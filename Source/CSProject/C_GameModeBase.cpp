@@ -3,23 +3,12 @@
 
 #include "C_GameModeBase.h"
 #include "Components/BoxComponent.h"
-
-#include "C_BaseSpawner.h"
+#include "C_Field.h"
 #include "C_Base.h"
 
 AC_GameModeBase::AC_GameModeBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
-
-	Field = CreateDefaultSubobject<UStaticMeshComponent>("Field");
-	SetRootComponent(Field);
-
-	LeftSpawnCollider = CreateDefaultSubobject<UBoxComponent>("LeftSpawnBox");
-	LeftSpawnCollider->SetupAttachment(RootComponent);
-
-	RightSpawnCollider = CreateDefaultSubobject<UBoxComponent>("RightSpawnBox");
-	RightSpawnCollider->SetupAttachment(RootComponent);
-
 
 }
 
@@ -33,10 +22,29 @@ void AC_GameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if(Field)
+		GetWorld()->SpawnActor(Field);
+
+	LeftCost = MaxCost;
+	RightCost = MaxCost;
 }
 
 void AC_GameModeBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+	RestoreCost(DeltaTime);
+}
 
+void AC_GameModeBase::RestoreCost(float DeltaTime)
+{
+	if (LeftCost <= MaxCost)
+		LeftCost += DeltaTime * CostRegenRatio;
+	else
+		LeftCost = MaxCost;
+
+	if (RightCost <= MaxCost)
+		RightCost += DeltaTime * CostRegenRatio;
+	else
+		RightCost = MaxCost;
 }

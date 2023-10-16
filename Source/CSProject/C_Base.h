@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "C_Base.generated.h"
 
-UCLASS()
+UCLASS(Abstract)
 class CSPROJECT_API AC_Base : public AActor
 {
 	GENERATED_BODY()
@@ -22,5 +22,16 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+protected:
+	UPROPERTY(EditDefaultsOnly)
+		int MaxHP;
+	int CurHP;
+
+	UPROPERTY(EditDefaultsOnly)
+		float AttackRange;
+
+	UPROPERTY(EditDefaultsOnly)
+		float Damage;
 
 };
