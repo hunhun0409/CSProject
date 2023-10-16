@@ -9,7 +9,8 @@
 /**
  * 
  */
-UCLASS()
+class AC_Field;
+UCLASS(Abstract)
 class CSPROJECT_API AC_GameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
@@ -22,26 +23,18 @@ protected:
 	virtual void BeginPlay() override;
 
 	virtual void Tick(float DeltaTime) override;
+
 private:
+	void RestoreCost(float DeltaTime);
 
 public:
 
 protected:
 	UPROPERTY(EditDefaultsOnly)
-		class UStaticMeshComponent* Field;
-
-	UPROPERTY(EditDefaultsOnly)
-		class AC_BaseSpawner* LeftBaseSpawner;
-	UPROPERTY(EditDefaultsOnly)
-		class UBoxComponent* LeftSpawnCollider;
-
-	UPROPERTY(EditDefaultsOnly)
-		class AC_BaseSpawner* RightBaseSpawner;
-	UPROPERTY(EditDefaultsOnly)
-		class UBoxComponent* RightSpawnCollider;
-
+		TSubclassOf<class AC_Field> Field;
 
 private:
+	float CostRegenRatio = 1.0f;
 	float MaxCost = 10.0f;
 	float LeftCost = 0.0f;
 	float RightCost = 0.0f;

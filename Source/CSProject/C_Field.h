@@ -4,21 +4,18 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "C_BaseSpawner.generated.h"
+#include "C_Field.generated.h"
 
-class AC_Base;
-UCLASS()
-class CSPROJECT_API AC_BaseSpawner : public AActor
+UCLASS(Abstract)
+class CSPROJECT_API AC_Field : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	AC_BaseSpawner();
+	AC_Field();
 
 protected:
-	virtual void OnConstruction(const FTransform &Transform) override;
-
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -26,18 +23,20 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void SpawnBase();
-
-	AC_Base* GetBase();
-
 protected:
-	UPROPERTY(EditAnywhere)
-		TSubclassOf<class AC_Base> BaseType;
+	UPROPERTY(EditDefaultsOnly)
+		class UStaticMeshComponent* Field;
 
 	UPROPERTY(EditDefaultsOnly)
-		class AC_Base* Base;
+		TSubclassOf<class AC_Base> LeftBase;
+	UPROPERTY(EditDefaultsOnly)
+		class UBoxComponent* LeftSpawnCollider;
 
 	UPROPERTY(EditDefaultsOnly)
-		class UStaticMeshComponent* BaseVisualSite;
+		TSubclassOf<class AC_Base> RightBase;
+	UPROPERTY(EditDefaultsOnly)
+		class UBoxComponent* RightSpawnCollider;
+
+
 
 };
