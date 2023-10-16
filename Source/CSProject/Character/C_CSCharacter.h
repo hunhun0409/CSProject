@@ -2,26 +2,28 @@
 
 #pragma once
 
+#include "C_CharacterInterface.h"
+
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "C_CSCharacter.generated.h"
 
+enum class ECharacterState :uint8;
+
 UCLASS(ABSTRACT)
-class CSPROJECT_API AC_CSCharacter : public ACharacter
+class CSPROJECT_API AC_CSCharacter : public ACharacter, public IC_CharacterInterface
 {
 	GENERATED_BODY()
 
-protected:
+private:
 	//Status
-	UPROPERTY(VisibleDefaultsOnly, Category = "Status")
+	UPROPERTY(VisibleDefaultsOnly, Category = "Status", meta = (AllowPrivateAccess = "true"))
 		class UC_StatusComponent* Status;
 
-
 public:
-	// Sets default values for this character's properties
 	AC_CSCharacter();
 
-
+	FORCEINLINE UC_StatusComponent* GetStatus() { return Status; }
 
 protected:
 	// Called when the game starts or when spawned
@@ -31,6 +33,12 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+protected:
+	virtual void Attack() override;
+	virtual void SpecialSkill() override;
+	virtual void UltimateSkill() override;
+
+
 private:
 	void InitWeapon();
 
@@ -38,7 +46,8 @@ private:
 public:
 	//Weapon
 	UPROPERTY(EditAnywhere)
-		TArray<TSubclassOf<class AC_Weapon>> WeaponClasses;
+		TSubclassOf<class AC_Weapon> WeaponClass;
 	class IC_WeaponInterface* Weapon;
-	TArray<decltype(Weapon)> Weapons;
+
+	TSharedPtr<ECharacterState> CharacterState;
 };

@@ -21,6 +21,7 @@ void AC_Gun::OnConstruction(FTransform const& Transform)
 
 	MuzzleFlash->AttachToComponent(Mesh, Rules, MuzzleSocket);
 	GunshotSound->AttachToComponent(Mesh, Rules, MuzzleSocket);
+
 }
 
 void AC_Gun::BeginPlay()
@@ -30,6 +31,8 @@ void AC_Gun::BeginPlay()
 
 void AC_Gun::ActivateAttack()
 {
+	Super::ActivateAttack();
+	//GEngine->AddOnScreenDebugMessage(0, 5, FColor::Red, TEXT("AC_Gun Attack!"));
 	ActivateEffect();
 }
 

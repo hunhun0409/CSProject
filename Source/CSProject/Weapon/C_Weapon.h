@@ -15,7 +15,7 @@ class CSPROJECT_API AC_Weapon : public AActor, public IC_WeaponInterface
 protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		class UStaticMeshComponent* Mesh;
+		class USkeletalMeshComponent* Mesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UParticleSystemComponent* Trail;
@@ -23,22 +23,25 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UParticleSystemComponent* Effect;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		class UAnimMontage* AttackMontage;
+
 public:
 	//¼ÒÄ¹
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Socket")
 		FName SocketOnEquipped;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Socket")
-		FName SocketOnUnequipped;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Socket")
 		FName SocketOnTrailStart;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Socket")
 		FName SocketOnTrailEnd;
 
+
 public:	
 	AC_Weapon();
 
-	virtual UStaticMeshComponent* GetMesh();
+	void PlayAttackMontage();
+	virtual USkeletalMeshComponent* GetMesh();
 protected:
 	virtual void BeginPlay() override;
 
