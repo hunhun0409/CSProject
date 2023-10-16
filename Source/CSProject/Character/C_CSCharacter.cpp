@@ -1,34 +1,59 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Character/C_CSCharacter.h"
+#include "Components/C_StatusComponent.h"
+#include "Weapon/C_Weapon.h"
+#include "Weapon/C_WeaponInterface.h"
+//#include "Skill/C_Skill.h"
 
-// Sets default values
+#include "GameFramework/CharacterMovementComponent.h"
+
+#include "Components/StaticMeshComponent.h"
+
+#define CreateDefaultSubobjectAuto(Component)\
+Component = CreateDefaultSubobject<std::remove_reference<decltype(*Component)>::type>(#Component)
+
 AC_CSCharacter::AC_CSCharacter()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	CreateDefaultSubobjectAuto(Status);
+	
 
 }
 
-// Called when the game starts or when spawned
 void AC_CSCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	GetCharacterMovement()->MaxWalkSpeed = Status->GetMovementSpeed();
+
+	
 	
 }
 
-// Called every frame
 void AC_CSCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 }
 
-// Called to bind functionality to input
-void AC_CSCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void AC_CSCharacter::InitWeapon()
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	FActorSpawnParameters SpawnParameters;
+	SpawnParameters.Owner = SpawnParameters.Instigator = this;
+	
+	for (auto& WeaponClass : WeaponClasses)
+	{
+		auto* const SpawnedWeapon = GetWorld()->SpawnActor<AC_Weapon>(WeaponClass, SpawnParameters);
+		SpawnedWeapon->GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+
+		FAttachmentTransformRules const Rules(EAttachmentRule::SnapToTarget, true);
+
+		Weapons.Add(SpawnedWeapon);
+
+		SpawnedWeapon->AttachToComponent(GetMesh(), Rules, SpawnedWeapon->SocketOnUnequipped);
+	}
+
+	
 
 }
 

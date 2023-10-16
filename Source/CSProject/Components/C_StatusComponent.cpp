@@ -5,11 +5,17 @@ UC_StatusComponent::UC_StatusComponent()
 
 }
 
+void UC_StatusComponent::AddHealth(float InAmount)
+{
+	CurHealth += InAmount;
 
-// Called when the game starts
+	CurHealth = FMath::Clamp(CurHealth, 0.0f, MaxHealth);
+}
+
 void UC_StatusComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	
+	CurHealth = MaxHealth;
+
 }

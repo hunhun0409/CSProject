@@ -6,14 +6,22 @@
 #include "GameFramework/Character.h"
 #include "C_CSCharacter.generated.h"
 
-UCLASS()
+UCLASS(ABSTRACT)
 class CSPROJECT_API AC_CSCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
+protected:
+	//Status
+	UPROPERTY(VisibleDefaultsOnly, Category = "Status")
+		class UC_StatusComponent* Status;
+
+
 public:
 	// Sets default values for this character's properties
 	AC_CSCharacter();
+
+
 
 protected:
 	// Called when the game starts or when spawned
@@ -23,7 +31,14 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+private:
+	void InitWeapon();
 
+
+public:
+	//Weapon
+	UPROPERTY(EditAnywhere)
+		TArray<TSubclassOf<class AC_Weapon>> WeaponClasses;
+	class IC_WeaponInterface* Weapon;
+	TArray<decltype(Weapon)> Weapons;
 };
