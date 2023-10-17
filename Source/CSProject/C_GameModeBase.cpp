@@ -23,7 +23,7 @@ void AC_GameModeBase::BeginPlay()
 	Super::BeginPlay();
 
 	if(Field)
-		GetWorld()->SpawnActor(Field);
+		Map = Cast<AC_Field>(GetWorld()->SpawnActor(Field));
 
 	LeftCost = MaxCost;
 	RightCost = MaxCost;

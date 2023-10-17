@@ -27,6 +27,7 @@ public:
 	virtual void BeginCharacterSelect() PURE_VIRTUAL(IC_ControllerInterface::BeginCharacterSelect, return;)
 	virtual void EndCharacterSelect() PURE_VIRTUAL(IC_ControllerInterface::EndCharacterSelect, return;)
 	virtual void Zoom(const float Value) PURE_VIRTUAL(IC_ControllerInterface::Zoom, return;)
+	virtual void KeyBoardCameraMove(const float Value) PURE_VIRTUAL(IC_ControllerInterface::KeyBoardCameraMove, return;)
 
 
 

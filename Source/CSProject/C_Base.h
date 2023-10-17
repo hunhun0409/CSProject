@@ -34,4 +34,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 		float Damage;
 
+	UPROPERTY(EditDefaultsOnly)
+		class UAIPerceptionComponent* AIPerception;
 };

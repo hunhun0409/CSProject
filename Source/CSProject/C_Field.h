@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "C_Field.generated.h"
 
+class AC_Base;
 UCLASS(Abstract)
 class CSPROJECT_API AC_Field : public AActor
 {
@@ -23,17 +24,23 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	AC_Base* GetBaseData(bool isLeftBase);
+
 protected:
 	UPROPERTY(EditDefaultsOnly)
 		class UStaticMeshComponent* Field;
 
 	UPROPERTY(EditDefaultsOnly)
-		TSubclassOf<class AC_Base> LeftBase;
+		TSubclassOf<class AC_Base> LeftBaseType;
+	UPROPERTY()
+		class AC_Base* LeftBase;
 	UPROPERTY(EditDefaultsOnly)
 		class UBoxComponent* LeftSpawnCollider;
 
 	UPROPERTY(EditDefaultsOnly)
-		TSubclassOf<class AC_Base> RightBase;
+		TSubclassOf<class AC_Base> RightBaseType;
+	UPROPERTY()
+		class AC_Base* RightBase;
 	UPROPERTY(EditDefaultsOnly)
 		class UBoxComponent* RightSpawnCollider;
 
