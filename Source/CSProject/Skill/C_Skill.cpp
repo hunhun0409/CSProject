@@ -1,27 +1,37 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Skill/C_Skill.h"
 
-// Sets default values
+
 AC_Skill::AC_Skill()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
 }
 
-// Called when the game starts or when spawned
 void AC_Skill::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
-// Called every frame
 void AC_Skill::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
 
+
+void AC_Skill::BeginAction()
+{
+}
+
+void AC_Skill::EndAction()
+{
+}
+
+void AC_Skill::Activate()
+{
+	bActivate = true;
+}
+
+void AC_Skill::Deactivate()
+{
+	bActivate = false;
 }
 

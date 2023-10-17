@@ -39,4 +39,7 @@ protected:
 
 	void ActivateEffect() override;
 	void DeactivateEffect() override;
+
+protected:
+	uint8 CurFireCount = 0;
 };

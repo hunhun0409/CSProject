@@ -70,6 +70,7 @@ public:
 	FORCEINLINE EClassType GetClassType() { return ClassType; }
 	FORCEINLINE EMoveType GetEMoveType() { return MoveType; }
 	FORCEINLINE EAttackType GetAttackType() { return AttackType; }
+	FORCEINLINE float GetMaxHealth() { return MaxHealth; } 
 	FORCEINLINE float GetCurHealth() { return CurHealth; } 
 	FORCEINLINE float GetAttack() { return Attack; }
 	FORCEINLINE float GetDefense() { return Defense; }
@@ -80,6 +81,17 @@ public:
 	FORCEINLINE float GetMaxSightRange() { return MaxSightRange; }
 	FORCEINLINE float GetMaxAttackRange() { return MaxAttackRange; }
 	FORCEINLINE float GetMovementSpeed() { return MovementSpeed; }
+
+	void SetMaxHealth(float Value);
+	FORCEINLINE void SetAttack(float Value) {  Attack = Value; }
+	FORCEINLINE void SetDefense(float Value) {  Defense = Value; }
+	FORCEINLINE void SetCrit(float Value) {  Crit = Value; }
+	FORCEINLINE void SetCritDamage(float Value) {  CritDamage = Value; }
+	FORCEINLINE void SetHit(float Value) {  Hit = Value; }
+	FORCEINLINE void SetAttackRate(float Value) {  AttackRate = Value; }
+	FORCEINLINE void SetMaxSightRange(float Value) {  MaxSightRange = Value; }
+	FORCEINLINE void SetMaxAttackRange(float Value) {  MaxAttackRange = Value; }
+	FORCEINLINE void SetMovementSpeed(float Value) {  MovementSpeed = Value; }
 
 public:	
 	UC_StatusComponent();

@@ -1,26 +1,38 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
+
+#include "C_SkillInterface.h"
+
+#include "Enum/ESkillType.h"
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "C_Skill.generated.h"
 
 UCLASS()
-class CSPROJECT_API AC_Skill : public AActor
+class CSPROJECT_API AC_Skill : public AActor, public IC_SkillInterface
 {
 	GENERATED_BODY()
 	
+
+protected:
+	UPROPERTY(EditDefaultsOnly)
+		ESkillType SkillType;
+	
+
 public:	
-	// Sets default values for this actor's properties
 	AC_Skill();
 
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 public:	
-	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+protected:
+	void BeginAction() override;
+	void EndAction() override;
+	void Activate() override;
+	void Deactivate() override;
+protected:
+	bool bActivate = false;
 };

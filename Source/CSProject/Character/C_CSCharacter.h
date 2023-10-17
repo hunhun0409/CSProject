@@ -15,6 +15,7 @@ class CSPROJECT_API AC_CSCharacter : public ACharacter, public IC_CharacterInter
 {
 	GENERATED_BODY()
 
+
 private:
 	//Status
 	UPROPERTY(VisibleDefaultsOnly, Category = "Status", meta = (AllowPrivateAccess = "true"))
@@ -25,22 +26,40 @@ public:
 
 	FORCEINLINE UC_StatusComponent* GetStatus() { return Status; }
 
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	void PrintState();
+	//Montage&Notify
+	UFUNCTION()
+		void CharacterMontageStarted(UAnimMontage* const Montage);
+	UFUNCTION()
+		virtual void CharacterMontageEnded(UAnimMontage* const Montage = 0, bool bInterrupted = 0);
+	UFUNCTION()
+		virtual void CharacterMontageBlendingOut(UAnimMontage* const montage = 0, bool bInterrupted = 0);
+	
+	UFUNCTION()
+		virtual void OnNotifyStart(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload);
+	UFUNCTION()
+		virtual void OnNotifyEnd(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload);
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 protected:
-	virtual void Attack() override;
-	virtual void SpecialSkill() override;
-	virtual void UltimateSkill() override;
+	void Attack() override;
+	void SPSkill() override;
+	void ULTSkill() override;
 
 
 private:
+	void InitState();
 	void InitWeapon();
+	void InitSkill();
+	void MoveForward();
 
 
 public:
@@ -49,7 +68,22 @@ public:
 		TSubclassOf<class AC_Weapon> WeaponClass;
 	class IC_WeaponInterface* Weapon;
 
-	
+	//PassiveSKill
+	UPROPERTY(EditAnywhere, Category = "PasiveSkill")
+		TArray<TSubclassOf<class AC_PassiveSkill>> PassiveSkillClasses;
+	TArray<class IC_SkillInterface*> PasiveSkills;
+
+	//SpecialSkill
+	UPROPERTY(EditAnywhere, Category = "SpecialSkill")
+		TSubclassOf<class AC_ActiveSkill> SpecialSkillClass;
+	class IC_SkillInterface* SpecialSkill;
+
+	//UltimateSkill
+	UPROPERTY(EditAnywhere, Category = "UltimateSkill")
+		TSubclassOf<class AC_ActiveSkill> UltimateSkillClass;
+	class IC_SkillInterface* UltimateSkill;
+
 
 	TSharedPtr<ECharacterState> CharacterState;
+	TMap<ECharacterState, FString> StateToName;
 };

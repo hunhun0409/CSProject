@@ -2,7 +2,11 @@
 #include "Character/C_CSCharacter.h"
 
 #include "Particles/ParticleSystemComponent.h"
+
 #include "Components/SkeletalMeshComponent.h"
+#include "Components/C_StatusComponent.h"
+
+
 #include "Animation/AnimMontage.h"
 
 
@@ -33,10 +37,6 @@ USkeletalMeshComponent* AC_Weapon::GetMesh()
 void AC_Weapon::BeginPlay()
 {
 	Super::BeginPlay();
-
-	
-	FTimerHandle Timer;
-	GetWorld()->GetTimerManager().SetTimer(Timer, this, &ThisClass::ActivateAttack, 3.0f, true, 0);
 }
 
 void AC_Weapon::ActivateAttack()
@@ -48,7 +48,9 @@ void AC_Weapon::ActivateAttack()
 	{
 		if (AttackMontage)
 		{
-			WeaponOwner->PlayAnimMontage(AttackMontage);
+			float attackRate = Cast<AC_CSCharacter>(GetOwner())->GetStatus()->GetAttackRate();
+
+			WeaponOwner->PlayAnimMontage(AttackMontage, attackRate);
 		}
 	}
 }

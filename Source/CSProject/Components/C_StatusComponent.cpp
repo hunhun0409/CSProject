@@ -1,5 +1,12 @@
 #include "Components/C_StatusComponent.h"
 
+void UC_StatusComponent::SetMaxHealth(float Value)
+{
+	float difference = Value - MaxHealth;
+	MaxHealth = Value;
+	AddHealth(difference);
+}
+
 UC_StatusComponent::UC_StatusComponent()
 {
 

@@ -2,28 +2,35 @@
 
 
 #include "Weapon/C_AssultRifle.h"
+#include "Character/C_CSCharacter.h"
+#include "Components/C_StatusComponent.h"
 
 void AC_AssultRifle::ActivateAttack()
 {
-	
-	//GEngine->AddOnScreenDebugMessage(0, 5, FColor::Red, TEXT("AC_AssultRifle Attack!"));
-	if (CurFireCount == FirePerAttack+1)
+	if (Timer == FTimerHandle())
 	{
-		CurFireCount = 0;
+		float attackRate = Cast<AC_CSCharacter>(GetOwner())->GetStatus()->GetAttackRate();
+		float FinalInterval = FireInterval / attackRate;
+
+		GetWorld()->GetTimerManager().SetTimer(Timer, this, &ThisClass::ActivateAttack, FinalInterval, true, 0);
+		return;
+	}
+		
+	//GEngine->AddOnScreenDebugMessage(0, 5, FColor::Green, FString::SanitizeFloat(CurFireCount), true);
+	Super::ActivateAttack();
+	if (++CurFireCount == FirePerAttack)
+	{
 		DeactivateAttack();
 		return;
 	}
-	if (Timer == FTimerHandle())
-		GetWorld()->GetTimerManager().SetTimer(Timer, this, &ThisClass::ActivateAttack, FireInterval, true, 0);
-
-	Super::ActivateAttack();
-	CurFireCount++;
 }
 
 void AC_AssultRifle::DeactivateAttack()
 {
+	Super::DeactivateAttack();
 	if (Timer != FTimerHandle())
 	{
+		CurFireCount = 0;
 		GetWorld()->GetTimerManager().ClearTimer(Timer);
 	}
 }

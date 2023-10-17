@@ -16,6 +16,6 @@ class CSPROJECT_API IC_CharacterInterface
 
 public:
 	virtual void Attack()	PURE_VIRTUAL(IC_CharacterInterface::Attack, return;)
-	virtual void SpecialSkill() PURE_VIRTUAL(IC_CharacterInterface::SpecialSkill, return;)
-	virtual void UltimateSkill() PURE_VIRTUAL(IC_CharacterInterface::DeactUltimateSkillivateTrail, return;)
+	virtual void SPSkill()	PURE_VIRTUAL(IC_CharacterInterface::SPSkill, return;)
+	virtual void ULTSkill()	PURE_VIRTUAL(IC_CharacterInterface::ULTSkill, return;)
 };

@@ -26,5 +26,4 @@ private:
 
 private:
 	FTimerHandle Timer;
-	uint8 CurFireCount = 0;
 };
