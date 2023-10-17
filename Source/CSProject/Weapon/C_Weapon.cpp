@@ -1,5 +1,6 @@
 #include "Weapon/C_Weapon.h"
 #include "Character/C_CSCharacter.h"
+
 #include "Particles/ParticleSystemComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "Animation/AnimMontage.h"
@@ -24,19 +25,6 @@ AC_Weapon::AC_Weapon()
 
 }
 
-void AC_Weapon::PlayAttackMontage()
-{
-	auto* const WeaponOwner = Cast<AC_CSCharacter>(GetOwner());
-	if (WeaponOwner)
-	{
-		if (AttackMontage)
-		{
-			GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5, FColor::Red, TEXT("PlayAttackMontage"));
-			WeaponOwner->PlayAnimMontage(AttackMontage, 1.0f);
-		}
-	}
-}
-
 USkeletalMeshComponent* AC_Weapon::GetMesh()
 {
 	return Mesh;
@@ -46,29 +34,23 @@ void AC_Weapon::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//FTimerHandle Timer;
-
-	//GetWorld()->GetTimerManager().SetTimer(Timer, this, &ThisClass::PlayAttackMontage, 1.0f, true, 0);
 	
+	FTimerHandle Timer;
+	GetWorld()->GetTimerManager().SetTimer(Timer, this, &ThisClass::ActivateAttack, 3.0f, true, 0);
 }
 
 void AC_Weapon::ActivateAttack()
 {
-	auto* const WeaponOwner = Cast<AC_CSCharacter>(GetOwner());
-	
+	AC_CSCharacter* const WeaponOwner = Cast<AC_CSCharacter>(GetOwner());
+	//auto* const WeaponOwner = Cast<AC_CSCharacter>(GetOwner());
 
 	if (WeaponOwner)
 	{
-		
 		if (AttackMontage)
 		{
-			GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5, FColor::Red, TEXT("AC_Weapon Attack!"));
 			WeaponOwner->PlayAnimMontage(AttackMontage);
 		}
-		
 	}
-		
-
 }
 
 void AC_Weapon::DeactivateAttack()

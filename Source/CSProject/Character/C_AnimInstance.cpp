@@ -7,4 +7,10 @@ void UC_AnimInstance::NativeUpdateAnimation(float const DeltaSeconds)
 {
 	Super::NativeUpdateAnimation(DeltaSeconds);
 
+	if (auto* const PawnOwner = TryGetPawnOwner())
+	{
+		FVector const Velocity = PawnOwner->GetVelocity();
+
+		Speed = Velocity.Size2D();
+	}
 }

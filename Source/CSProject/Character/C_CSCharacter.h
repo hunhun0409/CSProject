@@ -49,5 +49,7 @@ public:
 		TSubclassOf<class AC_Weapon> WeaponClass;
 	class IC_WeaponInterface* Weapon;
 
+	
+
 	TSharedPtr<ECharacterState> CharacterState;
 };

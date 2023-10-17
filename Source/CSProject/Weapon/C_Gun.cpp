@@ -1,4 +1,6 @@
 #include "Weapon/C_Gun.h"
+
+
 #include "Particles/ParticleSystemComponent.h"
 #include "Components/AudioComponent.h"
 
@@ -27,12 +29,14 @@ void AC_Gun::OnConstruction(FTransform const& Transform)
 void AC_Gun::BeginPlay()
 {
 	Super::BeginPlay();
+
+	
 }
 
 void AC_Gun::ActivateAttack()
 {
 	Super::ActivateAttack();
-	//GEngine->AddOnScreenDebugMessage(0, 5, FColor::Red, TEXT("AC_Gun Attack!"));
+	
 	ActivateEffect();
 }
 

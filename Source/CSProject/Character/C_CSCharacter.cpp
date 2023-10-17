@@ -32,15 +32,17 @@ void AC_CSCharacter::BeginPlay()
 
 	InitWeapon();
 
-	//FTimerHandle Timer;
-
-	//GetWorld()->GetTimerManager().SetTimer(Timer, this, &ThisClass::Attack, 1.0f, true, 0);
+	FTimerHandle Timer;
+	GetWorld()->GetTimerManager().SetTimer(Timer, this, &ThisClass::Attack, 3.0f, true, 0);
 }
 
 void AC_CSCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	//walk Forward
+	FVector const Direction = FRotator(0, GetControlRotation().Yaw, 0).Quaternion().GetForwardVector();
+	AddMovementInput(Direction);
 }
 
 void AC_CSCharacter::Attack()
