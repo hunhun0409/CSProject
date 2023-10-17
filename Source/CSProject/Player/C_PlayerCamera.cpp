@@ -7,9 +7,9 @@
 #include "GameFramework/FloatingPawnMovement.h"
 #include "Curves/CurveVector.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "C_GameModeBase.h"
-#include "../Environment/C_Field.h"
-#include "../Environment/C_Base.h"
+#include "Environment/C_GameModeBase.h"
+#include "Environment/C_Field.h"
+#include "Environment/C_Base.h"
 
 // Sets default values
 AC_PlayerCamera::AC_PlayerCamera()
