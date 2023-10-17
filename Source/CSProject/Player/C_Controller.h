@@ -14,6 +14,12 @@ class CSPROJECT_API AC_Controller : public APlayerController
 {
 	GENERATED_BODY()
 
+public:
+	AC_Controller();
+
+protected:
+	void Tick(const float DeltaTime) override;
+
 private:
 	void SetupInputComponent() override;
 
@@ -25,4 +31,6 @@ private:
 	void Wheel(const float Value);
 	void MoveRight(const float Value);
 
+private:
+	bool MouseRBPressed = false;
 };

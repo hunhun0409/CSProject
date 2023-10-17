@@ -20,6 +20,7 @@ void AC_Base::BeginPlay()
 	Super::BeginPlay();
 	
 	CurHP = MaxHP;
+
 }
 
 // Called every frame

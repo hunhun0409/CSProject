@@ -7,6 +7,9 @@
 #include "GameFramework/FloatingPawnMovement.h"
 #include "Curves/CurveVector.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Environment/C_GameModeBase.h"
+#include "Environment/C_Field.h"
+#include "Environment/C_Base.h"
 
 // Sets default values
 AC_PlayerCamera::AC_PlayerCamera()
@@ -21,7 +24,7 @@ AC_PlayerCamera::AC_PlayerCamera()
 	Camera->SetupAttachment(RootComponent);
 
 	Movement = CreateDefaultSubobject<UFloatingPawnMovement>("Movement");
-	
+
 }
 
 // Called when the game starts or when spawned
@@ -34,24 +37,15 @@ void AC_PlayerCamera::BeginPlay()
 		NewSocketOffsetZ = ZoomCurve->GetVectorValue(0).X;
 		NewFieldOfView = ZoomCurve->GetVectorValue(0).Z;
 	}
+
+	UpdateUIData();
+
 }
 
 // Called every frame
 void AC_PlayerCamera::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if (ControlCamera)
-	{
-		if (auto* PlayerController = Cast<APlayerController>(GetController()))
-		{
-			float DeltaX = 0.0f;
-			float DeltaY = 0.0f;
-			PlayerController->GetInputMouseDelta(DeltaX, DeltaY);
-			
-			CameraMovement = -DeltaX;
-		}
-	}
 
 	if (abs(CameraMovement) <= 0.01)
 		CameraMovement = 0;
@@ -70,16 +64,6 @@ void AC_PlayerCamera::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-}
-
-void AC_PlayerCamera::BeginCameraMove()
-{
-	ControlCamera = true;
-}
-
-void AC_PlayerCamera::EndCameraMove()
-{
-	ControlCamera = false;
 }
 
 void AC_PlayerCamera::BeginCharacterSelect()
@@ -112,3 +96,18 @@ void AC_PlayerCamera::KeyBoardCameraMove(const float Value)
 	CameraMovement = Value;
 }
 
+void AC_PlayerCamera::MouseDelta(const float DeltaX, const float DeltaY)
+{
+	CameraMovement = -DeltaX;
+}
+
+void AC_PlayerCamera::UpdateUIData()
+{
+	if (auto* GameMode = Cast<AC_GameModeBase>(GetWorld()->GetAuthGameMode()))
+	{
+		if(!GameMode->UIDataUpdated.IsBound())
+			GameMode->UIDataUpdated.BindUFunction(this, "UpdateUIData");
+
+		Datas = GameMode->GetUIData();
+	}
+}

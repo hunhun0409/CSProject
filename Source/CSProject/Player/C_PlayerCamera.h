@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "C_ControllerInterface.h"
+#include "Structs.h"
 #include "C_PlayerCamera.generated.h"
 
 UCLASS(Abstract)
@@ -28,12 +29,15 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 protected:
-	virtual void BeginCameraMove() override;
-	virtual void EndCameraMove() override;
 	virtual void BeginCharacterSelect() override;
 	virtual void EndCharacterSelect() override;
 	virtual void Zoom(const float Value) override;
 	virtual void KeyBoardCameraMove(const float Value) override;
+	virtual void MouseDelta(const float DeltaX, const float DetlaY) override;
+protected:
+	UFUNCTION()
+		void UpdateUIData();
+private:
 
 protected:
 	UPROPERTY(EditDefaultsOnly)
@@ -51,11 +55,12 @@ protected:
 		class UCurveVector* ZoomCurve;
 
 private:
+	FUIData Datas;
+
 	float CameraMovement;
-
 	float ZoomTime = 0.0f;
-
 	float ZoomRatio = 1.0f;
+
 	bool ControlCamera = false;
 
 };

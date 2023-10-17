@@ -4,6 +4,24 @@
 #include "C_Controller.h"
 #include "C_ControllerInterface.h"
 
+AC_Controller::AC_Controller()
+{
+	PrimaryActorTick.bCanEverTick = true;
+}
+
+void AC_Controller::Tick(const float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (MouseRBPressed)
+	{
+		float DeltaX;
+		float DeltaY;
+		GetInputMouseDelta(DeltaX, DeltaY);
+		Cast<IC_ControllerInterface>(GetPawn())->MouseDelta(DeltaX, DeltaY);
+	}
+}
+
 void AC_Controller::SetupInputComponent()
 {
 	Super::SetupInputComponent();
@@ -33,14 +51,12 @@ void AC_Controller::EndLB()
 
 void AC_Controller::BeginRB()
 {
-	Cast<IC_ControllerInterface>(GetPawn())->BeginCameraMove();
-
+	MouseRBPressed = true;
 }
 
 void AC_Controller::EndRB()
 {
-	Cast<IC_ControllerInterface>(GetPawn())->EndCameraMove();
-	
+	MouseRBPressed = false;
 }
 
 void AC_Controller::Wheel(const float Value)

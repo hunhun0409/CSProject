@@ -31,7 +31,7 @@ void AC_Field::BeginPlay()
 	LeftBase = Cast<AC_Base>(GetWorld()->SpawnActor(LeftBaseType, &LBTransform));
 
 	FTransform RBTransform = GetActorTransform();
-	RBTransform.SetLocation(RBTransform.GetLocation() + LeftSpawnCollider->GetComponentLocation());
+	RBTransform.SetLocation(RBTransform.GetLocation() + RightSpawnCollider->GetComponentLocation());
 	RightBase = Cast<AC_Base>(GetWorld()->SpawnActor(RightBaseType, &RBTransform));
 }
 
@@ -42,7 +42,7 @@ void AC_Field::Tick(float DeltaTime)
 
 }
 
-AC_Base* AC_Field::GetBaseData(bool isLeftBase)
+AC_Base* AC_Field::AccessBaseData(bool isLeftBase)
 {
 	if (isLeftBase)
 		return LeftBase;
