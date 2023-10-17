@@ -1,12 +1,12 @@
 #pragma once
 
-struct BasicData
+struct FBasicData
 {
 	float CurCost;
 	float CurHP;
 };
 
-struct UIData
+struct FUIData
 {
 	float CurCost;
 	float PlayerBaseHP;

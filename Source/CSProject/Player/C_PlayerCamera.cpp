@@ -24,7 +24,7 @@ AC_PlayerCamera::AC_PlayerCamera()
 	Camera->SetupAttachment(RootComponent);
 
 	Movement = CreateDefaultSubobject<UFloatingPawnMovement>("Movement");
-	
+
 }
 
 // Called when the game starts or when spawned

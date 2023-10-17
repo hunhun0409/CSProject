@@ -55,7 +55,7 @@ protected:
 		class UCurveVector* ZoomCurve;
 
 private:
-	UIData Datas;
+	FUIData Datas;
 
 	float CameraMovement;
 	float ZoomTime = 0.0f;
