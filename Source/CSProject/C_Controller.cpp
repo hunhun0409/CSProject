@@ -15,6 +15,8 @@ void AC_Controller::SetupInputComponent()
 	InputComponent->BindAction("MouseRB", IE_Released, this, &ThisClass::EndRB);
 
 	InputComponent->BindAxis("MouseWheel", this, &ThisClass::Wheel);
+	InputComponent->BindAxis("MoveForward", this, &ThisClass::Wheel);
+	InputComponent->BindAxis("MoveRight", this, &ThisClass::MoveRight);
 
 }
 
@@ -44,5 +46,11 @@ void AC_Controller::EndRB()
 void AC_Controller::Wheel(const float Value)
 {
 	Cast<IC_ControllerInterface>(GetPawn())->Zoom(Value);
+
+}
+
+void AC_Controller::MoveRight(const float Value)
+{
+	Cast<IC_ControllerInterface>(GetPawn())->KeyBoardCameraMove(Value);
 
 }

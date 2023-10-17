@@ -107,3 +107,8 @@ void AC_PlayerCamera::Zoom(const float Value)
 	NewFieldOfView = ZoomCurveData.Z;
 }
 
+void AC_PlayerCamera::KeyBoardCameraMove(const float Value)
+{
+	CameraMovement = Value;
+}
+

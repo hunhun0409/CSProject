@@ -23,5 +23,6 @@ private:
 	void BeginRB();
 	void EndRB();
 	void Wheel(const float Value);
+	void MoveRight(const float Value);
 
 };

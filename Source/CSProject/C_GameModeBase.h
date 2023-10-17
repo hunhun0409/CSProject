@@ -33,6 +33,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 		TSubclassOf<class AC_Field> Field;
 
+	UPROPERTY()
+		class AC_Field* Map;
+
 private:
 	float CostRegenRatio = 1.0f;
 	float MaxCost = 10.0f;

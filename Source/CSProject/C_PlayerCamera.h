@@ -33,6 +33,7 @@ protected:
 	virtual void BeginCharacterSelect() override;
 	virtual void EndCharacterSelect() override;
 	virtual void Zoom(const float Value) override;
+	virtual void KeyBoardCameraMove(const float Value) override;
 
 protected:
 	UPROPERTY(EditDefaultsOnly)
