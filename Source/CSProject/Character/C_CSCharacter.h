@@ -33,6 +33,8 @@ public:
 	FORCEINLINE UC_StatusComponent* GetStatus() { return Status; }
 	FORCEINLINE uint8 GetTeamID() { return TeamID; }
 	FORCEINLINE class UBehaviorTree* GetTree() { return BehaviorTree; }
+	FORCEINLINE ECharacterState GetCharacterState() { return *CharacterState; }
+
 	FORCEINLINE bool IsDead() { return *CharacterState == ECharacterState::Dead; }
 
 	
@@ -75,9 +77,6 @@ private:
 	void MoveForward();
 
 	virtual void Destroyed() override;
-
-public:
-	void RemoveTarget(AActor* Inactor);
 public:
 	//Weapon
 	UPROPERTY(EditAnywhere)
@@ -103,5 +102,11 @@ public:
 	TMap<ECharacterState, FString> StateToName;
 
 	AActor* Target;
-	TSet<AActor*> Targets;
+
+	//특수기 쿨이 돌았으면 true
+	bool bCanActivateSP = false;
+	//궁극기 쿨이 돌았으면 true
+	bool bCanActivateULT = false;
+	//필드에 소환돼있으면 true, 아니면 false
+	bool bInBattle = false;
 };

@@ -30,14 +30,16 @@ void AC_ActiveSkill::ApplyEffectToPawn(APawn* InPawn)
 
 void AC_ActiveSkill::BeginAction()
 {
-	Cast<AC_CSCharacter>(GetOwner())->GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &ThisClass::OnNotifyStart);
-
+	//Skill 애니메이션 재생
 	AC_CSCharacter* const SkillOwner = Cast<AC_CSCharacter>(GetOwner());
 
 	if (SkillOwner)
 	{
 		if (SkillMontage)
 		{
+			Cast<AC_CSCharacter>(GetOwner())->GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &ThisClass::OnNotifyStart);
+			Cast<AC_CSCharacter>(GetOwner())->GetMesh()->GetAnimInstance()->OnMontageEnded.AddDynamic(this, &ThisClass::OnSkillMontageEnded);
+
 			float attackRate = Cast<AC_CSCharacter>(GetOwner())->GetStatus()->GetAttackRate();
 
 			SkillOwner->PlayAnimMontage(SkillMontage, attackRate);
@@ -47,23 +49,31 @@ void AC_ActiveSkill::BeginAction()
 
 void AC_ActiveSkill::EndAction()
 {
-	Cast<AC_CSCharacter>(GetOwner())->GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.RemoveDynamic(this, &ThisClass::OnNotifyStart);
+	//Skill 애니메이션 끝날때 시행할 작업
+	Cast<AC_CSCharacter>(GetOwner())->GetMesh()->GetAnimInstance()->OnMontageEnded.RemoveDynamic(this, &ThisClass::OnSkillMontageEnded);
+
 }
 
 void AC_ActiveSkill::Activate()
 {
+	//스킬이 발사되는 순간
+	Cast<AC_CSCharacter>(GetOwner())->GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.RemoveDynamic(this, &ThisClass::OnNotifyStart);
+
 	RestartCooldown();
+	//미완
 	//효과
 }
 
 void AC_ActiveSkill::Deactivate()
 {
-			
+	
 }
 
 void AC_ActiveSkill::RestartCooldown()
 {
 	CurCooldown = 0;
+	//미완
+	//전장에 스폰여부를 확인하고 스폰돼있을때만 쿨이 돌게 해야함
 	FTimerHandle Timer;
 	GetWorld()->GetTimerManager().SetTimer(Timer, this, &ThisClass::AddCooldown, AddInterval, true, AddInterval);
 }
@@ -71,4 +81,9 @@ void AC_ActiveSkill::RestartCooldown()
 void AC_ActiveSkill::OnNotifyStart(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload)
 {
 	Activate();
+}
+
+void AC_ActiveSkill::OnSkillMontageEnded(UAnimMontage* Montage, bool bInterrupted)
+{
+	EndAction();
 }

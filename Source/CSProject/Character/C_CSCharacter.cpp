@@ -50,6 +50,8 @@ void AC_CSCharacter::BeginPlay()
 	
 	GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &ThisClass::OnNotifyStart);
 	GetMesh()->GetAnimInstance()->OnPlayMontageNotifyEnd.AddDynamic(this, &ThisClass::OnNotifyEnd);
+
+
 }
 
 void AC_CSCharacter::OnConstruction(FTransform const& Transform)
@@ -110,16 +112,22 @@ void AC_CSCharacter::Attack()
 
 void AC_CSCharacter::SPSkill()
 {
-	*CharacterState = ECharacterState::SP_Skilling;
+	if (bCanActivateSP)
+	{
+		*CharacterState = ECharacterState::SP_Skilling;
 
-	SpecialSkill->BeginAction();
+		SpecialSkill->BeginAction();
+	}
 }
 
 void AC_CSCharacter::ULTSkill()
 {
-	*CharacterState = ECharacterState::ULT_Skilling;
+	if (bCanActivateULT)
+	{
+		*CharacterState = ECharacterState::ULT_Skilling;
 
-	UltimateSkill->BeginAction();
+		UltimateSkill->BeginAction();
+	}
 }
 
 void AC_CSCharacter::InitState()
@@ -175,6 +183,8 @@ void AC_CSCharacter::InitSkill()
 		auto* const SpawnedSPSkill = GetWorld()->SpawnActor<AC_Skill>(SpecialSkillClass, SpawnParameters);
 		SpawnedSPSkill->AttachToComponent(GetMesh(), Rules);
 		SpecialSkill = SpawnedSPSkill;
+
+
 	}
 	//ultimate
 	if (UltimateSkillClass != nullptr)
@@ -199,29 +209,8 @@ void AC_CSCharacter::Destroyed()
 
 
 	//Todo
-
 	//상대 함선에게 죽음을 알림 : 미완성
-	//TArray<AC_Base*> AllBase;
-	//for (AActor* actor : FoundActors)
-	//{
-	//	if (actor == this)
-	//		continue;
-	//	AC_Base* Base = Cast<AC_Base>(actor);
-	//	if (Base)
-	//	{
-	//		AllBase.Add(Base);
-	//	}
-	//}
-
-	//for (AC_Base* Base : AllBase)
-	//{
-	//	if (Base->GetTeamID() == TeamID)
-	//		continue;
-	//	if (Base->IsValidLowLevel())
-	//	{
-	//		Base->RemoveTarget(this);
-	//	}
-	//}
+	
 
 
 
@@ -240,24 +229,13 @@ void AC_CSCharacter::Destroyed()
 
 	for (AC_CSCharacter* character : AllCharacters)
 	{
+		//아군이면 패스
 		if (character->GetTeamID() == TeamID)
 			continue;
-		if (character->IsValidLowLevel())
+		//IsValid
+		if (IsValid(character))
 		{
-			character->RemoveTarget(this);
+			Cast<AC_CSAIController>(character->GetController())->RemoveTarget(this);
 		}
 	}
 }
-
-void AC_CSCharacter::RemoveTarget(AActor* Inactor)
-{
-	if (Targets.Contains(Inactor))
-	{
-		Targets.Remove(Inactor);
-		if (Target == Inactor)
-			Target = nullptr;
-
-		Cast<AC_CSAIController>(GetController())->RemoveTarget(Inactor);
-	}
-}
-

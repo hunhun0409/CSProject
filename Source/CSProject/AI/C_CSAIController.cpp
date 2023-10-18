@@ -40,6 +40,8 @@ void AC_CSAIController::Tick(const float DeltaSecond)
 	if (SensedActors.Num())
 	{
 		Target = GetClosestActor();
+		Cast<AC_CSCharacter>(GetPawn())->Target = Target;
+		Blackboard->SetValueAsObject("Target", Target);
 	}
 }
 
@@ -73,6 +75,8 @@ void AC_CSAIController::RemoveTarget(AActor* Inactor)
 		if (Target == Inactor)
 		{
 			Target = nullptr;
+			Cast<AC_CSCharacter>(GetPawn())->Target = nullptr;
+			Blackboard->SetValueAsObject("Target", nullptr);
 		}
 		if (SensedActors.Num() == 0)
 			ClosestDist = BIG_NUMBER;
@@ -93,6 +97,8 @@ void AC_CSAIController::OnPerceptionUpdated(const TArray<AActor*>& UpdateActors)
 			if (Target == actor)
 			{
 				Target = nullptr;
+				Cast<AC_CSCharacter>(GetPawn())->Target = nullptr;
+				Blackboard->SetValueAsObject("Target", nullptr);
 			}
 			SensedActors.Remove(actor);
 			if (SensedActors.Num() == 0)
@@ -100,7 +106,7 @@ void AC_CSAIController::OnPerceptionUpdated(const TArray<AActor*>& UpdateActors)
 		}
 		else
 		{
-			if (actor->IsValidLowLevel() && Cast<AC_CSCharacter>(actor)->IsDead() != true)
+			if (IsValid(actor) && Cast<AC_CSCharacter>(actor)->IsDead() != true)
 			{
 				SensedActors.Add(actor);
 			}

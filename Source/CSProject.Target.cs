@@ -10,5 +10,6 @@ public class CSProjectTarget : TargetRules
 		Type = TargetType.Game;
 		DefaultBuildSettings = BuildSettingsVersion.V2;
 		ExtraModuleNames.Add("CSProject");
-	}
+
+	}	
 }

@@ -39,8 +39,10 @@ protected:
 
 	UFUNCTION()
 		virtual void OnNotifyStart(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload);
+		virtual void OnSkillMontageEnded(UAnimMontage* Montage, bool bInterrupted);
 
 	FORCEINLINE void AddCooldown() { CurCooldown += AddInterval; }
+	FORCEINLINE bool CanActivate() { return CurCooldown == MaxCooldown; }
 
 private:
 	float CurCooldown = 0;

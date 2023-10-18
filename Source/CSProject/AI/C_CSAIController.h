@@ -35,6 +35,8 @@ public:
 	class UC_BehaviorComponent* GetBehavior() { return Behavior; }
 	class UBlackboardComponent* GetBlackboard() { return Blackboard; }
 
+	FORCEINLINE float GetTargetDist() { return ClosestDist; }
+
 private:
 	UFUNCTION()
 		void OnPerceptionUpdated(const TArray<AActor*>& UpdateActors);
