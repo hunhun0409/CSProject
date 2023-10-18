@@ -20,7 +20,7 @@ class CSPROJECT_API UC_StatusComponent : public UActorComponent
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Name")
-		FName name;
+		FName Name;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Lv")
 		uint8 Level = 1;

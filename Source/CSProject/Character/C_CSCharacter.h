@@ -3,6 +3,7 @@
 #pragma once
 
 #include "C_CharacterInterface.h"
+#include "Enum/ECharacterState.h"
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
@@ -20,13 +21,21 @@ private:
 	//Status
 	UPROPERTY(VisibleDefaultsOnly, Category = "Status", meta = (AllowPrivateAccess = "true"))
 		class UC_StatusComponent* Status;
+protected:
+	UPROPERTY(EditAnywhere, Category = "TeamID", meta = (AllowPrivateAccess = "true"))
+		uint8 TeamID;
+	UPROPERTY(EditAnywhere, Category = "BTree", meta = (AllowPrivateAccess = "true"))
+		class UBehaviorTree* BehaviorTree;
 
 public:
 	AC_CSCharacter();
 
 	FORCEINLINE UC_StatusComponent* GetStatus() { return Status; }
+	FORCEINLINE uint8 GetTeamID() { return TeamID; }
+	FORCEINLINE class UBehaviorTree* GetTree() { return BehaviorTree; }
+	FORCEINLINE bool IsDead() { return *CharacterState == ECharacterState::Dead; }
 
-
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -47,6 +56,8 @@ protected:
 	UFUNCTION()
 		virtual void OnNotifyEnd(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload);
 
+		
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -63,7 +74,10 @@ private:
 	void InitSkill();
 	void MoveForward();
 
+	virtual void Destroyed() override;
 
+public:
+	void RemoveTarget(AActor* Inactor);
 public:
 	//Weapon
 	UPROPERTY(EditAnywhere)
@@ -85,7 +99,9 @@ public:
 		TSubclassOf<class AC_Skill> UltimateSkillClass;
 	class IC_SkillInterface* UltimateSkill;
 
-
 	TSharedPtr<ECharacterState> CharacterState;
 	TMap<ECharacterState, FString> StateToName;
+
+	AActor* Target;
+	TSet<AActor*> Targets;
 };

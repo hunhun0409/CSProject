@@ -4,6 +4,10 @@
 #include "Weapon/C_Weapon.h"
 #include "Weapon/C_WeaponInterface.h"
 
+#include "Environment/C_Base.h"
+
+#include "AI/C_CSAIController.h"
+
 #include "Skill/C_Skill.h"
 #include "Skill/C_PassiveSkill.h"
 #include "Skill/C_ActiveSkill.h"
@@ -15,6 +19,8 @@
 
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/StaticMeshComponent.h"
+
+#include "Kismet/GameplayStatics.h"
 
 #define CreateDefaultSubobjectAuto(Component)\
 Component = CreateDefaultSubobject<std::remove_reference<decltype(*Component)>::type>(#Component)
@@ -127,7 +133,7 @@ void AC_CSCharacter::InitState()
 		{ECharacterState::Attacking, TEXT("Attacking")},
 		{ECharacterState::SP_Skilling, TEXT("SP_Skilling")},
 		{ECharacterState::ULT_Skilling, TEXT("ULT_Skilling")},
-		{ECharacterState::Died, TEXT("Died")},
+		{ECharacterState::Dead, TEXT("Dead")},
 	};
 }
 
@@ -184,5 +190,74 @@ void AC_CSCharacter::MoveForward()
 	//walk Forward
 	FVector const Direction = FRotator(0, GetControlRotation().Yaw, 0).Quaternion().GetForwardVector();
 	AddMovementInput(Direction);
+}
+
+void AC_CSCharacter::Destroyed()
+{
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter::StaticClass(), FoundActors);
+
+
+	//Todo
+
+	//상대 함선에게 죽음을 알림 : 미완성
+	//TArray<AC_Base*> AllBase;
+	//for (AActor* actor : FoundActors)
+	//{
+	//	if (actor == this)
+	//		continue;
+	//	AC_Base* Base = Cast<AC_Base>(actor);
+	//	if (Base)
+	//	{
+	//		AllBase.Add(Base);
+	//	}
+	//}
+
+	//for (AC_Base* Base : AllBase)
+	//{
+	//	if (Base->GetTeamID() == TeamID)
+	//		continue;
+	//	if (Base->IsValidLowLevel())
+	//	{
+	//		Base->RemoveTarget(this);
+	//	}
+	//}
+
+
+
+	//전장에 있는 캐릭터들에게 죽음을 알림
+	TArray<AC_CSCharacter*> AllCharacters;
+	for (AActor* actor : FoundActors)
+	{
+		if (actor == this)
+			continue;
+		AC_CSCharacter* Character = Cast<AC_CSCharacter>(actor);
+		if (Character)
+		{
+			AllCharacters.Add(Character);
+		}
+	}
+
+	for (AC_CSCharacter* character : AllCharacters)
+	{
+		if (character->GetTeamID() == TeamID)
+			continue;
+		if (character->IsValidLowLevel())
+		{
+			character->RemoveTarget(this);
+		}
+	}
+}
+
+void AC_CSCharacter::RemoveTarget(AActor* Inactor)
+{
+	if (Targets.Contains(Inactor))
+	{
+		Targets.Remove(Inactor);
+		if (Target == Inactor)
+			Target = nullptr;
+
+		Cast<AC_CSAIController>(GetController())->RemoveTarget(Inactor);
+	}
 }
 
