@@ -9,6 +9,7 @@
 /**
  * 
  */
+//¾È¾¸
 UCLASS()
 class CSPROJECT_API AC_Administration_Rifleman : public AC_CSCharacter
 {

@@ -19,6 +19,12 @@ class CSPROJECT_API UC_StatusComponent : public UActorComponent
 	GENERATED_BODY()
 
 protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Name")
+		FName name;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Lv")
+		uint8 Level = 1;
+
 	UPROPERTY(EditDefaultsOnly)
 		ECharacterRank CharacterRank;
 
@@ -34,8 +40,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 		EAttackType AttackType;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 		float MaxHealth = 1000.0f;
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
+		float CurHealth;
 
 	UPROPERTY(EditDefaultsOnly)
 		float Attack = 100.0f;
@@ -63,6 +71,40 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 		float MovementSpeed = 600.0f;
+
+	////레벨당 증가량
+
+	//UPROPERTY(EditDefaultsOnly)
+	//	float LV1_Health = 10.0f;
+
+	//UPROPERTY(EditDefaultsOnly)
+	//	float Health_IncreaseAmount = 10.0f;
+
+	//UPROPERTY(EditDefaultsOnly)
+	//	float LV1_Attack = 10.0f;
+
+	//UPROPERTY(EditDefaultsOnly)
+	//	float Attack_IncreaseAmount = 10.0f;
+
+	//UPROPERTY(EditDefaultsOnly)
+	//	float LV1_Defenseh = 10.0f;
+
+	//UPROPERTY(EditDefaultsOnly)
+	//	float Defense_IncreaseAmount = 1.0f;
+
+	//UPROPERTY(EditDefaultsOnly)
+	//	float LV1_Crit = 10.0f;
+
+	//UPROPERTY(EditDefaultsOnly)
+	//	float Crit_IncreaseAmount = 1.0f;
+
+	//UPROPERTY(EditDefaultsOnly)
+	//	float LV1_Hit = 10.0f;
+
+	//UPROPERTY(EditDefaultsOnly)
+	//	float Hit_IncreaseAmount = 100.0f;
+
+	
 
 public:
 	FORCEINLINE ECharacterRank GetCharacterRank() { return CharacterRank; }
@@ -96,12 +138,12 @@ public:
 public:	
 	UC_StatusComponent();
 
-	void AddHealth(float InAmount);
 
 protected:
 	virtual void BeginPlay() override;
-		
-
+public:
+	void ApplyStatus();
+	void AddHealth(float InAmount);
 private:
-	float CurHealth;
+	
 };

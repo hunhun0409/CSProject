@@ -10,6 +10,7 @@ void AC_PassiveSkill::BeginPlay()
 
 void AC_PassiveSkill::ApplyEffectToPawn(APawn* InPawn)
 {
+	//GEngine->AddOnScreenDebugMessage(1, 5, FColor::Green, TEXT("ApplyEffectToPawn"));
 	AC_CSCharacter* InOwner = Cast<AC_CSCharacter>(InPawn);
 	UC_StatusComponent* Status = InOwner->GetStatus();
 

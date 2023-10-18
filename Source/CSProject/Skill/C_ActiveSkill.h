@@ -13,13 +13,20 @@ UCLASS()
 class CSPROJECT_API AC_ActiveSkill : public AC_Skill
 {
 	GENERATED_BODY()
-	
+
 protected:
 	UPROPERTY(EditDefaultsOnly)
 		float MaxCooldown;
 	UPROPERTY(EditDefaultsOnly)
 		float DamageCoefficience;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Montage")
+		class UAnimMontage* SkillMontage;
 
+public:
+	AC_ActiveSkill();
+
+protected:
+	virtual void BeginPlay() override;
 
 protected:
 	void ApplyEffectToPawn(APawn* InPawn) override;
@@ -29,6 +36,10 @@ protected:
 	void Deactivate() override;
 
 	void RestartCooldown() override;
+
+	UFUNCTION()
+		virtual void OnNotifyStart(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload);
+
 	FORCEINLINE void AddCooldown() { CurCooldown += AddInterval; }
 
 private:

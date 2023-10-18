@@ -35,8 +35,8 @@ void AC_CSCharacter::BeginPlay()
 	InitWeapon();
 	InitSkill();
 
-	//FTimerHandle Timer;
-	//GetWorld()->GetTimerManager().SetTimer(Timer, this, &ThisClass::Attack, 1 / Status->GetAttackRate(), true, 0);
+	FTimerHandle Timer;
+	GetWorld()->GetTimerManager().SetTimer(Timer, this, &ThisClass::Attack, 1 / Status->GetAttackRate(), true, 0);
 
 	GetMesh()->GetAnimInstance()->OnMontageStarted.AddDynamic(this, &ThisClass::CharacterMontageStarted);
 	GetMesh()->GetAnimInstance()->OnMontageEnded.AddDynamic(this, &ThisClass::CharacterMontageEnded);
@@ -44,6 +44,14 @@ void AC_CSCharacter::BeginPlay()
 	
 	GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &ThisClass::OnNotifyStart);
 	GetMesh()->GetAnimInstance()->OnPlayMontageNotifyEnd.AddDynamic(this, &ThisClass::OnNotifyEnd);
+}
+
+void AC_CSCharacter::OnConstruction(FTransform const& Transform)
+{
+	Super::OnConstruction(Transform);
+
+	GetMesh()->SetRelativeLocation(FVector(0, 0, -88.5f));
+	GetMesh()->SetRelativeRotation(FRotator(0, -90, 0).Quaternion());
 }
 
 void AC_CSCharacter::PrintState()
@@ -83,7 +91,7 @@ void AC_CSCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	PrintState();
+	//PrintState();
 	//MoveForward();
 }
 
@@ -145,23 +153,30 @@ void AC_CSCharacter::InitSkill()
 	FAttachmentTransformRules const Rules(EAttachmentRule::SnapToTarget, true);
 
 	//pasive
-	for (auto& PassiveSkillClass : PassiveSkillClasses)
+	if (PassiveSkillClasses.Num() != 0)
 	{
-		auto* const SpawnedPasiveSkill = GetWorld()->SpawnActor<AC_PassiveSkill>(PassiveSkillClass, SpawnParameters);
-		SpawnedPasiveSkill->AttachToComponent(GetMesh(), Rules);
-		PasiveSkills.AddUnique(SpawnedPasiveSkill);
+		for (auto& PassiveSkillClass : PassiveSkillClasses)
+		{
+			auto* const SpawnedPasiveSkill = GetWorld()->SpawnActor<AC_Skill>(PassiveSkillClass, SpawnParameters);
+			SpawnedPasiveSkill->AttachToComponent(GetMesh(), Rules);
+			PasiveSkills.AddUnique(SpawnedPasiveSkill);
+		}
 	}
-
+	
 	//special
-	auto* const SpawnedSPSkill = GetWorld()->SpawnActor<AC_ActiveSkill>(SpecialSkillClass, SpawnParameters);
-	SpawnedSPSkill->AttachToComponent(GetMesh(), Rules);
-	SpecialSkill = SpawnedSPSkill;
-
+	if (SpecialSkillClass != nullptr)
+	{
+		auto* const SpawnedSPSkill = GetWorld()->SpawnActor<AC_Skill>(SpecialSkillClass, SpawnParameters);
+		SpawnedSPSkill->AttachToComponent(GetMesh(), Rules);
+		SpecialSkill = SpawnedSPSkill;
+	}
 	//ultimate
-	auto* const SpawnedUltSkill = GetWorld()->SpawnActor<AC_ActiveSkill>(UltimateSkillClass, SpawnParameters);
-	SpawnedUltSkill->AttachToComponent(GetMesh(), Rules);
-	UltimateSkill = SpawnedUltSkill;
-
+	if (UltimateSkillClass != nullptr)
+	{
+		auto* const SpawnedUltSkill = GetWorld()->SpawnActor<AC_Skill>(UltimateSkillClass, SpawnParameters);
+		SpawnedUltSkill->AttachToComponent(GetMesh(), Rules);
+		UltimateSkill = SpawnedUltSkill;
+	}
 }
 
 void AC_CSCharacter::MoveForward()

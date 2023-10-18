@@ -31,6 +31,8 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	void OnConstruction(FTransform const& Transform) override;
+
 	void PrintState();
 	//Montage&Notify
 	UFUNCTION()
@@ -70,17 +72,17 @@ public:
 
 	//PassiveSKill
 	UPROPERTY(EditAnywhere, Category = "PasiveSkill")
-		TArray<TSubclassOf<class AC_PassiveSkill>> PassiveSkillClasses;
+		TArray<TSubclassOf<class AC_Skill>> PassiveSkillClasses;
 	TArray<class IC_SkillInterface*> PasiveSkills;
 
 	//SpecialSkill
 	UPROPERTY(EditAnywhere, Category = "SpecialSkill")
-		TSubclassOf<class AC_ActiveSkill> SpecialSkillClass;
+		TSubclassOf<class AC_Skill> SpecialSkillClass;
 	class IC_SkillInterface* SpecialSkill;
 
 	//UltimateSkill
 	UPROPERTY(EditAnywhere, Category = "UltimateSkill")
-		TSubclassOf<class AC_ActiveSkill> UltimateSkillClass;
+		TSubclassOf<class AC_Skill> UltimateSkillClass;
 	class IC_SkillInterface* UltimateSkill;
 
 

@@ -23,7 +23,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		class UParticleSystemComponent* Effect;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Attack")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Montage")
 		class UAnimMontage* AttackMontage;
 
 public:
@@ -43,6 +43,7 @@ public:
 	virtual USkeletalMeshComponent* GetMesh();
 protected:
 	virtual void BeginPlay() override;
+
 
 	void ActivateAttack() override;
 	void DeactivateAttack() override;
