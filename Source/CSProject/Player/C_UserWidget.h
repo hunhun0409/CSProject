@@ -36,7 +36,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 		class UMaterialInstance* CostMaterialInstance;
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY()
 		class UMaterialInstanceDynamic* CostMaterialInstanceDynamic;
 	UPROPERTY(EditDefaultsOnly)
 		FName CostPercentParamName;
