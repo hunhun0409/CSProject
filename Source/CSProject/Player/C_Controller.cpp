@@ -7,6 +7,7 @@
 AC_Controller::AC_Controller()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
 }
 
 void AC_Controller::Tick(const float DeltaTime)
@@ -15,10 +16,14 @@ void AC_Controller::Tick(const float DeltaTime)
 
 	if (MouseRBPressed)
 	{
-		float DeltaX;
-		float DeltaY;
-		GetInputMouseDelta(DeltaX, DeltaY);
-		Cast<IC_ControllerInterface>(GetPawn())->MouseDelta(DeltaX, DeltaY);
+		FVector2D MouseDelta;
+		GetInputMouseDelta(MouseDelta.X, MouseDelta.Y);
+		Cast<IC_ControllerInterface>(GetPawn())->MouseDelta(MouseDelta);
+	}
+	{
+		FVector2D MousePos;
+		GetMousePosition(MousePos.X, MousePos.Y);
+		Cast<IC_ControllerInterface>(GetPawn())->MousePos(MousePos);
 	}
 }
 
@@ -40,23 +45,24 @@ void AC_Controller::SetupInputComponent()
 
 void AC_Controller::BeginLB()
 {
-	Cast<IC_ControllerInterface>(GetPawn())->BeginCharacterSelect();
-
+	Cast<IC_ControllerInterface>(GetPawn())->MouseLBPressing(true);
 }
 
 void AC_Controller::EndLB()
 {
-	Cast<IC_ControllerInterface>(GetPawn())->EndCharacterSelect();
+	Cast<IC_ControllerInterface>(GetPawn())->MouseLBPressing(false);
 }
 
 void AC_Controller::BeginRB()
 {
 	MouseRBPressed = true;
+	Cast<IC_ControllerInterface>(GetPawn())->MouseRBPressing(true);
 }
 
 void AC_Controller::EndRB()
 {
 	MouseRBPressed = false;
+	Cast<IC_ControllerInterface>(GetPawn())->MouseRBPressing(false);
 }
 
 void AC_Controller::Wheel(const float Value)

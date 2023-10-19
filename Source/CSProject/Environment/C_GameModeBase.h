@@ -41,8 +41,11 @@ protected:
 	UFUNCTION()
 		void CheckHP();
 
+	UFUNCTION(BlueprintCallable)
+		void CostReduce(const bool& IsLeft = true, const int& Cost = 0);
+
 private:
-	void RestoreCost(float DeltaTime);
+	void RestoreCost(const float& DeltaTime);
 
 public:
 
@@ -59,5 +62,4 @@ private:
 	FBasicData RightBase;
 	FBasicData LeftBase;
 	FUIData Datas;
-
 };

@@ -25,7 +25,9 @@ public:
 
 	TDelegate<void()> UpdateHP;
 
-	const float GetHP() { return CurHP; }
+	const float& GetHP() { return CurHP; }
+	const float& GetMaxHP() { return MaxHP; }
+
 protected:
 	UPROPERTY(EditDefaultsOnly)
 		float MaxHP;

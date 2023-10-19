@@ -24,20 +24,22 @@ void AC_GameModeBase::BeginPlay()
 
 	Datas.CostRegenRatio = CostRegenRatio;
 
-	if(Field)
+	if (Field)
 		Map = Cast<AC_Field>(GetWorld()->SpawnActor(Field));
 
 	LeftBase.CurCost = MaxCost;
 	RightBase.CurCost = MaxCost;
 
-	CheckHP();
-
 	for (size_t i = 0; i < 2; i++)
 	{
-		if(!Map->AccessBaseData((bool)i)->UpdateHP.IsBound())
+		if (!Map->AccessBaseData((bool)i)->UpdateHP.IsBound())
 			Map->AccessBaseData((bool)i)->UpdateHP.BindUFunction(this, "CheckHP");
 
 	}
+
+	RestoreCost(0.0f);
+	CheckHP();
+
 
 	
 }
@@ -52,30 +54,58 @@ void AC_GameModeBase::Tick(float DeltaTime)
 void AC_GameModeBase::CheckHP()
 {
 	LeftBase.CurHP = Map->AccessBaseData(1)->GetHP();
+	LeftBase.MaxHP = Map->AccessBaseData(1)->GetMaxHP();
 	RightBase.CurHP = Map->AccessBaseData(0)->GetHP();
+	RightBase.MaxHP = Map->AccessBaseData(0)->GetMaxHP();
 
-	Datas.EnemyBaseHP = RightBase.CurHP;
-	Datas.PlayerBaseHP = LeftBase.CurHP;
+	Datas.PlayerBaseHP = LeftBase.CurHP / LeftBase.MaxHP;
+	Datas.EnemyBaseHP = RightBase.CurHP / RightBase.MaxHP;
 
-	UIDataUpdated;
+	UIDataUpdated.ExecuteIfBound();
 }
 
-void AC_GameModeBase::RestoreCost(float DeltaTime)
+void AC_GameModeBase::CostReduce(const bool& IsLeft, const int& Cost)
+{
+	if (IsLeft)
+	{
+		LeftBase.CurCost -= Cost;
+		LeftBase.IsCostFull = false;
+	}
+	else
+	{
+		RightBase.CurCost -= Cost;
+		RightBase.IsCostFull = false;
+	}
+
+	UIDataUpdated.ExecuteIfBound();
+}
+
+void AC_GameModeBase::RestoreCost(const float& DeltaTime)
 {
 
-	if (LeftBase.CurCost <= MaxCost)
-		LeftBase.CurCost += DeltaTime * CostRegenRatio;
-	else
-		LeftBase.CurCost = MaxCost;
+	if(!RightBase.IsCostFull)
+		if (RightBase.CurCost <= MaxCost)
+			RightBase.CurCost += DeltaTime * CostRegenRatio;
+		else
+		{
+			RightBase.CurCost = MaxCost;
+			RightBase.IsCostFull = true;
+		}
 
-	if (RightBase.CurCost <= MaxCost)
-		RightBase.CurCost += DeltaTime * CostRegenRatio;
-	else
-		RightBase.CurCost = MaxCost;
+	if (!LeftBase.IsCostFull)
+	{
+		if (LeftBase.CurCost <= MaxCost)
+			LeftBase.CurCost += DeltaTime * CostRegenRatio;
+		else
+		{
+			LeftBase.CurCost = MaxCost;
+			LeftBase.IsCostFull = true;
+		}
 
-	Datas.CurCost = LeftBase.CurCost;
-	
-	if (Datas.CurCost / 1 >= 1)
-		UIDataUpdated;
+		Datas.CurCost = LeftBase.CurCost;
+		
+		if (Datas.CurCost - (int)Datas.CurCost < 0.01f )
+			UIDataUpdated.ExecuteIfBound();
+	}
 }
 
