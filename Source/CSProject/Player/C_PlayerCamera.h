@@ -29,11 +29,13 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 protected:
-	virtual void BeginCharacterSelect() override;
-	virtual void EndCharacterSelect() override;
-	virtual void Zoom(const float Value) override;
-	virtual void KeyBoardCameraMove(const float Value) override;
-	virtual void MouseDelta(const float DeltaX, const float DetlaY) override;
+	virtual void Zoom(const float& Value) override;
+	virtual void KeyBoardCameraMove(const float& Value) override;
+	virtual void MouseDelta(const FVector2D& MouseDelta) override;
+	virtual void MousePos(const FVector2D& MousePos) override;
+	virtual void MouseLBPressing(const bool& IsPressing) override;
+	virtual void MouseRBPressing(const bool& IsPressing) override;
+
 protected:
 	UFUNCTION()
 		void UpdateUIData();
@@ -54,9 +56,15 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 		class UCurveVector* ZoomCurve;
 
+	UPROPERTY(EditDefaultsOnly)
+		TSubclassOf<class UC_UserWidget> UIWidgetClass;
+	UPROPERTY()
+		class UC_UserWidget* UIWidget;
+
 private:
 	FUIData Datas;
 
+	FVector2D CameraMovableY;
 	float CameraMovement;
 	float ZoomTime = 0.0f;
 	float ZoomRatio = 1.0f;

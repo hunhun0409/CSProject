@@ -27,6 +27,10 @@ public:
 	AC_Base* AccessBaseData(bool isLeftBase);
 
 protected:
+	UFUNCTION()
+		void UpdateSpawnCollider();
+
+protected:
 	UPROPERTY(EditDefaultsOnly)
 		class UStaticMeshComponent* Field;
 
@@ -43,6 +47,9 @@ protected:
 		class AC_Base* RightBase;
 	UPROPERTY(EditDefaultsOnly)
 		class UBoxComponent* RightSpawnCollider;
+
+private:
+	FVector2D ColliderScaleYOffset;
 
 
 

@@ -10,6 +10,7 @@
 #include "Environment/C_GameModeBase.h"
 #include "Environment/C_Field.h"
 #include "Environment/C_Base.h"
+#include "C_UserWidget.h"
 
 // Sets default values
 AC_PlayerCamera::AC_PlayerCamera()
@@ -40,6 +41,22 @@ void AC_PlayerCamera::BeginPlay()
 
 	UpdateUIData();
 
+	
+	if (UIWidgetClass)
+	{
+		UIWidget = Cast<UC_UserWidget>(CreateWidget(GetController()->CastToPlayerController(), UIWidgetClass, "UIWidget"));
+		
+
+		if (UIWidget)
+		{
+			UIWidget->AddToViewport();
+			UIWidget->UpdateUIData(Datas);
+			
+		}
+	}
+
+
+
 }
 
 // Called every frame
@@ -47,15 +64,38 @@ void AC_PlayerCamera::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (abs(CameraMovement) <= 0.01)
+	//카메라 좌 우 이동
+	if (abs(CameraMovement) <= 0.01f)
 		CameraMovement = 0;
 	else
-		CameraMovement = UKismetMathLibrary::FInterpTo(CameraMovement, 0.0f, 0.1f, 0.5f);
+	{
+		if (GetActorLocation().Y <= CameraMovableY.Y)
+		{
+			if (CameraMovement < 0)
+				CameraMovement = 0;
+		}
+		else if (GetActorLocation().Y >= CameraMovableY.X)
+		{
+				if (CameraMovement > 0)
+					CameraMovement = 0;
+		}
 
-	AddMovementInput(FVector(0.0f, CameraMovement, 0.0f));
+		CameraMovement = UKismetMathLibrary::FInterpTo(CameraMovement, 0, 0.1f, 0.5f);
 
-	SpringArm->SocketOffset.Z = UKismetMathLibrary::FInterpTo(SpringArm->SocketOffset.Z, NewSocketOffsetZ, 0.2f, 0.5f);
-	Camera->FieldOfView = UKismetMathLibrary::FInterpTo(Camera->FieldOfView, NewFieldOfView, 0.2f, 0.5f);
+		AddMovementInput(FVector(0, CameraMovement, 0));
+	}
+
+	// 카메라 줌인 스프링암 높이
+	if (abs(SpringArm->SocketOffset.Z - NewSocketOffsetZ) <= 0.01f)
+		SpringArm->SocketOffset.Z = NewSocketOffsetZ;
+	else
+		SpringArm->SocketOffset.Z = UKismetMathLibrary::FInterpTo(SpringArm->SocketOffset.Z, NewSocketOffsetZ, 0.2f, 0.5f);
+
+	//카메라 줌인 FOV
+	if (abs(Camera->FieldOfView - NewFieldOfView) <= 0.01f)
+		Camera->FieldOfView = NewFieldOfView;
+	else
+		Camera->FieldOfView = UKismetMathLibrary::FInterpTo(Camera->FieldOfView, NewFieldOfView, 0.2f, 0.5f);
 
 }
 
@@ -66,15 +106,7 @@ void AC_PlayerCamera::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 
 }
 
-void AC_PlayerCamera::BeginCharacterSelect()
-{
-}
-
-void AC_PlayerCamera::EndCharacterSelect()
-{
-}
-
-void AC_PlayerCamera::Zoom(const float Value)
+void AC_PlayerCamera::Zoom(const float& Value)
 {
 	if (!ZoomCurve)
 		return;
@@ -91,23 +123,49 @@ void AC_PlayerCamera::Zoom(const float Value)
 	NewFieldOfView = ZoomCurveData.Z;
 }
 
-void AC_PlayerCamera::KeyBoardCameraMove(const float Value)
+void AC_PlayerCamera::KeyBoardCameraMove(const float& Value)
 {
 	CameraMovement = Value;
 }
 
-void AC_PlayerCamera::MouseDelta(const float DeltaX, const float DeltaY)
+void AC_PlayerCamera::MouseDelta(const FVector2D& MouseDelta)
 {
-	CameraMovement = -DeltaX;
+	CameraMovement = -MouseDelta.X;
+}
+
+void AC_PlayerCamera::MousePos(const FVector2D& MousePos)
+{
+	if (UIWidget)
+		UIWidget->UpdateMousePos(MousePos);
+}
+
+void AC_PlayerCamera::MouseLBPressing(const bool& IsPressing)
+{
+	if (UIWidget)
+		UIWidget->UpdateMouseLBPressing(IsPressing);
+}
+
+void AC_PlayerCamera::MouseRBPressing(const bool& IsPressing)
+{
+
 }
 
 void AC_PlayerCamera::UpdateUIData()
 {
 	if (auto* GameMode = Cast<AC_GameModeBase>(GetWorld()->GetAuthGameMode()))
 	{
-		if(!GameMode->UIDataUpdated.IsBound())
+		if (!GameMode->UIDataUpdated.IsBound())
+		{
 			GameMode->UIDataUpdated.BindUFunction(this, "UpdateUIData");
+			CameraMovableY = GameMode->GetMaxYPos();
+		}
 
 		Datas = GameMode->GetUIData();
+
+	}
+
+	if (UIWidget)
+	{
+		UIWidget->UpdateUIData(Datas);
 	}
 }

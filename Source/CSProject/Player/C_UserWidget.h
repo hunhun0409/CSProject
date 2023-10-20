@@ -4,12 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Structs.h"
 #include "C_UserWidget.generated.h"
-
 /**
  * 
  */
-UCLASS()
+UCLASS(Abstract)
 class CSPROJECT_API UC_UserWidget : public UUserWidget
 {
 	GENERATED_BODY()
@@ -21,20 +21,36 @@ public:
 
 	void NativeTick(const FGeometry& MyGeometry, float InDeltaTime) override;
 
+	void UpdateUIData(const FUIData& UIData);
+	void UpdateMousePos(const FVector2D& InMousePos);
+	void UpdateMouseLBPressing(const bool& IsPressing);
+
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY(BlueprintReadOnly)
 		int CurCost;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY(BlueprintReadOnly)
 		float PlayerBaseHP;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY(BlueprintReadOnly)
 		float EnemyBaseHP;
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 		float CostRegenRatio;
 
 	UPROPERTY(EditDefaultsOnly)
 		class UMaterialInstance* CostMaterialInstance;
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
+	UPROPERTY()
 		class UMaterialInstanceDynamic* CostMaterialInstanceDynamic;
 	UPROPERTY(EditDefaultsOnly)
 		FName CostPercentParamName;
+	UPROPERTY(EditDefaultsOnly)
+		FName CostImage;
+	class UImage* CostWidget;
+
+
+	FVector2D MousePos;
+	UPROPERTY(EditDefaultsOnly)
+		class UTexture2D* MouseCurserNClick;
+	UPROPERTY(EditDefaultsOnly)
+		class UTexture2D* MouseCurserClick;
+	UPROPERTY(EditDefaultsOnly)
+		FName MouseImage;
+	class UImage* MouseWidget;
 };

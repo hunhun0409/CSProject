@@ -30,3 +30,11 @@ void AC_Base::Tick(float DeltaTime)
 
 }
 
+void AC_Base::DamagedHP(const int& InDamage)
+{
+	CurHP -= InDamage;
+
+	UpdateHP.Broadcast();
+
+}
+
