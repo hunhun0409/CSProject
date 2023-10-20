@@ -21,7 +21,7 @@ AC_CSAIController::AC_CSAIController()
 	CreateDefaultSubobjectAuto(Behavior);
 
 	CreateDefaultSubobjectAuto(Sight);
-	//Sight->SightRadius = Cast<AC_CSCharacter>(Owner)->GetStatus()->GetMaxSightRange();
+	
 	Sight->SightRadius = Sight->LoseSightRadius = 1000;
 	Sight->PeripheralVisionAngleDegrees = 180.0f;
 	Sight->SetMaxAge(0);
@@ -64,10 +64,7 @@ void AC_CSAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
-	
-
-	
-
+	//Sight->SightRadius = Cast<AC_CSCharacter>(Owner)->GetStatus()->GetMaxSightRange();
 
 	Owner = Cast<AC_CSCharacter>(GetPawn());
 
@@ -120,14 +117,16 @@ void AC_CSAIController::OnPerceptionUpdated(const TArray<AActor*>& UpdateActors)
 
 		if (SensedActors.Contains(actor))
 		{
-			if (OwningPawn->GetDistanceTo(actor) > OwningPawn->GetStatus()->GetMaxSightRange())
+			if (OwningPawn->GetDistanceTo(actor) > 1000)
 			{
+				GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Red, FString::SanitizeFloat(OwningPawn->GetDistanceTo(actor)));
+
 				SensedActors.Remove(actor);
 			}
 		}
 		else
 		{
-			if (IsValid(actor) && !Cast<AC_CSCharacter>(actor)->IsDead())
+			if (!Cast<AC_CSCharacter>(actor)->IsDead())
 			{
 				SensedActors.Add(actor);
 			}
@@ -139,6 +138,7 @@ void AC_CSAIController::GetClosestActor()
 {
 	AC_CSCharacter* OwningPawn = Cast<AC_CSCharacter>(GetPawn());
 	AActor* ClosestActor = nullptr;
+
 	float ClosestDist = OwningPawn->GetStatus()->GetMaxSightRange();
 	for (AActor* actor : SensedActors)
 	{

@@ -49,10 +49,12 @@ AC_CSCharacter::AC_CSCharacter()
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
+	GetCapsuleComponent()->SetCollisionObjectType(ECC_Pawn);
 	GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Block);
 	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
 	
+	GetMesh()->SetCollisionObjectType(ECC_Pawn);
 	GetMesh()->SetCollisionResponseToAllChannels(ECR_Ignore);
 	GetMesh()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Block);
 	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
@@ -141,6 +143,8 @@ void AC_CSCharacter::Attack()
 {
 	if (bCanActivateAttack)
 	{
+		UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), Target->GetActorLocation());
+
 		*CharacterState = ECharacterState::Attacking;
 
 		Weapon->ActivateAttack();
@@ -181,6 +185,30 @@ void AC_CSCharacter::Die()
 
 	//Todo
 	//상대 함선에게 죽음을 알림 : 미완성
+	//TArray<AC_Base*> AllBase;
+	//for (AActor* actor : FoundActors)
+	//{
+	//	if (actor == this)
+	//		continue;
+	//	AC_Base* Base = Cast<AC_Base>(actor);
+	//	if (Base)
+	//	{
+	//		AllBase.Add(Base);
+	//	}
+	//}
+
+	//for (AC_Base* Base : AllBase)
+	//{
+	//	//아군이면 패스
+	//	if (Base->GetTeamID() == TeamID)
+	//		continue;
+	//	//IsValid
+	//	if (IsValid(Base))
+	//	{
+	//		Cast<AC_CSAIController>(character->GetController())->RemoveTarget(this);
+	//	}
+	//}
+
 
 
 
