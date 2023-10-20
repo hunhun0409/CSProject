@@ -6,6 +6,7 @@ struct FBasicData
 	float CurHP;
 	float MaxHP;
 	bool IsCostFull;
+	float YPosition;
 };
 
 struct FUIData

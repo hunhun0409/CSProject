@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Abstract)
 class CSPROJECT_API UC_UserWidget : public UUserWidget
 {
 	GENERATED_BODY()

@@ -64,6 +64,7 @@ protected:
 private:
 	FUIData Datas;
 
+	FVector2D CameraMovableY;
 	float CameraMovement;
 	float ZoomTime = 0.0f;
 	float ZoomRatio = 1.0f;

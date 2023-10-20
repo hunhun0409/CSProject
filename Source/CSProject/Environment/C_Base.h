@@ -23,10 +23,14 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	TDelegate<void()> UpdateHP;
+	TMulticastDelegate<void()> UpdateHP;
 
 	const float& GetHP() { return CurHP; }
 	const float& GetMaxHP() { return MaxHP; }
+
+protected:
+	UFUNCTION(BlueprintCallable)
+		void DamagedHP(const int& InDamage);
 
 protected:
 	UPROPERTY(EditDefaultsOnly)

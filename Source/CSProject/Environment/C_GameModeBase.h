@@ -31,6 +31,9 @@ public:
 	//TDelegate<void() <- 데미지량 및 유형(회피등을 담은 구조체를 매개변수로)
 	//위 델리게이트는 캐릭터에 만들고, 여기선 연결 후 Text Actor 소환 연동
 
+	const FVector2D& GetMaxYPos() { return CameraMovablePosY; }
+
+
 protected:
 	virtual void OnConstruction(const FTransform& Transform) override;
 
@@ -59,7 +62,8 @@ protected:
 private:
 	float CostRegenRatio = 1.0f;
 	float MaxCost = 10.0f;
-	FBasicData RightBase;
-	FBasicData LeftBase;
+	FBasicData RightBaseData;
+	FBasicData LeftBaseData;
 	FUIData Datas;
+	FVector2D CameraMovablePosY;
 };

@@ -27,14 +27,14 @@ void AC_GameModeBase::BeginPlay()
 	if (Field)
 		Map = Cast<AC_Field>(GetWorld()->SpawnActor(Field));
 
-	LeftBase.CurCost = MaxCost;
-	RightBase.CurCost = MaxCost;
+	LeftBaseData.CurCost = MaxCost;
+	RightBaseData.CurCost = MaxCost;
 
 	for (size_t i = 0; i < 2; i++)
 	{
-		if (!Map->AccessBaseData((bool)i)->UpdateHP.IsBound())
-			Map->AccessBaseData((bool)i)->UpdateHP.BindUFunction(this, "CheckHP");
+		Map->AccessBaseData((bool)i)->UpdateHP.AddUFunction(this, "CheckHP");
 
+		CameraMovablePosY[i] = Map->AccessBaseData((bool)i)->GetActorLocation().Y;
 	}
 
 	RestoreCost(0.0f);
@@ -53,13 +53,19 @@ void AC_GameModeBase::Tick(float DeltaTime)
 
 void AC_GameModeBase::CheckHP()
 {
-	LeftBase.CurHP = Map->AccessBaseData(1)->GetHP();
-	LeftBase.MaxHP = Map->AccessBaseData(1)->GetMaxHP();
-	RightBase.CurHP = Map->AccessBaseData(0)->GetHP();
-	RightBase.MaxHP = Map->AccessBaseData(0)->GetMaxHP();
+	if (AC_Base* LeftBase = Map->AccessBaseData(1))
+	{
+		LeftBaseData.CurHP = LeftBase->GetHP();
+		LeftBaseData.MaxHP = LeftBase->GetMaxHP();
+	}
+	if (AC_Base* RightBase = Map->AccessBaseData(0))
+	{
+		RightBaseData.CurHP = RightBase->GetHP();
+		RightBaseData.MaxHP = RightBase->GetMaxHP();
+	}
 
-	Datas.PlayerBaseHP = LeftBase.CurHP / LeftBase.MaxHP;
-	Datas.EnemyBaseHP = RightBase.CurHP / RightBase.MaxHP;
+	Datas.PlayerBaseHP = LeftBaseData.CurHP / LeftBaseData.MaxHP;
+	Datas.EnemyBaseHP = RightBaseData.CurHP / RightBaseData.MaxHP;
 
 	UIDataUpdated.ExecuteIfBound();
 }
@@ -68,13 +74,13 @@ void AC_GameModeBase::CostReduce(const bool& IsLeft, const int& Cost)
 {
 	if (IsLeft)
 	{
-		LeftBase.CurCost -= Cost;
-		LeftBase.IsCostFull = false;
+		LeftBaseData.CurCost -= Cost;
+		LeftBaseData.IsCostFull = false;
 	}
 	else
 	{
-		RightBase.CurCost -= Cost;
-		RightBase.IsCostFull = false;
+		RightBaseData.CurCost -= Cost;
+		RightBaseData.IsCostFull = false;
 	}
 
 	UIDataUpdated.ExecuteIfBound();
@@ -83,26 +89,26 @@ void AC_GameModeBase::CostReduce(const bool& IsLeft, const int& Cost)
 void AC_GameModeBase::RestoreCost(const float& DeltaTime)
 {
 
-	if(!RightBase.IsCostFull)
-		if (RightBase.CurCost <= MaxCost)
-			RightBase.CurCost += DeltaTime * CostRegenRatio;
+	if(!RightBaseData.IsCostFull)
+		if (RightBaseData.CurCost <= MaxCost)
+			RightBaseData.CurCost += DeltaTime * CostRegenRatio;
 		else
 		{
-			RightBase.CurCost = MaxCost;
-			RightBase.IsCostFull = true;
+			RightBaseData.CurCost = MaxCost;
+			RightBaseData.IsCostFull = true;
 		}
 
-	if (!LeftBase.IsCostFull)
+	if (!LeftBaseData.IsCostFull)
 	{
-		if (LeftBase.CurCost <= MaxCost)
-			LeftBase.CurCost += DeltaTime * CostRegenRatio;
+		if (LeftBaseData.CurCost <= MaxCost)
+			LeftBaseData.CurCost += DeltaTime * CostRegenRatio;
 		else
 		{
-			LeftBase.CurCost = MaxCost;
-			LeftBase.IsCostFull = true;
+			LeftBaseData.CurCost = MaxCost;
+			LeftBaseData.IsCostFull = true;
 		}
 
-		Datas.CurCost = LeftBase.CurCost;
+		Datas.CurCost = LeftBaseData.CurCost;
 		
 		if (Datas.CurCost - (int)Datas.CurCost < 0.01f )
 			UIDataUpdated.ExecuteIfBound();

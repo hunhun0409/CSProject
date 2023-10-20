@@ -29,10 +29,16 @@ void AC_Field::BeginPlay()
 	FTransform LBTransform = GetActorTransform();
 	LBTransform.SetLocation(LBTransform.GetLocation() + LeftSpawnCollider->GetComponentLocation());
 	LeftBase = Cast<AC_Base>(GetWorld()->SpawnActor(LeftBaseType, &LBTransform));
+	LeftBase->UpdateHP.AddUFunction(this, "UpdateSpawnCollider");
+	ColliderScaleYOffset.X = LeftSpawnCollider->GetRelativeScale3D().Y;
 
 	FTransform RBTransform = GetActorTransform();
 	RBTransform.SetLocation(RBTransform.GetLocation() + RightSpawnCollider->GetComponentLocation());
 	RightBase = Cast<AC_Base>(GetWorld()->SpawnActor(RightBaseType, &RBTransform));
+	RightBase->UpdateHP.AddUFunction(this, "UpdateSpawnCollider");
+	ColliderScaleYOffset.Y = RightSpawnCollider->GetRelativeScale3D().Y;
+
+	UpdateSpawnCollider();
 }
 
 // Called every frame
@@ -48,5 +54,21 @@ AC_Base* AC_Field::AccessBaseData(bool isLeftBase)
 		return LeftBase;
 	else
 		return RightBase;
+}
+
+void AC_Field::UpdateSpawnCollider()
+{
+	FVector LeftColliderOffset = LeftSpawnCollider->GetRelativeScale3D();
+	LeftColliderOffset.Y = (1 + (1 - RightBase->GetHP() / RightBase->GetMaxHP())) * ColliderScaleYOffset.X;
+
+	LeftSpawnCollider->SetRelativeScale3D(LeftColliderOffset);
+	LeftSpawnCollider->SetWorldLocation(FVector(0, LeftBase->GetActorLocation().Y + LeftSpawnCollider->GetScaledBoxExtent().Y, 0));
+	
+	FVector RightColliderOffset = RightSpawnCollider->GetRelativeScale3D();
+	RightColliderOffset.Y = (1 + (1 - LeftBase->GetHP() / LeftBase->GetMaxHP())) * ColliderScaleYOffset.Y;
+
+	RightSpawnCollider->SetRelativeScale3D(RightColliderOffset);
+	RightSpawnCollider->SetWorldLocation(FVector(0, RightBase->GetActorLocation().Y - RightSpawnCollider->GetScaledBoxExtent().Y, 0));
+
 }
 
