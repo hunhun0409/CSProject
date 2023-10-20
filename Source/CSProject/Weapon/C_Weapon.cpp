@@ -41,8 +41,10 @@ void AC_Weapon::BeginPlay()
 
 void AC_Weapon::ActivateAttack()
 {
+	if (!IsValid(GetOwner()))
+		return;
+
 	AC_CSCharacter* const WeaponOwner = Cast<AC_CSCharacter>(GetOwner());
-	//auto* const WeaponOwner = Cast<AC_CSCharacter>(GetOwner());
 
 	if (WeaponOwner)
 	{

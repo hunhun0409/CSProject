@@ -39,13 +39,13 @@ public:
 	class UC_BehaviorComponent* GetBehavior() { return Behavior; }
 	class UBlackboardComponent* GetBlackboard() { return Blackboard; }
 
-	FORCEINLINE float GetTargetDist() { return ClosestDist; }
+	FORCEINLINE float GetTargetDist() { return TargetDist; }
 
 private:
 	UFUNCTION()
 		void OnPerceptionUpdated(const TArray<AActor*>& UpdateActors);
 
-	AActor* GetClosestActor();
+	void GetClosestActor();
 
 private:
 
@@ -53,8 +53,8 @@ private:
 	class UAISenseConfig_Sight* Sight;
 
 	TSet<AActor*> SensedActors;
-	class AActor* Target;
-	float ClosestDist;
+	AActor* Target;
+	float TargetDist;
 
 	
 

@@ -37,7 +37,6 @@ AC_CSAIController::AC_CSAIController()
 
 	Perception->SetDominantSense(*Sight->GetSenseImplementation());
 	Target = nullptr;
-	ClosestDist = BIG_NUMBER;
 }
 
 void AC_CSAIController::Tick(const float DeltaSecond)
@@ -56,9 +55,8 @@ void AC_CSAIController::Tick(const float DeltaSecond)
 
 	if (SensedActors.Num())
 	{
-		Target = GetClosestActor();
-		Cast<AC_CSCharacter>(GetPawn())->Target = Target;
-		Blackboard->SetValueAsObject("Target", Target);
+		GetClosestActor();
+		
 	}
 }
 
@@ -102,39 +100,30 @@ void AC_CSAIController::RemoveTarget(AActor* Inactor)
 				Cast<AC_CSCharacter>(GetPawn())->Target = nullptr;
 				Blackboard->SetValueAsObject("Target", nullptr);
 			}
-			if (SensedActors.Num() == 0)
-				ClosestDist = BIG_NUMBER;
 		}
 	}
 }
 
 void AC_CSAIController::OnPerceptionUpdated(const TArray<AActor*>& UpdateActors)
 {
-	
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, TEXT("SensedTarget!"));
+	AC_CSCharacter* OwningPawn = Cast<AC_CSCharacter>(GetPawn());
 	TArray<AActor*> actors;
 	Perception->GetCurrentlyPerceivedActors(nullptr, actors);
-	if (actors.Num() == 0)
-		return;
 
 	for (AActor* actor : actors)
 	{
 		
 		if (!actor->IsA(AC_CSCharacter::StaticClass()) && !actor->IsA(AC_Base::StaticClass()))
 			continue;
+		if (Cast<AC_CSCharacter>(actor)->GetTeamID() == OwningPawn->GetTeamID())
+			continue;
 
 		if (SensedActors.Contains(actor))
 		{
-			if (Target == actor)
+			if (OwningPawn->GetDistanceTo(actor) > OwningPawn->GetStatus()->GetMaxSightRange())
 			{
-				Target = nullptr;
-				Cast<AC_CSCharacter>(GetPawn())->Target = nullptr;
-				Blackboard->SetValueAsObject("Target", nullptr);
+				SensedActors.Remove(actor);
 			}
-			SensedActors.Remove(actor);
-			if (SensedActors.Num() == 0)
-				ClosestDist = BIG_NUMBER;
-
 		}
 		else
 		{
@@ -146,10 +135,11 @@ void AC_CSAIController::OnPerceptionUpdated(const TArray<AActor*>& UpdateActors)
 	}
 }
 
-AActor* AC_CSAIController::GetClosestActor()
+void AC_CSAIController::GetClosestActor()
 {
-	APawn* OwningPawn = GetPawn();
+	AC_CSCharacter* OwningPawn = Cast<AC_CSCharacter>(GetPawn());
 	AActor* ClosestActor = nullptr;
+	float ClosestDist = OwningPawn->GetStatus()->GetMaxSightRange();
 	for (AActor* actor : SensedActors)
 	{
 		if (OwningPawn->GetDistanceTo(actor) <= ClosestDist)
@@ -158,5 +148,8 @@ AActor* AC_CSAIController::GetClosestActor()
 			ClosestActor = actor;
 		}
 	}
-	return ClosestActor;
+	TargetDist = ClosestDist;
+	Target = ClosestActor;
+	Cast<AC_CSCharacter>(GetPawn())->Target = Target;
+	Blackboard->SetValueAsObject("Target", Target);
 }

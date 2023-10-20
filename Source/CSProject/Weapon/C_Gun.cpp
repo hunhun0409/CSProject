@@ -1,10 +1,11 @@
 #include "Weapon/C_Gun.h"
 
-
 #include "Particles/ParticleSystemComponent.h"
 #include "Components/AudioComponent.h"
 #include "Character/C_CSCharacter.h"
 #include "Components/C_StatusComponent.h"
+
+#include "Kismet/GameplayStatics.h"
 
 #define CreateDefaultSubobjectAuto(Component)\
 Component = CreateDefaultSubobject<std::remove_reference<decltype(*Component)>::type>(#Component)
@@ -36,10 +37,18 @@ void AC_Gun::BeginPlay()
 
 void AC_Gun::ActivateAttack()
 {
+	if (!IsValid(GetOwner()))
+		return;
 	Super::ActivateAttack();
 
 	AC_CSCharacter* const WeaponOwner = Cast<AC_CSCharacter>(GetOwner());
 	float attackRate = Cast<AC_CSCharacter>(GetOwner())->GetStatus()->GetAttackRate();
+
+	if (WeaponOwner)
+	{
+		UGameplayStatics::ApplyDamage(WeaponOwner->Target, 1000.0f, GetInstigatorController(), this, UDamageType::StaticClass());
+	}
+
 
 	WeaponOwner->bCanActivateAttack = false;
 	if (AttackTimer == FTimerHandle())

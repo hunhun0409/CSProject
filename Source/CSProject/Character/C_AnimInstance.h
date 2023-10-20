@@ -17,7 +17,12 @@ class CSPROJECT_API UC_AnimInstance : public UAnimInstance
 public:
 	void NativeUpdateAnimation(float const DeltaSeconds) override;
 
+	FORCEINLINE void SetWeaponClass(TSubclassOf<class AC_Weapon> InClass) { WeaponClass = InClass; }
+
 protected:
 	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 		float Speed;
+
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+		TSubclassOf<class AC_Weapon> WeaponClass;
 };

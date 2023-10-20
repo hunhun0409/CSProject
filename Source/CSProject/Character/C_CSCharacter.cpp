@@ -1,5 +1,9 @@
 #include "Character/C_CSCharacter.h"
+#include "Character/C_AnimInstance.h"
+
 #include "Components/C_StatusComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "Components/CapsuleComponent.h"
 
 #include "Weapon/C_Weapon.h"
 #include "Weapon/C_WeaponInterface.h"
@@ -15,11 +19,9 @@
 
 #include "Components/C_StatusComponent.h"
 
-#include "Enum/ECharacterState.h"
+#include "Particles/ParticleSystem.h"
 
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Components/StaticMeshComponent.h"
-#include "Components/CapsuleComponent.h"
 
 #include "Components/WidgetComponent.h"
 
@@ -39,10 +41,9 @@ AC_CSCharacter::AC_CSCharacter()
 
 	CreateDefaultSubobjectAuto(Status);
 
-	//CreateDefaultSubobjectAuto(DieMontage);
+	CreateDefaultSubobjectAuto(HitEffect);
 
-	
-	StatusUI = CreateDefaultSubobject<UWidgetComponent>("StatusUI");
+	CreateDefaultSubobjectAuto(StatusUI);
 	StatusUI->SetupAttachment(RootComponent);
 	
 
@@ -176,6 +177,8 @@ void AC_CSCharacter::Die()
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter::StaticClass(), FoundActors);
 
 	Cast<AActor>(Weapon)->Destroy();
+	StatusUI->SetVisibility(false);
+
 	//Todo
 	//상대 함선에게 죽음을 알림 : 미완성
 
@@ -241,6 +244,7 @@ void AC_CSCharacter::InitWeapon()
 
 	SpawnedWeapon->AttachToComponent(GetMesh(), Rules, SpawnedWeapon->SocketOnEquipped);
 
+	Cast<UC_AnimInstance>(GetMesh()->GetAnimInstance())->SetWeaponClass(WeaponClass);
 	Weapon = SpawnedWeapon;
 
 }
@@ -300,56 +304,16 @@ void AC_CSCharacter::MoveForward()
 void AC_CSCharacter::GetDamaged(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
 	Status->AddHealth(-Damage);
+	FVector Location = GetActorLocation() + FVector(0, 0, 60);
+	FRotator Rotation = GetActorRotation() + FRotator(-60, 0, 0);
+	FVector Scale = FVector(0.5f, 0.5f, 0.5f);
+	const FTransform Transform = FTransform(Rotation, Location, Scale);
+
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitEffect, Transform);
+
 	UpdateLifeGauge();
 	if (Status->GetCurHealth() <= 0)
 	{
 		Die();
 	}
-}
-
-void AC_CSCharacter::Destroyed()
-{
-	Super::Destroyed();
-	if (!GWorld->HasBegunPlay())
-	{
-		return;
-	}
-
-	
-
-
-	//TArray<AActor*> FoundActors;
-	//UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter::StaticClass(), FoundActors);
-
-	//Cast<AActor>(Weapon)->Destroy();
-	////Todo
-	////상대 함선에게 죽음을 알림 : 미완성
-
-
-
-
-	////전장에 있는 캐릭터들에게 죽음을 알림
-	//TArray<AC_CSCharacter*> AllCharacters;
-	//for (AActor* actor : FoundActors)
-	//{
-	//	if (actor == this)
-	//		continue;
-	//	AC_CSCharacter* Character = Cast<AC_CSCharacter>(actor);
-	//	if (Character)
-	//	{
-	//		AllCharacters.Add(Character);
-	//	}
-	//}
-
-	//for (AC_CSCharacter* character : AllCharacters)
-	//{
-	//	//아군이면 패스
-	//	if (character->GetTeamID() == TeamID)
-	//		continue;
-	//	//IsValid
-	//	if (IsValid(character))
-	//	{
-	//		Cast<AC_CSAIController>(character->GetController())->RemoveTarget(this);
-	//	}
-	//}
 }

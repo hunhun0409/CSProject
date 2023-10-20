@@ -29,7 +29,10 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
 		class UWidgetComponent* StatusUI;
 
-	UPROPERTY(EditAnywhere, Category = "Montage")
+	UPROPERTY(EditDefaultsOnly, Category = "OnDamaged")
+		class UParticleSystem* HitEffect;
+
+	UPROPERTY(EditDefaultsOnly, Category = "OnDamaged")
 		TArray<class UAnimMontage*> DieMontage;
 
 	
@@ -90,8 +93,6 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Status")
 		void UpdateCooldown();
 	
-
-	virtual void Destroyed() override;
 public:
 	//Weapon
 	UPROPERTY(EditAnywhere, Category = "Weapon")
