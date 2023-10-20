@@ -6,10 +6,12 @@
 UC_BTTaskSP::UC_BTTaskSP()
 {
 	NodeName = "SP";
+	bNotifyTick = true;
 }
 
 EBTNodeResult::Type UC_BTTaskSP::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
+
 	AC_CSAIController* Controller = Cast<AC_CSAIController>(OwnerComp.GetOwner());
 	AC_CSCharacter* Unit = Cast<AC_CSCharacter>(Controller->GetPawn());
 

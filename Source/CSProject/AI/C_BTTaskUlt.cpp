@@ -6,6 +6,7 @@
 UC_BTTaskUlt::UC_BTTaskUlt()
 {
 	NodeName = "Ult";
+	bNotifyTick = true;
 }
 
 EBTNodeResult::Type UC_BTTaskUlt::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)

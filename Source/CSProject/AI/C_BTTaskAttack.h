@@ -17,6 +17,8 @@ class CSPROJECT_API UC_BTTaskAttack : public UBTTaskNode
 public:
 	UC_BTTaskAttack();
 
+
+
 protected:
 	EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory);
 };

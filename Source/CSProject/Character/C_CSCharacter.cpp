@@ -121,7 +121,6 @@ void AC_CSCharacter::CharacterMontageEnded(UAnimMontage* const Montage, bool bIn
 {
 	if (bInterrupted)
 	{
-
 	}
 	else
 	{
@@ -137,9 +136,10 @@ void AC_CSCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	//PrintState();
+	if(Status->GetClassType() == EClassType::Striker)
+		PrintState();
 
-	if(bMove)
+	if(bMove && *CharacterState == ECharacterState::Idle)
 		MoveForward();
 }
 
@@ -147,7 +147,8 @@ void AC_CSCharacter::Attack()
 {
 	if (bCanActivateAttack)
 	{
-		UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), Target->GetActorLocation());
+		FRotator rot = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), Target->GetActorLocation());
+		SetActorRotation(rot.Quaternion(), ETeleportType::TeleportPhysics);
 
 		*CharacterState = ECharacterState::Attacking;
 
