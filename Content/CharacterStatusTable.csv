@@ -1,4 +1,4 @@
 ,Name,CharacterRank,CharacterType,ClassType,MoveType,AttackType,Health,Attack,Defense,Critk,CritDamage,Hit,Eva,AttackRate,MaxSightRange,MaxAttackRange,MovementSpeed
-0,Rifleman,SR,Soldier,Ranger,Ground,AllAround_Attack,15000,150,300,750,50,450,200,4,1000,700,150
-1,ShotgunMan,SR,Soldier,Striker,Ground,Ground_Attack,30000,3000,300,750,50,450,200,0.5,1000,300,300
-2,PistolMan,SR,Soldier,Ranger,Ground,AllAround_Attack,9000,1500,300,750,50,450,200,1,1000,500,150
+0,Rifleman,SR,Soldier,Ranger,Ground,AllAround_Attack,22000,1500,300,750,50,700,200,2,1000,700,300
+1,ShotgunMan,SR,Soldier,Striker,Ground,Ground_Attack,80000,8000,1150,1435,50,633,1264,1,1000,300,600
+2,PistolMan,SR,Soldier,Ranger,Ground,AllAround_Attack,12000,2000,300,750,50,450,200,1.5,1000,500,300

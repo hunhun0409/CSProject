@@ -86,6 +86,8 @@ private:
 
 	UFUNCTION()
 		virtual void GetDamaged(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
+	float CalculateDamage(float Damage, AActor* DamageCauser);
+
 
 protected:
 	UFUNCTION(BlueprintImplementableEvent, Category = "Status")

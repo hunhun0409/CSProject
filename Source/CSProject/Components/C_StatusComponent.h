@@ -122,6 +122,7 @@ public:
 	FORCEINLINE float GetCrit() { return Crit; }
 	FORCEINLINE float GetCritDamage() { return CritDamage; }
 	FORCEINLINE float GetHit() { return Hit; }
+	FORCEINLINE float GetEva() { return Eva; }
 	FORCEINLINE float GetAttackRate() { return AttackRate; }
 	FORCEINLINE float GetMaxSightRange() { return MaxSightRange; }
 	FORCEINLINE float GetMaxAttackRange() { return MaxAttackRange; }
@@ -133,6 +134,7 @@ public:
 	FORCEINLINE void SetCrit(float Value) {  Crit = Value; }
 	FORCEINLINE void SetCritDamage(float Value) {  CritDamage = Value; }
 	FORCEINLINE void SetHit(float Value) {  Hit = Value; }
+	FORCEINLINE void SetEva(float Value) {  Eva = Value; }
 	FORCEINLINE void SetAttackRate(float Value) {  AttackRate = Value; }
 	FORCEINLINE void SetMaxSightRange(float Value) {  MaxSightRange = Value; }
 	FORCEINLINE void SetMaxAttackRange(float Value) {  MaxAttackRange = Value; }

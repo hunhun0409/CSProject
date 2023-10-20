@@ -44,6 +44,10 @@ AC_CSCharacter::AC_CSCharacter()
 	CreateDefaultSubobjectAuto(HitEffect);
 
 	CreateDefaultSubobjectAuto(StatusUI);
+
+	StatusUI->SetWidgetSpace(EWidgetSpace::Screen);
+	StatusUI->SetDrawAtDesiredSize(true);
+
 	StatusUI->SetupAttachment(RootComponent);
 	
 
@@ -331,7 +335,8 @@ void AC_CSCharacter::MoveForward()
 
 void AC_CSCharacter::GetDamaged(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
 {
-	Status->AddHealth(-Damage);
+	float FinalDamage = CalculateDamage(Damage, DamageCauser);
+	Status->AddHealth(-FinalDamage);
 	FVector Location = GetActorLocation() + FVector(0, 0, 60);
 	FRotator Rotation = GetActorRotation() + FRotator(-60, 0, 0);
 	FVector Scale = FVector(0.5f, 0.5f, 0.5f);
@@ -344,4 +349,121 @@ void AC_CSCharacter::GetDamaged(AActor* DamagedActor, float Damage, const UDamag
 	{
 		Die();
 	}
+}
+float AC_CSCharacter::CalculateDamage(float Damage, AActor* DamageCauser)
+{
+	auto* MyDamageCauser = DamageCauser->GetInstigator();
+	EClassType CauserClass = Cast<AC_CSCharacter>(MyDamageCauser)->GetStatus()->GetClassType();
+	float CauserHit = Cast<AC_CSCharacter>(MyDamageCauser)->GetStatus()->GetHit();
+	float CauserCrit = Cast<AC_CSCharacter>(MyDamageCauser)->GetStatus()->GetCrit();
+	float CauserCritDamage = Cast<AC_CSCharacter>(MyDamageCauser)->GetStatus()->GetCritDamage();
+
+	float Defense = Status->GetDefense();
+	float Eva = Status->GetEva();
+	EClassType MyClass = Status->GetClassType();
+
+	//방어 감소 적용
+	//********
+	float DefenseReduceRate = (1 - (Defense / (1000 + Defense)));
+	//********
+	float ClassTypeDamageReduceRate = 1;
+
+	//상성 피해 적용
+	switch (CauserClass)
+	{
+	case EClassType::Defender:
+		switch (MyClass)
+		{
+		case EClassType::Ranger:
+			ClassTypeDamageReduceRate = 0.7;
+			break;
+		case EClassType::Sniper:
+			ClassTypeDamageReduceRate = 1.3;
+			break;
+		default:
+			ClassTypeDamageReduceRate = 1;
+			break;
+		}
+	case EClassType::Striker:
+		switch (MyClass)
+		{
+		case EClassType::Sniper:
+			ClassTypeDamageReduceRate = 0.7;
+			break;
+		case EClassType::Ranger:
+			ClassTypeDamageReduceRate = 1.3;
+			break;
+		default:
+			ClassTypeDamageReduceRate = 1;
+			break;
+		}
+	case EClassType::Ranger:
+		switch (MyClass)
+		{
+		case EClassType::Striker:
+			ClassTypeDamageReduceRate = 0.7;
+			break;
+		case EClassType::Defender:
+			ClassTypeDamageReduceRate = 1.3;
+			break;
+		default:
+			ClassTypeDamageReduceRate = 1;
+			break;
+		}
+	case EClassType::Sniper:
+		switch (MyClass)
+		{
+		case EClassType::Defender:
+			ClassTypeDamageReduceRate = 0.7;
+			break;
+		case EClassType::Striker:
+			ClassTypeDamageReduceRate = 1.3;
+			break;
+		default:
+			ClassTypeDamageReduceRate = 1;
+			break;
+		}
+	}
+
+
+	//회피 적용
+	float EvadeRate = (Eva - CauserHit) / ((Eva - CauserHit) + 800);
+	float randFloat = UKismetMathLibrary::RandomFloatInRange(0.0f, 1.0f);
+	bool bEvade = EvadeRate >= randFloat;
+	//*******
+	float EvadeReduceRate = 1;
+	//*******
+	float CritDamageAmplitudeRate = 1;
+	if (bEvade)
+	{
+		EvadeReduceRate = 0.9 - (CauserHit / (CauserHit + 1500));
+	}
+	else//치명 여부
+	{
+		float CritRate = CauserCrit / (CauserCrit + 1000);
+		float randomFloat = UKismetMathLibrary::RandomFloatInRange(0.0f, 1.0f);
+		bool bCrit = CritRate >= randomFloat;
+		if (bCrit)//치명시
+		{
+			CritDamageAmplitudeRate = 1 + (CauserCritDamage/100);
+		}
+	}
+
+	float FinalAdjustment = DefenseReduceRate * ClassTypeDamageReduceRate * 
+		EvadeReduceRate * CritDamageAmplitudeRate;
+	//FinalAdjustment = FMath::Clamp(FinalAdjustment, 0.2f, 5.0f);
+	
+	/*if (MyClass == EClassType::Striker)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Red, FString::SanitizeFloat(DefenseReduceRate));
+		GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Magenta, FString::SanitizeFloat(ClassTypeDamageReduceRate));
+		GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Blue, FString::SanitizeFloat(EvadeReduceRate));
+		GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Green, FString::SanitizeFloat(CritDamageAmplitudeRate));
+	}*/
+	//-5~5프로 랜덤 편차
+	float RandomAdjust = UKismetMathLibrary::RandomFloatInRange(0.95f, 1.05f);
+	float FinalDamage = Damage * FinalAdjustment * RandomAdjust;
+
+	return FinalDamage;
+
 }
