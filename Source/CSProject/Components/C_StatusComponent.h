@@ -9,6 +9,8 @@
 #include "Enum/EMoveType.h"
 #include "Enum/EAttackType.h"
 
+#include "DataTables/StatusData.h"
+
 #include "Components/ActorComponent.h"
 #include "C_StatusComponent.generated.h"
 
@@ -19,57 +21,57 @@ class CSPROJECT_API UC_StatusComponent : public UActorComponent
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Name")
+	UPROPERTY(VisibleAnywhere)
 		FName Name;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Lv")
-		uint8 Level = 1;
-
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(VisibleAnywhere)
 		ECharacterRank CharacterRank;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(VisibleAnywhere)
 		ECharacterType CharacterType;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(VisibleAnywhere)
 		EClassType ClassType;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(VisibleAnywhere)
 		EMoveType MoveType;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(VisibleAnywhere)
 		EAttackType AttackType;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		float MaxHealth = 1000.0f;
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 		float CurHealth;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(VisibleAnywhere)
 		float Attack = 100.0f;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(VisibleAnywhere)
 		float Defense = 100.0f;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(VisibleAnywhere)
 		float Crit = 100.0f;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(VisibleAnywhere)
 		float CritDamage = 50.0f;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(VisibleAnywhere)
 		float Hit = 100.0f;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(VisibleAnywhere)
+		float Eva = 100.0f;
+
+	UPROPERTY(VisibleAnywhere)
 		float AttackRate = 1.0f;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(VisibleAnywhere)
 		float MaxSightRange = 600.0f;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(VisibleAnywhere)
 		float MaxAttackRange = 400.0f;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(VisibleAnywhere)
 		float MovementSpeed = 600.0f;
 
 	////레벨당 증가량
@@ -107,6 +109,7 @@ protected:
 	
 
 public:
+	FORCEINLINE FName GetCharacterName() { return Name; }
 	FORCEINLINE ECharacterRank GetCharacterRank() { return CharacterRank; }
 	FORCEINLINE ECharacterType GetCharacterType() { return CharacterType; }
 	FORCEINLINE EClassType GetClassType() { return ClassType; }
@@ -137,13 +140,9 @@ public:
 
 public:	
 	UC_StatusComponent();
-
-
-protected:
-	virtual void BeginPlay() override;
 public:
-	void ApplyStatus();
+	void ApplyStatus(FStatusData InData);
 	void AddHealth(float InAmount);
 private:
-	
+	FStatusData StatusData;
 };

@@ -74,4 +74,16 @@ void AC_Weapon::ActivateEffect()
 void AC_Weapon::DeactivateEffect()
 {
 }
+void AC_Weapon::NotifyCanAttack()
+{
+
+	AC_CSCharacter* const WeaponOwner = Cast<AC_CSCharacter>(GetOwner());
+
+	if (WeaponOwner)
+	{
+		GetWorld()->GetTimerManager().ClearTimer(AttackTimer);
+		WeaponOwner->bCanActivateAttack = true;
+	}
+}
+
 

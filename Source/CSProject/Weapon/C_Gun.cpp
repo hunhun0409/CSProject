@@ -3,7 +3,8 @@
 
 #include "Particles/ParticleSystemComponent.h"
 #include "Components/AudioComponent.h"
-
+#include "Character/C_CSCharacter.h"
+#include "Components/C_StatusComponent.h"
 
 #define CreateDefaultSubobjectAuto(Component)\
 Component = CreateDefaultSubobject<std::remove_reference<decltype(*Component)>::type>(#Component)
@@ -36,6 +37,16 @@ void AC_Gun::BeginPlay()
 void AC_Gun::ActivateAttack()
 {
 	Super::ActivateAttack();
+
+	AC_CSCharacter* const WeaponOwner = Cast<AC_CSCharacter>(GetOwner());
+	float attackRate = Cast<AC_CSCharacter>(GetOwner())->GetStatus()->GetAttackRate();
+
+	WeaponOwner->bCanActivateAttack = false;
+	if (AttackTimer == FTimerHandle())
+	{
+		GetWorld()->GetTimerManager().SetTimer(AttackTimer, this, &ThisClass::NotifyCanAttack, 1 / attackRate, false);
+	}
+
 	
 	ActivateEffect();
 }

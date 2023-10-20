@@ -22,8 +22,9 @@ void UC_BTCharacterService::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* N
 	AC_CSCharacter* target = Cast<AC_CSCharacter>(behavior->GetTarget());
 
 
-	if (unit->GetCharacterState() == ECharacterState::Dead)
+	if (unit->IsDead())
 	{
+		unit->bMove = false;
 		behavior->ChangeType(EBehaviorType::Dead);
 		return;
 	}
@@ -35,10 +36,12 @@ void UC_BTCharacterService::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* N
 
 	if (IsValid(target))
 	{
+		unit->bMove = false;
 		float distance = controller->GetTargetDist();
 		float attackRange = unit->GetStatus()->GetMaxAttackRange();
 		if (distance <= attackRange)
 		{
+
 			if (unit->bCanActivateULT)
 			{
 				behavior->ChangeType(EBehaviorType::ULTSkill);

@@ -54,6 +54,9 @@ protected:
 	void ActivateEffect() override;
 	void DeactivateEffect() override;
 
+	void NotifyCanAttack();
 
+protected:
+	FTimerHandle AttackTimer;
 
 };

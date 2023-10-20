@@ -1,0 +1,2 @@
+,Name,CharacterRank,CharacterType,ClassType,MoveType,AttackType,Health,Attack,Defense,Critk,CritDamage,Hit,Eva,AttackRate,MaxSightRange,MaxAttackRange,MovementSpeed
+0,AdinRifleman,SR,Soldier,Ranger,Ground,Ground_Attack,15000,3500,300,750,50,450,200,1,1000,600,150

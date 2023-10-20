@@ -18,4 +18,5 @@ public:
 	virtual void Attack()	PURE_VIRTUAL(IC_CharacterInterface::Attack, return;)
 	virtual void SPSkill()	PURE_VIRTUAL(IC_CharacterInterface::SPSkill, return;)
 	virtual void ULTSkill()	PURE_VIRTUAL(IC_CharacterInterface::ULTSkill, return;)
+	virtual void Die()	PURE_VIRTUAL(IC_CharacterInterface::Die, return;)
 };

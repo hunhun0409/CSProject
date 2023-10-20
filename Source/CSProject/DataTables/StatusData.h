@@ -17,24 +17,20 @@ struct FStatusData : public FTableRowBase
 	GENERATED_BODY()
 public:
 	UPROPERTY(EditAnywhere) FName Name;
-	UPROPERTY(EditAnywhere) uint8 Level;
 	UPROPERTY(EditAnywhere) ECharacterRank CharacterRank;
 	UPROPERTY(EditAnywhere) ECharacterType CharacterType;
 	UPROPERTY(EditAnywhere) EClassType ClassType;
 	UPROPERTY(EditAnywhere) EMoveType MoveType;
 	UPROPERTY(EditAnywhere) EAttackType AttackType;
-	UPROPERTY(EditAnywhere) float LV1_Health;
-	UPROPERTY(EditAnywhere) float LV1_Attack;
-	UPROPERTY(EditAnywhere) float LV1_Defense;
-	UPROPERTY(EditAnywhere) float LV1_Critk;
+	UPROPERTY(EditAnywhere) float Health;
+	UPROPERTY(EditAnywhere) float Attack;
+	UPROPERTY(EditAnywhere) float Defense;
+	UPROPERTY(EditAnywhere) float Critk;
 	UPROPERTY(EditAnywhere) float CritDamage;
-	UPROPERTY(EditAnywhere) float LV1_Hit;
+	UPROPERTY(EditAnywhere) float Hit;
+	UPROPERTY(EditAnywhere) float Eva;
 	UPROPERTY(EditAnywhere) float AttackRate;
 	UPROPERTY(EditAnywhere) float MaxSightRange;
 	UPROPERTY(EditAnywhere) float MaxAttackRange;
-	UPROPERTY(EditAnywhere) float Health_IncreaseAmount;
-	UPROPERTY(EditAnywhere) float Attack_IncreaseAmount;
-	UPROPERTY(EditAnywhere) float Defense_IncreaseAmount;
-	UPROPERTY(EditAnywhere) float Crit_IncreaseAmount;
-	UPROPERTY(EditAnywhere) float Hit_IncreaseAmount;
+	UPROPERTY(EditAnywhere) float MovementSpeed;
 };

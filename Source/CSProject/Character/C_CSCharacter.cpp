@@ -19,7 +19,14 @@
 
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/CapsuleComponent.h"
 
+#include "Components/WidgetComponent.h"
+
+#include "Animation/AnimMontage.h"
+
+#include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
 
 #define CreateDefaultSubobjectAuto(Component)\
@@ -31,27 +38,59 @@ AC_CSCharacter::AC_CSCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 
 	CreateDefaultSubobjectAuto(Status);
+
+	//CreateDefaultSubobjectAuto(DieMontage);
+
+	
+	StatusUI = CreateDefaultSubobject<UWidgetComponent>("StatusUI");
+	StatusUI->SetupAttachment(RootComponent);
+	
+
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+
+	GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECR_Ignore);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Block);
+	GetCapsuleComponent()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
+	
+	GetMesh()->SetCollisionResponseToAllChannels(ECR_Ignore);
+	GetMesh()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Block);
+	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
 }
 
 void AC_CSCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (DataTable != nullptr)
+	{
+		TArray<FStatusData const*> Rows;
+		DataTable->GetAllRows("", Rows);
+
+		TArray<FStatusData> Value;
+		for (auto& Row : Rows)
+		{
+			if (Row->Name == Name)
+			{
+				Value.Add(*Row);
+			}
+		}
+		StatusMap.Add(Name, Value);
+			
+
+		TArray<FStatusData> Data = StatusMap[Name];
+		if (Data.Num())
+		{
+			Status->ApplyStatus(Data[0]);
+		}
+	}
+
 	InitState();
 	InitWeapon();
 	InitSkill();
 
-	FTimerHandle Timer;
-	GetWorld()->GetTimerManager().SetTimer(Timer, this, &ThisClass::Attack, 1 / Status->GetAttackRate(), true, 0);
-
-	GetMesh()->GetAnimInstance()->OnMontageStarted.AddDynamic(this, &ThisClass::CharacterMontageStarted);
 	GetMesh()->GetAnimInstance()->OnMontageEnded.AddDynamic(this, &ThisClass::CharacterMontageEnded);
 	GetMesh()->GetAnimInstance()->OnMontageBlendingOut.AddDynamic(this, &ThisClass::CharacterMontageBlendingOut);
-	
-	GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &ThisClass::OnNotifyStart);
-	GetMesh()->GetAnimInstance()->OnPlayMontageNotifyEnd.AddDynamic(this, &ThisClass::OnNotifyEnd);
-
-
+	OnTakeAnyDamage.AddDynamic(this, &ThisClass::GetDamaged);
 }
 
 void AC_CSCharacter::OnConstruction(FTransform const& Transform)
@@ -65,11 +104,11 @@ void AC_CSCharacter::OnConstruction(FTransform const& Transform)
 void AC_CSCharacter::PrintState()
 {
 	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, *StateToName.Find(*CharacterState));
+
+	//FString MyBoolString = bMove ? TEXT("true") : TEXT("false");
+	//GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, MyBoolString);
 }
 
-void AC_CSCharacter::CharacterMontageStarted(UAnimMontage* const Montage)
-{
-}
 
 void AC_CSCharacter::CharacterMontageEnded(UAnimMontage* const Montage, bool bInterrupted)
 {
@@ -87,27 +126,24 @@ void AC_CSCharacter::CharacterMontageBlendingOut(UAnimMontage* const montage, bo
 {
 }
 
-void AC_CSCharacter::OnNotifyStart(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload)
-{
-}
-
-void AC_CSCharacter::OnNotifyEnd(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload)
-{
-}
-
 void AC_CSCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 	//PrintState();
-	//MoveForward();
+
+	if(bMove)
+		MoveForward();
 }
 
 void AC_CSCharacter::Attack()
 {
-	*CharacterState = ECharacterState::Attacking;
+	if (bCanActivateAttack)
+	{
+		*CharacterState = ECharacterState::Attacking;
 
-	Weapon->ActivateAttack();
+		Weapon->ActivateAttack();
+	}
 }
 
 void AC_CSCharacter::SPSkill()
@@ -128,6 +164,54 @@ void AC_CSCharacter::ULTSkill()
 
 		UltimateSkill->BeginAction();
 	}
+}
+
+void AC_CSCharacter::Die()
+{
+	GEngine->AddOnScreenDebugMessage(0, 5, FColor::Green, TEXT("Dead!"), true);
+
+	*CharacterState = ECharacterState::Dead;
+	
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter::StaticClass(), FoundActors);
+
+	Cast<AActor>(Weapon)->Destroy();
+	//Todo
+	//상대 함선에게 죽음을 알림 : 미완성
+
+
+
+
+	//전장에 있는 캐릭터들에게 죽음을 알림
+	TArray<AC_CSCharacter*> AllCharacters;
+	for (AActor* actor : FoundActors)
+	{
+		if (actor == this)
+			continue;
+		AC_CSCharacter* Character = Cast<AC_CSCharacter>(actor);
+		if (Character)
+		{
+			AllCharacters.Add(Character);
+		}
+	}
+
+	for (AC_CSCharacter* character : AllCharacters)
+	{
+		//아군이면 패스
+		if (character->GetTeamID() == TeamID)
+			continue;
+		//IsValid
+		if (IsValid(character))
+		{
+			Cast<AC_CSAIController>(character->GetController())->RemoveTarget(this);
+		}
+	}
+
+
+
+	uint8 i = UKismetMathLibrary::RandomIntegerInRange(0, DieMontage.Num() - 1);
+	PlayAnimMontage(DieMontage[i]);
+	SetLifeSpan(3.0f);
 }
 
 void AC_CSCharacter::InitState()
@@ -198,44 +282,74 @@ void AC_CSCharacter::InitSkill()
 void AC_CSCharacter::MoveForward()
 {
 	//walk Forward
-	FVector const Direction = FRotator(0, GetControlRotation().Yaw, 0).Quaternion().GetForwardVector();
+	FVector Direction;
+	switch(TeamID)
+	{
+	case 0:
+		//SetActorRelativeRotation(FRotator(0, 1, 0).Quaternion());
+		Direction = FVector(0, 1, 0);
+		break;
+	case 1:
+		//SetActorRelativeRotation(FRotator(0, -1, 0).Quaternion());
+		Direction = FVector(0, -1, 0);
+		break;
+	}
 	AddMovementInput(Direction);
+}
+
+void AC_CSCharacter::GetDamaged(AActor* DamagedActor, float Damage, const UDamageType* DamageType, AController* InstigatedBy, AActor* DamageCauser)
+{
+	Status->AddHealth(-Damage);
+	UpdateLifeGauge();
+	if (Status->GetCurHealth() <= 0)
+	{
+		Die();
+	}
 }
 
 void AC_CSCharacter::Destroyed()
 {
-	TArray<AActor*> FoundActors;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter::StaticClass(), FoundActors);
+	Super::Destroyed();
+	if (!GWorld->HasBegunPlay())
+	{
+		return;
+	}
 
-
-	//Todo
-	//상대 함선에게 죽음을 알림 : 미완성
 	
 
 
+	//TArray<AActor*> FoundActors;
+	//UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter::StaticClass(), FoundActors);
 
-	//전장에 있는 캐릭터들에게 죽음을 알림
-	TArray<AC_CSCharacter*> AllCharacters;
-	for (AActor* actor : FoundActors)
-	{
-		if (actor == this)
-			continue;
-		AC_CSCharacter* Character = Cast<AC_CSCharacter>(actor);
-		if (Character)
-		{
-			AllCharacters.Add(Character);
-		}
-	}
+	//Cast<AActor>(Weapon)->Destroy();
+	////Todo
+	////상대 함선에게 죽음을 알림 : 미완성
 
-	for (AC_CSCharacter* character : AllCharacters)
-	{
-		//아군이면 패스
-		if (character->GetTeamID() == TeamID)
-			continue;
-		//IsValid
-		if (IsValid(character))
-		{
-			Cast<AC_CSAIController>(character->GetController())->RemoveTarget(this);
-		}
-	}
+
+
+
+	////전장에 있는 캐릭터들에게 죽음을 알림
+	//TArray<AC_CSCharacter*> AllCharacters;
+	//for (AActor* actor : FoundActors)
+	//{
+	//	if (actor == this)
+	//		continue;
+	//	AC_CSCharacter* Character = Cast<AC_CSCharacter>(actor);
+	//	if (Character)
+	//	{
+	//		AllCharacters.Add(Character);
+	//	}
+	//}
+
+	//for (AC_CSCharacter* character : AllCharacters)
+	//{
+	//	//아군이면 패스
+	//	if (character->GetTeamID() == TeamID)
+	//		continue;
+	//	//IsValid
+	//	if (IsValid(character))
+	//	{
+	//		Cast<AC_CSAIController>(character->GetController())->RemoveTarget(this);
+	//	}
+	//}
 }

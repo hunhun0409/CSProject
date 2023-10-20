@@ -4,6 +4,7 @@
 
 #include "C_CharacterInterface.h"
 #include "Enum/ECharacterState.h"
+#include "DataTables/StatusData.h"
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
@@ -19,8 +20,19 @@ class CSPROJECT_API AC_CSCharacter : public ACharacter, public IC_CharacterInter
 
 private:
 	//Status
-	UPROPERTY(VisibleDefaultsOnly, Category = "Status", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, Category = "Status", meta = (AllowPrivateAccess = "true"))
+		FName Name;
+	//Status
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Status", meta = (AllowPrivateAccess = "true"))
 		class UC_StatusComponent* Status;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
+		class UWidgetComponent* StatusUI;
+
+	UPROPERTY(EditAnywhere, Category = "Montage")
+		TArray<class UAnimMontage*> DieMontage;
+
+	
 protected:
 	UPROPERTY(EditAnywhere, Category = "TeamID", meta = (AllowPrivateAccess = "true"))
 		uint8 TeamID;
@@ -47,16 +59,9 @@ protected:
 	void PrintState();
 	//Montage&Notify
 	UFUNCTION()
-		void CharacterMontageStarted(UAnimMontage* const Montage);
-	UFUNCTION()
 		virtual void CharacterMontageEnded(UAnimMontage* const Montage = 0, bool bInterrupted = 0);
 	UFUNCTION()
 		virtual void CharacterMontageBlendingOut(UAnimMontage* const montage = 0, bool bInterrupted = 0);
-	
-	UFUNCTION()
-		virtual void OnNotifyStart(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload);
-	UFUNCTION()
-		virtual void OnNotifyEnd(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload);
 
 		
 
@@ -68,7 +73,7 @@ protected:
 	void Attack() override;
 	void SPSkill() override;
 	void ULTSkill() override;
-
+	void Die() override;
 
 private:
 	void InitState();
@@ -76,37 +81,58 @@ private:
 	void InitSkill();
 	void MoveForward();
 
+	UFUNCTION()
+		virtual void GetDamaged(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
+
+protected:
+	UFUNCTION(BlueprintImplementableEvent, Category = "Status")
+		void UpdateLifeGauge();
+	UFUNCTION(BlueprintImplementableEvent, Category = "Status")
+		void UpdateCooldown();
+	
+
 	virtual void Destroyed() override;
 public:
 	//Weapon
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Weapon")
 		TSubclassOf<class AC_Weapon> WeaponClass;
 	class IC_WeaponInterface* Weapon;
 
 	//PassiveSKill
-	UPROPERTY(EditAnywhere, Category = "PasiveSkill")
+	UPROPERTY(EditAnywhere, Category = "Skill")
 		TArray<TSubclassOf<class AC_Skill>> PassiveSkillClasses;
 	TArray<class IC_SkillInterface*> PasiveSkills;
 
 	//SpecialSkill
-	UPROPERTY(EditAnywhere, Category = "SpecialSkill")
+	UPROPERTY(EditAnywhere, Category = "Skill")
 		TSubclassOf<class AC_Skill> SpecialSkillClass;
 	class IC_SkillInterface* SpecialSkill;
 
 	//UltimateSkill
-	UPROPERTY(EditAnywhere, Category = "UltimateSkill")
+	UPROPERTY(EditAnywhere, Category = "Skill")
 		TSubclassOf<class AC_Skill> UltimateSkillClass;
 	class IC_SkillInterface* UltimateSkill;
 
 	TSharedPtr<ECharacterState> CharacterState;
 	TMap<ECharacterState, FString> StateToName;
 
-	AActor* Target;
+	UPROPERTY(BlueprintReadOnly)
+		AActor* Target;
 
+
+	UPROPERTY(EditDefaultsOnly, Category = "Status")
+		UDataTable* DataTable;
+
+	TMap<FName, TArray<FStatusData>> StatusMap;
+
+	//평타 쿨이 돌았으면 true
+	bool bCanActivateAttack = true;
 	//특수기 쿨이 돌았으면 true
 	bool bCanActivateSP = false;
 	//궁극기 쿨이 돌았으면 true
 	bool bCanActivateULT = false;
 	//필드에 소환돼있으면 true, 아니면 false
 	bool bInBattle = false;
+
+	bool bMove = true;
 };

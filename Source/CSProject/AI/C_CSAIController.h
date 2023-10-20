@@ -16,11 +16,15 @@ class CSPROJECT_API AC_CSAIController : public AAIController
 	
 
 private:
+	UPROPERTY(EditAnywhere)
+		bool bDrawDebug;
 
 	UPROPERTY(VisibleDefaultsOnly)
 		class UAIPerceptionComponent* Perception;
 	UPROPERTY(VisibleDefaultsOnly)
 		class UC_BehaviorComponent* Behavior;
+
+	
 
 public:
 	AC_CSAIController();
