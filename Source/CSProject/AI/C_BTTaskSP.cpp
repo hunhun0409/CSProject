@@ -1,7 +1,7 @@
 #include "AI/C_BTTaskSP.h"
 #include "AI/C_CSAIController.h"
 #include "Character/C_CSCHaracter.h"
-#include "CHaracter/C_CharacterInterface.h"
+#include "Interface/C_CharacterInterface.h"
 
 UC_BTTaskSP::UC_BTTaskSP()
 {

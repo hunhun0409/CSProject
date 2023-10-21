@@ -1,6 +1,6 @@
 #pragma once
 
-#include "C_SkillInterface.h"
+#include "Interface/C_SkillInterface.h"
 
 #include "Enum/ESkillType.h"
 

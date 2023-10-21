@@ -4,26 +4,30 @@
 #include "Components/C_StatusComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/WidgetComponent.h"
 
 #include "Weapon/C_Weapon.h"
-#include "Weapon/C_WeaponInterface.h"
+
 
 #include "Environment/C_Base.h"
+
+#include "Interface/C_DamageHandleInterface.h"
+#include "Interface/C_WeaponInterface.h"
+#include "Interface/C_SkillInterface.h"
 
 #include "AI/C_CSAIController.h"
 
 #include "Skill/C_Skill.h"
 #include "Skill/C_PassiveSkill.h"
 #include "Skill/C_ActiveSkill.h"
-#include "Skill/C_SkillInterface.h"
+
 
 #include "Components/C_StatusComponent.h"
 
 #include "Particles/ParticleSystem.h"
 
 #include "GameFramework/CharacterMovementComponent.h"
-
-#include "Components/WidgetComponent.h"
+#include "GameFramework/GameModeBase.h"
 
 #include "Animation/AnimMontage.h"
 
@@ -134,7 +138,10 @@ void AC_CSCharacter::CharacterMontageBlendingOut(UAnimMontage* const montage, bo
 
 void AC_CSCharacter::Tick(float DeltaTime)
 {
+	if (IsDead())
+		return;
 	Super::Tick(DeltaTime);
+	
 
 	if(Status->GetClassType() == EClassType::Striker)
 		PrintState();
@@ -145,6 +152,8 @@ void AC_CSCharacter::Tick(float DeltaTime)
 
 void AC_CSCharacter::Attack()
 {
+	if (IsDead())
+		return;
 	if (bCanActivateAttack)
 	{
 		FRotator rot = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), Target->GetActorLocation());
@@ -158,6 +167,8 @@ void AC_CSCharacter::Attack()
 
 void AC_CSCharacter::SPSkill()
 {
+	if (IsDead())
+		return;
 	if (bCanActivateSP)
 	{
 		*CharacterState = ECharacterState::SP_Skilling;
@@ -168,6 +179,8 @@ void AC_CSCharacter::SPSkill()
 
 void AC_CSCharacter::ULTSkill()
 {
+	if (IsDead())
+		return;
 	if (bCanActivateULT)
 	{
 		*CharacterState = ECharacterState::ULT_Skilling;
@@ -178,8 +191,6 @@ void AC_CSCharacter::ULTSkill()
 
 void AC_CSCharacter::Die()
 {
-	GEngine->AddOnScreenDebugMessage(0, 5, FColor::Green, TEXT("Dead!"), true);
-
 	*CharacterState = ECharacterState::Dead;
 	
 	TArray<AActor*> FoundActors;
@@ -353,21 +364,30 @@ void AC_CSCharacter::GetDamaged(AActor* DamagedActor, float Damage, const UDamag
 }
 float AC_CSCharacter::CalculateDamage(float Damage, AActor* DamageCauser)
 {
+	//감소률 계산할 변수들
+	float DefenseReduceRate = 1;
+	float ClassTypeDamageReduceRate = 1;
+	float EvadeReduceRate = 1;
+	float CritDamageAmplitudeRate = 1;
+
+	//가해자 정보
 	auto* MyDamageCauser = DamageCauser->GetInstigator();
 	EClassType CauserClass = Cast<AC_CSCharacter>(MyDamageCauser)->GetStatus()->GetClassType();
 	float CauserHit = Cast<AC_CSCharacter>(MyDamageCauser)->GetStatus()->GetHit();
 	float CauserCrit = Cast<AC_CSCharacter>(MyDamageCauser)->GetStatus()->GetCrit();
 	float CauserCritDamage = Cast<AC_CSCharacter>(MyDamageCauser)->GetStatus()->GetCritDamage();
 
+	//피해자 정보
 	float Defense = Status->GetDefense();
 	float Eva = Status->GetEva();
 	EClassType MyClass = Status->GetClassType();
 
+	//회피 치명 bool 변수
+	bool bEvade;
+	bool bCrit;
+
 	//방어 감소 적용
-	//********
-	float DefenseReduceRate = (1 - (Defense / (1000 + Defense)));
-	//********
-	float ClassTypeDamageReduceRate = 1;
+	DefenseReduceRate = (1 - (Defense / (1000 + Defense)));
 
 	//상성 피해 적용
 	switch (CauserClass)
@@ -385,6 +405,7 @@ float AC_CSCharacter::CalculateDamage(float Damage, AActor* DamageCauser)
 			ClassTypeDamageReduceRate = 1;
 			break;
 		}
+		break;
 	case EClassType::Striker:
 		switch (MyClass)
 		{
@@ -398,6 +419,7 @@ float AC_CSCharacter::CalculateDamage(float Damage, AActor* DamageCauser)
 			ClassTypeDamageReduceRate = 1;
 			break;
 		}
+		break;
 	case EClassType::Ranger:
 		switch (MyClass)
 		{
@@ -411,6 +433,7 @@ float AC_CSCharacter::CalculateDamage(float Damage, AActor* DamageCauser)
 			ClassTypeDamageReduceRate = 1;
 			break;
 		}
+		break;
 	case EClassType::Sniper:
 		switch (MyClass)
 		{
@@ -424,17 +447,14 @@ float AC_CSCharacter::CalculateDamage(float Damage, AActor* DamageCauser)
 			ClassTypeDamageReduceRate = 1;
 			break;
 		}
+		break;
+	default:
+		ClassTypeDamageReduceRate = 1;
 	}
-
-
 	//회피 적용
 	float EvadeRate = (Eva - CauserHit) / ((Eva - CauserHit) + 800);
 	float randFloat = UKismetMathLibrary::RandomFloatInRange(0.0f, 1.0f);
-	bool bEvade = EvadeRate >= randFloat;
-	//*******
-	float EvadeReduceRate = 1;
-	//*******
-	float CritDamageAmplitudeRate = 1;
+	bEvade = EvadeRate >= randFloat;
 	if (bEvade)
 	{
 		EvadeReduceRate = 0.9 - (CauserHit / (CauserHit + 1500));
@@ -443,27 +463,29 @@ float AC_CSCharacter::CalculateDamage(float Damage, AActor* DamageCauser)
 	{
 		float CritRate = CauserCrit / (CauserCrit + 1000);
 		float randomFloat = UKismetMathLibrary::RandomFloatInRange(0.0f, 1.0f);
-		bool bCrit = CritRate >= randomFloat;
+		bCrit = CritRate >= randomFloat;
 		if (bCrit)//치명시
 		{
-			CritDamageAmplitudeRate = 1 + (CauserCritDamage/100);
+			CritDamageAmplitudeRate = 1 + (CauserCritDamage / 100);
 		}
 	}
 
+	//방어 감소율 회피 감소율 상성피해 치명피해 적용
 	float FinalAdjustment = DefenseReduceRate * ClassTypeDamageReduceRate * 
 		EvadeReduceRate * CritDamageAmplitudeRate;
-	//FinalAdjustment = FMath::Clamp(FinalAdjustment, 0.2f, 5.0f);
+
+	//감소 최소수치는 0.2
+	FinalAdjustment = FMath::Clamp(FinalAdjustment, 0.2f, 5.0f);
 	
-	/*if (MyClass == EClassType::Striker)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Red, FString::SanitizeFloat(DefenseReduceRate));
-		GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Magenta, FString::SanitizeFloat(ClassTypeDamageReduceRate));
-		GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Blue, FString::SanitizeFloat(EvadeReduceRate));
-		GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Green, FString::SanitizeFloat(CritDamageAmplitudeRate));
-	}*/
 	//-5~5프로 랜덤 편차
 	float RandomAdjust = UKismetMathLibrary::RandomFloatInRange(0.95f, 1.05f);
 	float FinalDamage = Damage * FinalAdjustment * RandomAdjust;
+
+	
+	//GameModeBase::PrintDamage
+	AGameModeBase* GameMode = UGameplayStatics::GetGameMode(GetWorld());
+	Cast<IC_DamageHandleInterface>(GameMode)->PrintDamage(FinalDamage, bCrit, bEvade, GetActorLocation());
+	
 
 	return FinalDamage;
 

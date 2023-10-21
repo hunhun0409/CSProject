@@ -10,5 +10,4 @@ enum class EClassType : uint8
 	Supporter		UMETA(DisplayName = "Supporter"),
 	Tower			UMETA(DisplayName = "Tower"),
 	Seige			UMETA(DisplayName = "Seige"),
-
 };

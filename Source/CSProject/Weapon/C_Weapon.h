@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "C_WeaponInterface.h"
+#include "Interface/C_WeaponInterface.h"
 #include "GameFramework/Actor.h"
 #include "C_Weapon.generated.h"
 

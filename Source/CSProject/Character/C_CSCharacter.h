@@ -2,7 +2,8 @@
 
 #pragma once
 
-#include "C_CharacterInterface.h"
+#include "Interface/C_CharacterInterface.h"
+#include "Interface/C_DamageHandleInterface.h"
 #include "Enum/ECharacterState.h"
 #include "DataTables/StatusData.h"
 
@@ -13,7 +14,10 @@
 enum class ECharacterState :uint8;
 
 UCLASS(ABSTRACT)
-class CSPROJECT_API AC_CSCharacter : public ACharacter, public IC_CharacterInterface
+class CSPROJECT_API AC_CSCharacter : 
+	public ACharacter, 
+	public IC_CharacterInterface,
+	public IC_DamageHandleInterface
 {
 	GENERATED_BODY()
 
@@ -86,7 +90,7 @@ private:
 
 	UFUNCTION()
 		virtual void GetDamaged(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
-	float CalculateDamage(float Damage, AActor* DamageCauser);
+	virtual float CalculateDamage(float Damage, AActor* DamageCauser) override;
 
 
 protected:
