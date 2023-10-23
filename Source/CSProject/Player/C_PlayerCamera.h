@@ -35,6 +35,7 @@ protected:
 	virtual void MousePos(const FVector2D& MousePos) override;
 	virtual void MouseLBPressing(const bool& IsPressing) override;
 	virtual void MouseRBPressing(const bool& IsPressing) override;
+	virtual void KeyNumPress(const int& KeyNum) override;
 
 protected:
 	UFUNCTION()

@@ -28,6 +28,7 @@ public:
 	virtual void MousePos(const FVector2D& MousePos) PURE_VIRTUAL(IC_ControllerInterface::MousePos, return;)
 	virtual void MouseLBPressing(const bool& IsPressing) PURE_VIRTUAL(IC_ControllerInterface::MouseLBPressing, return;)
 	virtual void MouseRBPressing(const bool& IsPressing) PURE_VIRTUAL(IC_ControllerInterface::MouseRBPressing, return;)
+	virtual void KeyNumPress(const int& KeyNum) PURE_VIRTUAL(IC_ControllerInterface::KeyNumPress, return;)
 
 
 

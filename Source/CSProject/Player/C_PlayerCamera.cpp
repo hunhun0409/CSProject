@@ -11,6 +11,7 @@
 #include "Environment/C_Field.h"
 #include "Environment/C_Base.h"
 #include "C_UserWidget.h"
+#include "C_Controller.h" 
 
 // Sets default values
 AC_PlayerCamera::AC_PlayerCamera()
@@ -51,11 +52,25 @@ void AC_PlayerCamera::BeginPlay()
 		{
 			UIWidget->AddToViewport();
 			UIWidget->UpdateUIData(Datas);
+
+			
 			
 		}
 	}
 
+	if (auto* Temp = Cast<AC_Controller>(GetController()))
+	{
+		FInputModeGameAndUI ModeData;
+		ModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+		//왜 클릭이 잘 안될까
+		if (UIWidget)
+		{
+			ModeData.SetWidgetToFocus(UIWidget->TakeWidget());
+		}
 
+		Temp->SetInputMode(ModeData);
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "Done");
+	}
 
 }
 
@@ -148,6 +163,10 @@ void AC_PlayerCamera::MouseLBPressing(const bool& IsPressing)
 void AC_PlayerCamera::MouseRBPressing(const bool& IsPressing)
 {
 
+}
+
+void AC_PlayerCamera::KeyNumPress(const int& KeyNum)
+{
 }
 
 void AC_PlayerCamera::UpdateUIData()

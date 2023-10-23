@@ -28,6 +28,12 @@ private:
 	void EndLB();
 	void BeginRB();
 	void EndRB();
+	void Key1B();
+	void Key2B();
+	void Key3B();
+	void Key4B();
+
+
 	void Wheel(const float Value);
 	void MoveRight(const float Value);
 

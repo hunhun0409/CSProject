@@ -8,6 +8,8 @@ AC_Controller::AC_Controller()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
+	bShowMouseCursor = true;
+
 }
 
 void AC_Controller::Tick(const float DeltaTime)
@@ -37,6 +39,12 @@ void AC_Controller::SetupInputComponent()
 	InputComponent->BindAction("MouseRB", IE_Pressed, this, &ThisClass::BeginRB);
 	InputComponent->BindAction("MouseRB", IE_Released, this, &ThisClass::EndRB);
 
+	InputComponent->BindAction("Key1", IE_Pressed, this, &ThisClass::Key1B);
+	InputComponent->BindAction("Key2", IE_Pressed, this, &ThisClass::Key2B);
+	InputComponent->BindAction("Key3", IE_Pressed, this, &ThisClass::Key3B);
+	InputComponent->BindAction("Key4", IE_Pressed, this, &ThisClass::Key4B);
+
+
 	InputComponent->BindAxis("MouseWheel", this, &ThisClass::Wheel);
 	InputComponent->BindAxis("MoveForward", this, &ThisClass::Wheel);
 	InputComponent->BindAxis("MoveRight", this, &ThisClass::MoveRight);
@@ -63,6 +71,30 @@ void AC_Controller::EndRB()
 {
 	MouseRBPressed = false;
 	Cast<IC_ControllerInterface>(GetPawn())->MouseRBPressing(false);
+}
+
+void AC_Controller::Key1B()
+{
+	Cast<IC_ControllerInterface>(GetPawn())->KeyNumPress(0);
+
+}
+
+void AC_Controller::Key2B()
+{
+	Cast<IC_ControllerInterface>(GetPawn())->KeyNumPress(1);
+
+}
+
+void AC_Controller::Key3B()
+{
+	Cast<IC_ControllerInterface>(GetPawn())->KeyNumPress(2);
+
+}
+
+void AC_Controller::Key4B()
+{
+	Cast<IC_ControllerInterface>(GetPawn())->KeyNumPress(3);
+
 }
 
 void AC_Controller::Wheel(const float Value)
