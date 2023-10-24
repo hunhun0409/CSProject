@@ -66,6 +66,7 @@ void AC_PlayerCamera::BeginPlay()
 
 			UIWidget->SpawnOrdered.BindUFunction(this, "Spawn");
 			UIWidget->SelectedPreview.BindUFunction(this, "Preview");
+			UIWidget->CancelPreview.BindUFunction(this, "CancelSelect");
 		}
 	}
 }
@@ -211,4 +212,9 @@ void AC_PlayerCamera::Preview(int SlotNum)
 	CalculatePreviewLoc = true;
 
 	//SpawnLocation 기록 <- Tick에서 실시간 충돌
+}
+
+void AC_PlayerCamera::CancelSelect()
+{
+	CalculatePreviewLoc = false;
 }

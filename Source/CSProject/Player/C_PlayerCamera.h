@@ -37,6 +37,8 @@ protected:
 		void Spawn(int SlotNum);
 	UFUNCTION()
 		void Preview(int SlotNum);
+	UFUNCTION()
+		void CancelSelect();
 
 protected:
 	virtual void Zoom(const float& Value) override;

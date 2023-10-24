@@ -28,6 +28,7 @@ public:
 
 	TDelegate<void(int)> SpawnOrdered;
 	TDelegate<void(int)> SelectedPreview;
+	TDelegate<void()> CancelPreview;
 
 protected:
 	UFUNCTION()

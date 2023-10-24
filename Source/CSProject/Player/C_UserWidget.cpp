@@ -326,6 +326,11 @@ void UC_UserWidget::KeyBoardNumPress(const int& InNum)
 	default:
 		break;
 	}
+
+	if (UnitSelected)
+		SelectedPreview.ExecuteIfBound(ButtonNum);
+	else
+		CancelPreview.ExecuteIfBound();
 }
 
 void UC_UserWidget::RBEvent(bool IsPressed)
