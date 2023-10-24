@@ -18,7 +18,15 @@ public:
 	AC_Controller();
 
 protected:
+	void OnConstruction(const FTransform& Transform) override;
+
+	void BeginPlay() override;
+
 	void Tick(const float DeltaTime) override;
+
+
+	UFUNCTION()
+		const FHitResult CurserOnGroundHitResult();
 
 private:
 	void SetupInputComponent() override;

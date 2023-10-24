@@ -3,13 +3,12 @@
 
 #include "C_PlayerCamera.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "Camera/CameraComponent.h"
 #include "GameFramework/FloatingPawnMovement.h"
+#include "Camera/CameraComponent.h"
 #include "Curves/CurveVector.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Environment/C_GameModeBase.h"
-#include "Environment/C_Field.h"
-#include "Environment/C_Base.h"
 #include "C_UserWidget.h"
 
 // Sets default values
@@ -32,6 +31,19 @@ AC_PlayerCamera::AC_PlayerCamera()
 void AC_PlayerCamera::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (auto* GameMode = Cast<AC_GameModeBase>(GetWorld()->GetAuthGameMode()))
+	{
+		if (!GameMode->UIDataUpdated.IsBound())
+		{
+			GameMode->UIDataUpdated.BindUFunction(this, "UpdateUIData");
+			CameraMovableY = GameMode->GetMaxYPos();
+			GetUIData.BindUFunction(GameMode, "GetUIData");
+		}
+
+		Datas = GameMode->GetUIData();
+
+	}
 	
 	if (ZoomCurve)
 	{
@@ -52,8 +64,8 @@ void AC_PlayerCamera::BeginPlay()
 			UIWidget->AddToViewport();
 			UIWidget->UpdateUIData(Datas);
 
-			//RBPressed.BindUFunction(UIWidget, "RBEvent");
 			UIWidget->SpawnOrdered.BindUFunction(this, "Spawn");
+			UIWidget->SelectedPreview.BindUFunction(this, "Preview");
 		}
 	}
 }
@@ -96,6 +108,21 @@ void AC_PlayerCamera::Tick(float DeltaTime)
 	else
 		Camera->FieldOfView = UKismetMathLibrary::FInterpTo(Camera->FieldOfView, NewFieldOfView, 0.2f, 0.5f);
 
+	//소환 Preview
+	if (CalculatePreviewLoc)
+	{
+		if(FindCurserHitResult.IsBound())
+			SpawnLocation = FindCurserHitResult.Execute().Location;
+
+		UKismetSystemLibrary::DrawDebugSphere(GetWorld(), SpawnLocation);
+
+		/*UKismetSystemLibrary::LineTraceSingle(GetWorld(),
+			GetActorLocation() + Camera->GetRelativeLocation(),
+			Camera->GetForwardVector() * 1000, TraceTypeQuery1, false,
+			{},
+			EDrawDebugTrace::ForOneFrame
+			, Result, true);*/
+	}
 }
 
 // Called to bind functionality to input
@@ -140,6 +167,9 @@ void AC_PlayerCamera::MousePos(const FVector2D& MousePos)
 
 void AC_PlayerCamera::MouseLBPressing(const bool& IsPressing)
 {
+	//누를때 Widget에 정보 전송, 뗄때 정보 전송. 위치정보가 동일하면 Click, 다르면 Press로 판별
+	// 뭐가 됐든 Release에서 소환 확인
+
 	if (UIWidget)
 		UIWidget->UpdateMouseLBPressing(IsPressing);
 
@@ -147,9 +177,6 @@ void AC_PlayerCamera::MouseLBPressing(const bool& IsPressing)
 
 void AC_PlayerCamera::MouseRBPressing(const bool& IsPressing)
 {
-	//누를때 Widget에 정보 전송, 뗄때 정보 전송. 위치정보가 동일하면 Click, 다르면 Press로 판별
-	// 뭐가 됐든 Release에서 소환 확인
-
 	
 }
 
@@ -162,26 +189,26 @@ void AC_PlayerCamera::KeyNumPress(const int& KeyNum)
 
 void AC_PlayerCamera::UpdateUIData()
 {
-	if (auto* GameMode = Cast<AC_GameModeBase>(GetWorld()->GetAuthGameMode()))
-	{
-		if (!GameMode->UIDataUpdated.IsBound())
-		{
-			GameMode->UIDataUpdated.BindUFunction(this, "UpdateUIData");
-			CameraMovableY = GameMode->GetMaxYPos();
-		}
-
-		Datas = GameMode->GetUIData();
-
-	}
+	if(GetUIData.IsBound())
+		Datas = GetUIData.Execute();
 
 	if (UIWidget)
-	{
 		UIWidget->UpdateUIData(Datas);
-	}
 }
 
 void AC_PlayerCamera::Spawn(int SlotNum)
 {
 	//슬롯에 맞는 유닛 소환 가능구역 확인 후 코스트 감소 성공시 소환
 	//소환 명령은 GameMode로.
+	CalculatePreviewLoc = false;
+
+	//SpawnLocation에 소환하도록.
+}
+
+void AC_PlayerCamera::Preview(int SlotNum)
+{
+	SelectedSlot = SlotNum;
+	CalculatePreviewLoc = true;
+
+	//SpawnLocation 기록 <- Tick에서 실시간 충돌
 }

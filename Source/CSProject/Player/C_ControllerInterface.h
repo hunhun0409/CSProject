@@ -30,6 +30,7 @@ public:
 	virtual void MouseRBPressing(const bool& IsPressing) PURE_VIRTUAL(IC_ControllerInterface::MouseRBPressing, return;)
 	virtual void KeyNumPress(const int& KeyNum) PURE_VIRTUAL(IC_ControllerInterface::KeyNumPress, return;)
 
-
+public:
+	TDelegate<FHitResult()> FindCurserHitResult;
 
 };

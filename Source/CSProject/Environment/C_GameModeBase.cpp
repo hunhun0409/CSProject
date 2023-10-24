@@ -39,8 +39,6 @@ void AC_GameModeBase::BeginPlay()
 
 	RestoreCost(0.0f);
 	CheckHP();
-
-
 	
 }
 

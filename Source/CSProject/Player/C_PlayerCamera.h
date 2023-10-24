@@ -28,6 +28,16 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	TDelegate<FUIData()> GetUIData;
+
+protected:
+	UFUNCTION()
+		void UpdateUIData();
+	UFUNCTION()
+		void Spawn(int SlotNum);
+	UFUNCTION()
+		void Preview(int SlotNum);
+
 protected:
 	virtual void Zoom(const float& Value) override;
 	virtual void KeyBoardCameraMove(const float& Value) override;
@@ -37,11 +47,6 @@ protected:
 	virtual void MouseRBPressing(const bool& IsPressing) override;
 	virtual void KeyNumPress(const int& KeyNum) override;
 
-protected:
-	UFUNCTION()
-		void UpdateUIData();
-	UFUNCTION()
-		void Spawn(int SlotNum);
 private:
 
 protected:
@@ -73,5 +78,9 @@ private:
 	float ZoomRatio = 1.0f;
 
 	bool ControlCamera = false;
+
+	FVector SpawnLocation;
+	int SelectedSlot;
+	bool CalculatePreviewLoc = false;;
 
 };

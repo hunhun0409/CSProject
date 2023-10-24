@@ -24,7 +24,8 @@ public:
 
 	const AC_Field* GetField() { return Map; }
 
-	const FUIData& GetUIData() { return Datas; }
+	UFUNCTION()
+		const FUIData& GetUIData() { return Datas; }
 
 	TDelegate<void()> UIDataUpdated;
 	

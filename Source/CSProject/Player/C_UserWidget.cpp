@@ -154,6 +154,9 @@ void UC_UserWidget::UpdateMouseLBPressing(const bool& IsPressing)
 				ButtonNum = 4;
 
 			}
+
+			if (UnitSelected)
+				SelectedPreview.ExecuteIfBound(ButtonNum);
 		}
 	}
 	else
@@ -216,6 +219,9 @@ void UC_UserWidget::UpdateMouseLBPressing(const bool& IsPressing)
 			{
 				//Click
 				// unit selected À¯Áö
+				if(UnitSelected)
+					SelectedPreview.ExecuteIfBound(ButtonNum);
+
 			}
 			else
 			{

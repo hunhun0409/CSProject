@@ -27,6 +27,7 @@ public:
 	void KeyBoardNumPress(const int& InNum);
 
 	TDelegate<void(int)> SpawnOrdered;
+	TDelegate<void(int)> SelectedPreview;
 
 protected:
 	UFUNCTION()
