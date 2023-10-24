@@ -11,7 +11,6 @@
 #include "Environment/C_Field.h"
 #include "Environment/C_Base.h"
 #include "C_UserWidget.h"
-#include "C_Controller.h" 
 
 // Sets default values
 AC_PlayerCamera::AC_PlayerCamera()
@@ -53,8 +52,8 @@ void AC_PlayerCamera::BeginPlay()
 			UIWidget->AddToViewport();
 			UIWidget->UpdateUIData(Datas);
 
-			
-			
+			//RBPressed.BindUFunction(UIWidget, "RBEvent");
+			UIWidget->SpawnOrdered.BindUFunction(this, "Spawn");
 		}
 	}
 }
@@ -143,8 +142,6 @@ void AC_PlayerCamera::MouseLBPressing(const bool& IsPressing)
 {
 	if (UIWidget)
 		UIWidget->UpdateMouseLBPressing(IsPressing);
-	//Widget용
-	RBPressed.ExecuteIfBound(IsPressing);
 
 }
 
@@ -158,7 +155,9 @@ void AC_PlayerCamera::MouseRBPressing(const bool& IsPressing)
 
 void AC_PlayerCamera::KeyNumPress(const int& KeyNum)
 {
-
+	//UIWidget에 Click에 해당하는 Keynum기능 구현
+	if (UIWidget)
+		UIWidget->KeyBoardNumPress(KeyNum);
 }
 
 void AC_PlayerCamera::UpdateUIData()
@@ -179,4 +178,10 @@ void AC_PlayerCamera::UpdateUIData()
 	{
 		UIWidget->UpdateUIData(Datas);
 	}
+}
+
+void AC_PlayerCamera::Spawn(int SlotNum)
+{
+	//슬롯에 맞는 유닛 소환 가능구역 확인 후 코스트 감소 성공시 소환
+	//소환 명령은 GameMode로.
 }

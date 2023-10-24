@@ -24,6 +24,9 @@ public:
 	void UpdateUIData(const FUIData& UIData);
 	void UpdateMousePos(const FVector2D& InMousePos);
 	void UpdateMouseLBPressing(const bool& IsPressing);
+	void KeyBoardNumPress(const int& InNum);
+
+	TDelegate<void(int)> SpawnOrdered;
 
 protected:
 	UFUNCTION()
