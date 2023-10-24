@@ -8,7 +8,7 @@ AC_Controller::AC_Controller()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	bShowMouseCursor = true;
+	bShowMouseCursor = false;
 
 }
 
@@ -27,6 +27,7 @@ void AC_Controller::Tick(const float DeltaTime)
 		GetMousePosition(MousePos.X, MousePos.Y);
 		Cast<IC_ControllerInterface>(GetPawn())->MousePos(MousePos);
 	}
+	
 }
 
 void AC_Controller::SetupInputComponent()

@@ -6,7 +6,7 @@
 #include "Kismet/KismetMaterialLibrary.h"
 #include "Components/Image.h"
 #include "Components/PanelSlot.h"
-#include "Components/Button.h"
+#include "C_PlayerCamera.h"
 
 void UC_UserWidget::NativeOnInitialized()
 {
@@ -40,42 +40,35 @@ void UC_UserWidget::NativeConstruct()
 		MouseWidget->SetBrushFromTexture(MouseCurserNClick);
 	}
 
-	if (!Button1.IsNone())
+	if(!Button1.IsNone())
 	{
-		UnitButton1 = Cast<UButton>(GetWidgetFromName(Button1));
-		UnitButton1->OnClicked.AddDynamic(this, &ThisClass::Button1Clicked);
-		UnitButton1->OnPressed.AddDynamic(this, &ThisClass::Button1Pressed);
-		UnitButton1->OnReleased.AddDynamic(this, &ThisClass::Button1Released);
-		
+		UnitButton1 = Cast<UImage>(GetWidgetFromName(Button1));
 	}
 
-	if (!Button2.IsNone())
+	if(!Button2.IsNone())
 	{
-		UnitButton2 = Cast<UButton>(GetWidgetFromName(Button2));
-		UnitButton2->OnClicked.AddDynamic(this, &ThisClass::Button2Clicked);
-		UnitButton2->OnPressed.AddDynamic(this, &ThisClass::Button2Pressed);
-		UnitButton2->OnReleased.AddDynamic(this, &ThisClass::Button2Released);
+		UnitButton2 = Cast<UImage>(GetWidgetFromName(Button2));
 
 	}
 
-	if (!Button3.IsNone())
+	if(!Button3.IsNone())
 	{
-		UnitButton3 = Cast<UButton>(GetWidgetFromName(Button3));
-		UnitButton3->OnClicked.AddDynamic(this, &ThisClass::Button3Clicked);
-		UnitButton3->OnPressed.AddDynamic(this, &ThisClass::Button3Pressed);
-		UnitButton3->OnReleased.AddDynamic(this, &ThisClass::Button3Released);
+		UnitButton3 = Cast<UImage>(GetWidgetFromName(Button3));
 
 	}
 
-	if (!Button4.IsNone())
+	if(!Button4.IsNone())
 	{
-		UnitButton4 = Cast<UButton>(GetWidgetFromName(Button4));
-		UnitButton4->OnClicked.AddDynamic(this, &ThisClass::Button4Clicked);
-		UnitButton4->OnPressed.AddDynamic(this, &ThisClass::Button4Pressed);
-		UnitButton4->OnReleased.AddDynamic(this, &ThisClass::Button4Released);
+		UnitButton4 = Cast<UImage>(GetWidgetFromName(Button4));
 
 	}
 
+	if (auto* Player = Cast<AC_PlayerCamera>(GetOwningPlayerPawn()))
+	{
+		Player->RBPressed.BindUFunction(this, "RBEvent");
+	}
+	//UImage에 UTexture2D는 Character로부터 받아 변경. Press 입력을 받으면 Release 될때가지 마우스 위치에 있던
+	//Image의 Tint를 조정. 만약 소환된 Character면 어둡게 표시. <- 정보 받아야 함.
 }
 
 void UC_UserWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -109,7 +102,8 @@ void UC_UserWidget::UpdateUIData(const FUIData& UIData)
 void UC_UserWidget::UpdateMousePos(const FVector2D& InMousePos)
 {
 	FWidgetTransform Transform;
-	Transform.Translation = InMousePos * 1.5f;
+	MousePos = InMousePos * 1.5f;
+	Transform.Translation = MousePos;
 	
 	MouseWidget->SetRenderTransform(Transform);
 	
@@ -127,59 +121,95 @@ void UC_UserWidget::UpdateMouseLBPressing(const bool& IsPressing)
 	}
 }
 
-void UC_UserWidget::Button1Clicked()
+void UC_UserWidget::RBEvent(bool IsPressed)
 {
-	//Pawn에게 Selected 1, true
-	//true면 Pawn에서 다시 클릭시 소환되도록
-	//소환명령에서 충돌박스 점검
+	if (!UnitSelected)
+	{
+		if (IsPressed)
+		{
+			//Press
+			ClickedPos = MousePos;
+			// UnitButton 위치 체크하여 tint
+			//IsMousePosInUImage(CostWidget);
+			if (IsMousePosInUImage(UnitButton1))
+			{
+				//1번 유닛 선택
+				UnitButton1->SetRenderScale(FVector2D(1.1f));
+				UnitSelected = true;
+				ButtonNum = 1;
+			}
+			else if (IsMousePosInUImage(UnitButton2))
+			{
+				//2
+				
+				UnitButton2->SetRenderScale(FVector2D(1.1f));
+				UnitSelected = true;
+				ButtonNum = 2;
+
+			}
+			else if (IsMousePosInUImage(UnitButton3))
+			{
+				//3
+				UnitButton3->SetRenderScale(FVector2D(1.1f));
+				UnitSelected = true;
+				ButtonNum = 3;
+
+			}
+			else if (IsMousePosInUImage(UnitButton4))
+			{
+				//4
+				UnitButton4->SetRenderScale(FVector2D(1.1f));
+				UnitSelected = true;
+				ButtonNum = 4;
+
+			}
+		}
+	}
+	else
+	{
+		if (IsPressed)
+		{
+			//Spawn Unit, Selected 해제.
+			UnitButton1->SetRenderScale(FVector2D(1.0f));
+			UnitButton2->SetRenderScale(FVector2D(1.0f));
+			UnitButton3->SetRenderScale(FVector2D(1.0f));
+			UnitButton4->SetRenderScale(FVector2D(1.0f));
+
+			UnitSelected = false;
+		}
+		else
+		{
+			if (ClickedPos.Equals(MousePos, 1.0f))
+			{
+				//Click
+				// unit selected 유지
+			}
+			else
+			{
+				//Release
+				// spawn unit, selected 해제
+				UnitButton1->SetRenderScale(FVector2D(1.0f));
+				UnitButton2->SetRenderScale(FVector2D(1.0f));
+				UnitButton3->SetRenderScale(FVector2D(1.0f));
+				UnitButton4->SetRenderScale(FVector2D(1.0f));
+
+				UnitSelected = false;
+			}
+		}
+	}
 }
 
-void UC_UserWidget::Button2Clicked()
+bool UC_UserWidget::IsMousePosInUImage(UImage* Target)
 {
+	FVector2D LT = Target->GetCachedGeometry().GetLocalPositionAtCoordinates(FVector2D::ZeroVector);
+	FVector2D RB = LT + Target->GetCachedGeometry().GetLocalSize();
+
+	if (MousePos >= LT && MousePos <= RB)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
 }
-
-void UC_UserWidget::Button3Clicked()
-{
-}
-
-void UC_UserWidget::Button4Clicked()
-{
-}
-
-void UC_UserWidget::Button1Pressed()
-{
-	//Pawn에게 Selected 1, false
-	//Release일때 소환.
-}
-
-void UC_UserWidget::Button2Pressed()
-{
-}
-
-void UC_UserWidget::Button3Pressed()
-{
-}
-
-void UC_UserWidget::Button4Pressed()
-{
-}
-
-void UC_UserWidget::Button1Released()
-{
-	//Pawn에서 소환 명령
-	//Pawn은 충돌박스를 확인
-}
-
-void UC_UserWidget::Button2Released()
-{
-}
-
-void UC_UserWidget::Button3Released()
-{
-}
-
-void UC_UserWidget::Button4Released()
-{
-}
-
-

@@ -28,6 +28,8 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	TDelegate<void(bool)> RBPressed;
+
 protected:
 	virtual void Zoom(const float& Value) override;
 	virtual void KeyBoardCameraMove(const float& Value) override;

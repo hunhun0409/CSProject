@@ -57,21 +57,6 @@ void AC_PlayerCamera::BeginPlay()
 			
 		}
 	}
-
-	if (auto* Temp = Cast<AC_Controller>(GetController()))
-	{
-		FInputModeGameAndUI ModeData;
-		ModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-		//왜 클릭이 잘 안될까
-		if (UIWidget)
-		{
-			ModeData.SetWidgetToFocus(UIWidget->TakeWidget());
-		}
-
-		Temp->SetInputMode(ModeData);
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "Done");
-	}
-
 }
 
 // Called every frame
@@ -158,15 +143,22 @@ void AC_PlayerCamera::MouseLBPressing(const bool& IsPressing)
 {
 	if (UIWidget)
 		UIWidget->UpdateMouseLBPressing(IsPressing);
+	//Widget용
+	RBPressed.ExecuteIfBound(IsPressing);
+
 }
 
 void AC_PlayerCamera::MouseRBPressing(const bool& IsPressing)
 {
+	//누를때 Widget에 정보 전송, 뗄때 정보 전송. 위치정보가 동일하면 Click, 다르면 Press로 판별
+	// 뭐가 됐든 Release에서 소환 확인
 
+	
 }
 
 void AC_PlayerCamera::KeyNumPress(const int& KeyNum)
 {
+
 }
 
 void AC_PlayerCamera::UpdateUIData()
