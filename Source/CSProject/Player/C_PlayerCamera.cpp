@@ -157,7 +157,7 @@ void AC_PlayerCamera::KeyBoardCameraMove(const float& Value)
 
 void AC_PlayerCamera::MouseDelta(const FVector2D& MouseDelta)
 {
-	CameraMovement = -MouseDelta.X;
+	CameraMovement = -MouseDelta.X * 10.0f;
 }
 
 void AC_PlayerCamera::MousePos(const FVector2D& MousePos)
