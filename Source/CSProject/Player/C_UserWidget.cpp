@@ -16,10 +16,8 @@ void UC_UserWidget::NativePreConstruct()
 {
 	Super::NativePreConstruct();
 	if (CostMaterialInstance)
-	{
 		CostMaterialInstanceDynamic = UKismetMaterialLibrary::CreateDynamicMaterialInstance(
 			this, CostMaterialInstance);
-	}
 
 }
 
@@ -40,27 +38,16 @@ void UC_UserWidget::NativeConstruct()
 	}
 
 	if(!Button1.IsNone())
-	{
 		UnitButton1 = Cast<UImage>(GetWidgetFromName(Button1));
-	}
 
 	if(!Button2.IsNone())
-	{
 		UnitButton2 = Cast<UImage>(GetWidgetFromName(Button2));
 
-	}
-
 	if(!Button3.IsNone())
-	{
 		UnitButton3 = Cast<UImage>(GetWidgetFromName(Button3));
 
-	}
-
 	if(!Button4.IsNone())
-	{
 		UnitButton4 = Cast<UImage>(GetWidgetFromName(Button4));
-
-	}
 
 	//UImage에 UTexture2D는 Character로부터 받아 변경. Press 입력을 받으면 Release 될때가지 마우스 위치에 있던
 	//Image의 Tint를 조정. 만약 소환된 Character면 어둡게 표시. <- 정보 받아야 함.
@@ -123,37 +110,13 @@ void UC_UserWidget::UpdateMouseLBPressing(const bool& IsPressing)
 			ClickedPos = MousePos;
 			// UnitButton 위치 체크하여 tint
 			if (IsMousePosInUImage(UnitButton1))
-			{
-				//1번 유닛 선택
-				UnitButton1->SetRenderScale(FVector2D(1.1f));
-				UnitSelected = true;
-				ButtonNum = 1;
-			}
+				SetUnitButtonSelect(true, 1);
 			else if (IsMousePosInUImage(UnitButton2))
-			{
-				//2
-
-				UnitButton2->SetRenderScale(FVector2D(1.1f));
-				UnitSelected = true;
-				ButtonNum = 2;
-
-			}
+				SetUnitButtonSelect(true, 2);
 			else if (IsMousePosInUImage(UnitButton3))
-			{
-				//3
-				UnitButton3->SetRenderScale(FVector2D(1.1f));
-				UnitSelected = true;
-				ButtonNum = 3;
-
-			}
+				SetUnitButtonSelect(true, 3);
 			else if (IsMousePosInUImage(UnitButton4))
-			{
-				//4
-				UnitButton4->SetRenderScale(FVector2D(1.1f));
-				UnitSelected = true;
-				ButtonNum = 4;
-
-			}
+				SetUnitButtonSelect(true, 4);
 
 			if (UnitSelected)
 				SelectedPreview.ExecuteIfBound(ButtonNum);
@@ -166,51 +129,19 @@ void UC_UserWidget::UpdateMouseLBPressing(const bool& IsPressing)
 			ClickedPos = MousePos;
 
 			if (ButtonNum != 1 && IsMousePosInUImage(UnitButton1))
-			{
-				UnitButton1->SetRenderScale(FVector2D(1.1f));
-				UnitButton2->SetRenderScale(FVector2D(1.0f));
-				UnitButton3->SetRenderScale(FVector2D(1.0f));
-				UnitButton4->SetRenderScale(FVector2D(1.0f));
-				UnitSelected = true;
-				ButtonNum = 1;
-			}
+				SetUnitButtonSelect(true, 1);
 			else if (ButtonNum != 2 && IsMousePosInUImage(UnitButton2))
-			{
-				UnitButton1->SetRenderScale(FVector2D(1.0f));
-				UnitButton2->SetRenderScale(FVector2D(1.1f));
-				UnitButton3->SetRenderScale(FVector2D(1.0f));
-				UnitButton4->SetRenderScale(FVector2D(1.0f));
-				UnitSelected = true;
-				ButtonNum = 2;
-			}
+				SetUnitButtonSelect(true, 2);
 			else if (ButtonNum != 3 && IsMousePosInUImage(UnitButton3))
-			{
-				UnitButton1->SetRenderScale(FVector2D(1.0f));
-				UnitButton2->SetRenderScale(FVector2D(1.0f));
-				UnitButton3->SetRenderScale(FVector2D(1.1f));
-				UnitButton4->SetRenderScale(FVector2D(1.0f));
-				UnitSelected = true;
-				ButtonNum = 3;
-			}
+				SetUnitButtonSelect(true, 3);
 			else if (ButtonNum != 4 && IsMousePosInUImage(UnitButton4))
-			{
-				UnitButton1->SetRenderScale(FVector2D(1.0f));
-				UnitButton2->SetRenderScale(FVector2D(1.0f));
-				UnitButton3->SetRenderScale(FVector2D(1.0f));
-				UnitButton4->SetRenderScale(FVector2D(1.1f));
-				UnitSelected = true;
-				ButtonNum = 4;
-			}
+				SetUnitButtonSelect(true, 4);
 			else
 			{
 				//Spawn Unit, Selected 해제.
-				UnitButton1->SetRenderScale(FVector2D(1.0f));
-				UnitButton2->SetRenderScale(FVector2D(1.0f));
-				UnitButton3->SetRenderScale(FVector2D(1.0f));
-				UnitButton4->SetRenderScale(FVector2D(1.0f));
+				SetUnitButtonSelect(false);
 
 				SpawnOrdered.ExecuteIfBound(ButtonNum);
-				UnitSelected = false;
 			}
 		}
 		else
@@ -227,13 +158,9 @@ void UC_UserWidget::UpdateMouseLBPressing(const bool& IsPressing)
 			{
 				//Release
 				// spawn unit, selected 해제
-				UnitButton1->SetRenderScale(FVector2D(1.0f));
-				UnitButton2->SetRenderScale(FVector2D(1.0f));
-				UnitButton3->SetRenderScale(FVector2D(1.0f));
-				UnitButton4->SetRenderScale(FVector2D(1.0f));
+				SetUnitButtonSelect(false);
 
 				SpawnOrdered.ExecuteIfBound(ButtonNum);
-				UnitSelected = false;
 			}
 		}
 	}
@@ -245,83 +172,27 @@ void UC_UserWidget::KeyBoardNumPress(const int& InNum)
 	{
 	case 0:
 		if (ButtonNum == 1 && UnitSelected)
-		{
-			UnitButton1->SetRenderScale(FVector2D(1.0f));
-			UnitButton2->SetRenderScale(FVector2D(1.0f));
-			UnitButton3->SetRenderScale(FVector2D(1.0f));
-			UnitButton4->SetRenderScale(FVector2D(1.0f));
-			UnitSelected = false;
-
-		}
+			SetUnitButtonSelect(false);
 		else
-		{
-			UnitButton1->SetRenderScale(FVector2D(1.1f));
-			UnitButton2->SetRenderScale(FVector2D(1.0f));
-			UnitButton3->SetRenderScale(FVector2D(1.0f));
-			UnitButton4->SetRenderScale(FVector2D(1.0f));
-			UnitSelected = true;
-			ButtonNum = 1;
-		}
+			SetUnitButtonSelect(true, 1);
 		break;
 	case 1:
 		if (ButtonNum == 2 && UnitSelected)
-		{
-			UnitButton1->SetRenderScale(FVector2D(1.0f));
-			UnitButton2->SetRenderScale(FVector2D(1.0f));
-			UnitButton3->SetRenderScale(FVector2D(1.0f));
-			UnitButton4->SetRenderScale(FVector2D(1.0f));
-			UnitSelected = false;
-
-		}
+			SetUnitButtonSelect(false);
 		else
-		{
-			UnitButton1->SetRenderScale(FVector2D(1.0f));
-			UnitButton2->SetRenderScale(FVector2D(1.1f));
-			UnitButton3->SetRenderScale(FVector2D(1.0f));
-			UnitButton4->SetRenderScale(FVector2D(1.0f));
-			UnitSelected = true;
-			ButtonNum = 2;
-		}
+			SetUnitButtonSelect(true, 2);
 		break;
 	case 2:
 		if (ButtonNum == 3 && UnitSelected)
-		{
-			UnitButton1->SetRenderScale(FVector2D(1.0f));
-			UnitButton2->SetRenderScale(FVector2D(1.0f));
-			UnitButton3->SetRenderScale(FVector2D(1.0f));
-			UnitButton4->SetRenderScale(FVector2D(1.0f));
-			UnitSelected = false;
-
-		}
+			SetUnitButtonSelect(false);
 		else
-		{
-			UnitButton1->SetRenderScale(FVector2D(1.0f));
-			UnitButton2->SetRenderScale(FVector2D(1.0f));
-			UnitButton3->SetRenderScale(FVector2D(1.1f));
-			UnitButton4->SetRenderScale(FVector2D(1.0f));
-			UnitSelected = true;
-			ButtonNum = 3;
-		}
+			SetUnitButtonSelect(true, 3);
 		break;
 	case 3:
 		if (ButtonNum == 4 && UnitSelected)
-		{
-			UnitButton1->SetRenderScale(FVector2D(1.0f));
-			UnitButton2->SetRenderScale(FVector2D(1.0f));
-			UnitButton3->SetRenderScale(FVector2D(1.0f));
-			UnitButton4->SetRenderScale(FVector2D(1.0f));
-			UnitSelected = false;
-
-		}
+			SetUnitButtonSelect(false);
 		else
-		{
-			UnitButton1->SetRenderScale(FVector2D(1.0f));
-			UnitButton2->SetRenderScale(FVector2D(1.0f));
-			UnitButton3->SetRenderScale(FVector2D(1.0f));
-			UnitButton4->SetRenderScale(FVector2D(1.1f));
-			UnitSelected = true;
-			ButtonNum = 4;
-		}
+			SetUnitButtonSelect(true, 4);
 		break;
 	default:
 		break;
@@ -344,11 +215,52 @@ bool UC_UserWidget::IsMousePosInUImage(UImage* Target)
 	FVector2D RB = LT + Target->GetCachedGeometry().GetLocalSize();
 
 	if (MousePos >= LT && MousePos <= RB)
-	{
 		return true;
+	else
+		return false;
+}
+
+void UC_UserWidget::SetUnitButtonSelect(const bool& Selected, const int& ButtonNumber)
+{
+	UnitSelected = Selected;
+	if (UnitSelected)
+	{
+		ButtonNum = ButtonNumber;
+		switch (ButtonNum)
+		{
+		case 1:
+			UnitButton1->SetRenderScale(FVector2D(1.1f));
+			UnitButton2->SetRenderScale(FVector2D(1.0f));
+			UnitButton3->SetRenderScale(FVector2D(1.0f));
+			UnitButton4->SetRenderScale(FVector2D(1.0f));
+			break;
+		case 2:
+			UnitButton1->SetRenderScale(FVector2D(1.0f));
+			UnitButton2->SetRenderScale(FVector2D(1.1f));
+			UnitButton3->SetRenderScale(FVector2D(1.0f));
+			UnitButton4->SetRenderScale(FVector2D(1.0f));
+			break;
+		case 3:
+			UnitButton1->SetRenderScale(FVector2D(1.0f));
+			UnitButton2->SetRenderScale(FVector2D(1.0f));
+			UnitButton3->SetRenderScale(FVector2D(1.1f));
+			UnitButton4->SetRenderScale(FVector2D(1.0f));
+			break;
+		case 4:
+			UnitButton1->SetRenderScale(FVector2D(1.0f));
+			UnitButton2->SetRenderScale(FVector2D(1.0f));
+			UnitButton3->SetRenderScale(FVector2D(1.0f));
+			UnitButton4->SetRenderScale(FVector2D(1.1f));
+			break;
+		default:
+			break;
+		}
 	}
 	else
 	{
-		return false;
+		UnitButton1->SetRenderScale(FVector2D(1.0f));
+		UnitButton2->SetRenderScale(FVector2D(1.0f));
+		UnitButton3->SetRenderScale(FVector2D(1.0f));
+		UnitButton4->SetRenderScale(FVector2D(1.0f));
 	}
 }

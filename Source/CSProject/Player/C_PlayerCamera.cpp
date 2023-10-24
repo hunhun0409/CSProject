@@ -39,6 +39,7 @@ void AC_PlayerCamera::BeginPlay()
 			GameMode->UIDataUpdated.BindUFunction(this, "UpdateUIData");
 			CameraMovableY = GameMode->GetMaxYPos();
 			GetUIData.BindUFunction(GameMode, "GetUIData");
+			SpawnOrder.BindUFunction(GameMode, "SpawnCharacter");
 		}
 
 		Datas = GameMode->GetUIData();
@@ -199,11 +200,11 @@ void AC_PlayerCamera::UpdateUIData()
 
 void AC_PlayerCamera::Spawn(int SlotNum)
 {
-	//슬롯에 맞는 유닛 소환 가능구역 확인 후 코스트 감소 성공시 소환
-	//소환 명령은 GameMode로.
+	//GameMode로 Location을 보냄. 받은 값이 Field의 Collider 내부면 Spawn + CostReduce
+
 	CalculatePreviewLoc = false;
 
-	//SpawnLocation에 소환하도록.
+	SpawnOrder.ExecuteIfBound(SpawnLocation, SlotNum);
 }
 
 void AC_PlayerCamera::Preview(int SlotNum)

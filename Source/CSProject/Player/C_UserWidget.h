@@ -37,6 +37,8 @@ protected:
 private:
 	bool IsMousePosInUImage(class UImage* Target);
 
+	void SetUnitButtonSelect(const bool& Selected = false, const int& ButtonNumber = 0);
+
 protected:
 	UPROPERTY(BlueprintReadOnly)
 		int CurCost;

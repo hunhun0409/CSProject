@@ -12,6 +12,10 @@ AC_GameModeBase::AC_GameModeBase()
 
 }
 
+void AC_GameModeBase::SpawnCharacter(const FVector& Location, const int& SlotNum)
+{
+}
+
 void AC_GameModeBase::OnConstruction(const FTransform& Transform)
 {
 	Super::OnConstruction(Transform);
