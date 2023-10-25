@@ -24,7 +24,8 @@ public:
 
 	const AC_Field* GetField() { return Map; }
 
-	const FUIData& GetUIData() { return Datas; }
+	UFUNCTION()
+		const FUIData& GetUIData() { return Datas; }
 
 	TDelegate<void()> UIDataUpdated;
 	
@@ -33,6 +34,8 @@ public:
 
 	const FVector2D& GetMaxYPos() { return CameraMovablePosY; }
 
+	UFUNCTION()
+		void SpawnCharacter(const FVector& Location, const int& SlotNum);
 
 protected:
 	virtual void OnConstruction(const FTransform& Transform) override;
@@ -58,6 +61,9 @@ protected:
 
 	UPROPERTY()
 		class AC_Field* Map;
+
+	UPROPERTY()
+		TArray<TSubclassOf<class C_CSCharacter>> TeamOrganization;
 
 private:
 	float CostRegenRatio = 1.0f;

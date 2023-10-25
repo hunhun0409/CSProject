@@ -3,15 +3,13 @@
 
 #include "C_PlayerCamera.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "Camera/CameraComponent.h"
 #include "GameFramework/FloatingPawnMovement.h"
+#include "Camera/CameraComponent.h"
 #include "Curves/CurveVector.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Environment/C_GameModeBase.h"
-#include "Environment/C_Field.h"
-#include "Environment/C_Base.h"
 #include "C_UserWidget.h"
-#include "C_Controller.h" 
 
 // Sets default values
 AC_PlayerCamera::AC_PlayerCamera()
@@ -33,6 +31,20 @@ AC_PlayerCamera::AC_PlayerCamera()
 void AC_PlayerCamera::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (auto* GameMode = Cast<AC_GameModeBase>(GetWorld()->GetAuthGameMode()))
+	{
+		if (!GameMode->UIDataUpdated.IsBound())
+		{
+			GameMode->UIDataUpdated.BindUFunction(this, "UpdateUIData");
+			CameraMovableY = GameMode->GetMaxYPos();
+			GetUIData.BindUFunction(GameMode, "GetUIData");
+			SpawnOrder.BindUFunction(GameMode, "SpawnCharacter");
+		}
+
+		Datas = GameMode->GetUIData();
+
+	}
 	
 	if (ZoomCurve)
 	{
@@ -53,25 +65,11 @@ void AC_PlayerCamera::BeginPlay()
 			UIWidget->AddToViewport();
 			UIWidget->UpdateUIData(Datas);
 
-			
-			
+			UIWidget->SpawnOrdered.BindUFunction(this, "Spawn");
+			UIWidget->SelectedPreview.BindUFunction(this, "Preview");
+			UIWidget->CancelPreview.BindUFunction(this, "CancelSelect");
 		}
 	}
-
-	if (auto* Temp = Cast<AC_Controller>(GetController()))
-	{
-		FInputModeGameAndUI ModeData;
-		ModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
-		//왜 클릭이 잘 안될까
-		if (UIWidget)
-		{
-			ModeData.SetWidgetToFocus(UIWidget->TakeWidget());
-		}
-
-		Temp->SetInputMode(ModeData);
-		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, "Done");
-	}
-
 }
 
 // Called every frame
@@ -112,6 +110,21 @@ void AC_PlayerCamera::Tick(float DeltaTime)
 	else
 		Camera->FieldOfView = UKismetMathLibrary::FInterpTo(Camera->FieldOfView, NewFieldOfView, 0.2f, 0.5f);
 
+	//소환 Preview
+	if (CalculatePreviewLoc)
+	{
+		if(FindCurserHitResult.IsBound())
+			SpawnLocation = FindCurserHitResult.Execute().Location;
+
+		UKismetSystemLibrary::DrawDebugSphere(GetWorld(), SpawnLocation);
+
+		/*UKismetSystemLibrary::LineTraceSingle(GetWorld(),
+			GetActorLocation() + Camera->GetRelativeLocation(),
+			Camera->GetForwardVector() * 1000, TraceTypeQuery1, false,
+			{},
+			EDrawDebugTrace::ForOneFrame
+			, Result, true);*/
+	}
 }
 
 // Called to bind functionality to input
@@ -145,7 +158,7 @@ void AC_PlayerCamera::KeyBoardCameraMove(const float& Value)
 
 void AC_PlayerCamera::MouseDelta(const FVector2D& MouseDelta)
 {
-	CameraMovement = -MouseDelta.X;
+	CameraMovement = -MouseDelta.X * 10.0f;
 }
 
 void AC_PlayerCamera::MousePos(const FVector2D& MousePos)
@@ -156,35 +169,53 @@ void AC_PlayerCamera::MousePos(const FVector2D& MousePos)
 
 void AC_PlayerCamera::MouseLBPressing(const bool& IsPressing)
 {
+	//누를때 Widget에 정보 전송, 뗄때 정보 전송. 위치정보가 동일하면 Click, 다르면 Press로 판별
+	// 뭐가 됐든 Release에서 소환 확인
+
 	if (UIWidget)
 		UIWidget->UpdateMouseLBPressing(IsPressing);
+
 }
 
 void AC_PlayerCamera::MouseRBPressing(const bool& IsPressing)
 {
-
+	
 }
 
 void AC_PlayerCamera::KeyNumPress(const int& KeyNum)
 {
+	//UIWidget에 Click에 해당하는 Keynum기능 구현
+	if (UIWidget)
+		UIWidget->KeyBoardNumPress(KeyNum);
 }
 
 void AC_PlayerCamera::UpdateUIData()
 {
-	if (auto* GameMode = Cast<AC_GameModeBase>(GetWorld()->GetAuthGameMode()))
-	{
-		if (!GameMode->UIDataUpdated.IsBound())
-		{
-			GameMode->UIDataUpdated.BindUFunction(this, "UpdateUIData");
-			CameraMovableY = GameMode->GetMaxYPos();
-		}
-
-		Datas = GameMode->GetUIData();
-
-	}
+	if(GetUIData.IsBound())
+		Datas = GetUIData.Execute();
 
 	if (UIWidget)
-	{
 		UIWidget->UpdateUIData(Datas);
-	}
+}
+
+void AC_PlayerCamera::Spawn(int SlotNum)
+{
+	//GameMode로 Location을 보냄. 받은 값이 Field의 Collider 내부면 Spawn + CostReduce
+
+	CalculatePreviewLoc = false;
+
+	SpawnOrder.ExecuteIfBound(SpawnLocation, SlotNum);
+}
+
+void AC_PlayerCamera::Preview(int SlotNum)
+{
+	SelectedSlot = SlotNum;
+	CalculatePreviewLoc = true;
+
+	//SpawnLocation 기록 <- Tick에서 실시간 충돌
+}
+
+void AC_PlayerCamera::CancelSelect()
+{
+	CalculatePreviewLoc = false;
 }

@@ -1,4 +1,6 @@
 #pragma once
+#include "CoreMinimal.h"
+#include "Structs.generated.h"
 
 struct FBasicData
 {
@@ -9,8 +11,11 @@ struct FBasicData
 	float YPosition;
 };
 
+USTRUCT()
 struct FUIData
 {
+	GENERATED_BODY()
+
 	float CurCost;
 	float PlayerBaseHP;
 	float EnemyBaseHP;

@@ -24,22 +24,20 @@ public:
 	void UpdateUIData(const FUIData& UIData);
 	void UpdateMousePos(const FVector2D& InMousePos);
 	void UpdateMouseLBPressing(const bool& IsPressing);
+	void KeyBoardNumPress(const int& InNum);
+
+	TDelegate<void(int)> SpawnOrdered;
+	TDelegate<void(int)> SelectedPreview;
+	TDelegate<void()> CancelPreview;
 
 protected:
-	void Button1Clicked();
-	void Button2Clicked();
-	void Button3Clicked();
-	void Button4Clicked();
+	UFUNCTION()
+		void RBEvent(bool IsPressed);
 
-	void Button1Pressed();
-	void Button2Pressed(); 
-	void Button3Pressed(); 
-	void Button4Pressed();
+private:
+	bool IsMousePosInUImage(class UImage* Target);
 
-	void Button1Released();
-	void Button2Released();
-	void Button3Released();
-	void Button4Released();
+	void SetUnitButtonSelect(const bool& Selected = false, const int& ButtonNumber = 0);
 
 protected:
 	UPROPERTY(BlueprintReadOnly)
@@ -60,18 +58,22 @@ protected:
 		FName CostImage;
 	class UImage* CostWidget;
 
-	class UButton* UnitButton1;
+	class UImage* UnitButton1;
 	UPROPERTY(EditDefaultsOnly)
 		FName Button1;
-	class UButton* UnitButton2;
+	class UImage* UnitButton2;
 	UPROPERTY(EditDefaultsOnly)
 		FName Button2;
-	class UButton* UnitButton3;
+	class UImage* UnitButton3;
 	UPROPERTY(EditDefaultsOnly)
 		FName Button3;
-	class UButton* UnitButton4;
+	class UImage* UnitButton4;
 	UPROPERTY(EditDefaultsOnly)
 		FName Button4;
+	FVector2D ClickedPos;
+	int ButtonNum;
+	bool UnitSelected = false;
+	FLinearColor SpawnedTint = {0.2f, 0.2f, 0.2f, 1.0f};
 
 	FVector2D MousePos;
 	UPROPERTY(EditDefaultsOnly)

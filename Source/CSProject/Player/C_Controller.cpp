@@ -8,8 +8,19 @@ AC_Controller::AC_Controller()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	bShowMouseCursor = true;
+	bShowMouseCursor = false;
 
+}
+
+void AC_Controller::OnConstruction(const FTransform& Transform)
+{
+	
+}
+
+void AC_Controller::BeginPlay()
+{
+	Cast<IC_ControllerInterface>(GetPawn())->FindCurserHitResult.BindUFunction(this,
+		"CurserOnGroundHitResult");
 }
 
 void AC_Controller::Tick(const float DeltaTime)
@@ -27,6 +38,15 @@ void AC_Controller::Tick(const float DeltaTime)
 		GetMousePosition(MousePos.X, MousePos.Y);
 		Cast<IC_ControllerInterface>(GetPawn())->MousePos(MousePos);
 	}
+}
+
+const FHitResult AC_Controller::CurserOnGroundHitResult()
+{
+	FHitResult Result;
+	GetHitResultUnderCursorByChannel(TraceTypeQuery1, true, Result);
+
+	return Result;
+
 }
 
 void AC_Controller::SetupInputComponent()

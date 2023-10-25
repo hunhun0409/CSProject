@@ -12,6 +12,17 @@ AC_GameModeBase::AC_GameModeBase()
 
 }
 
+void AC_GameModeBase::SpawnCharacter(const FVector& Location, const int& SlotNum)
+{
+	//Location이 Field의 Collider 내부인지 체크
+	//맞으면 Cost 감소
+	//필드에 소환된 유닛 그룹을 만들고 확인, 이미 소환된 상태면 같은 유닛을 파괴 
+	// 해당 그룹은 Widget으로 정보를 보내 파괴될때까지 Tint와 Grayscale을 설정.
+	// 위 정보는 FUIData를 수정하기.
+	//TeamOrganization에서 1~4 번째 소환, 해당 유닛을 5번과 바꾸고, 5 6 \ 6 7 \ 7 8 스왑.
+	//스왑 후 해당 유닛의 UTexture2D를 가져와 해당 UImage로 넣기
+}
+
 void AC_GameModeBase::OnConstruction(const FTransform& Transform)
 {
 	Super::OnConstruction(Transform);
@@ -39,8 +50,6 @@ void AC_GameModeBase::BeginPlay()
 
 	RestoreCost(0.0f);
 	CheckHP();
-
-
 	
 }
 
