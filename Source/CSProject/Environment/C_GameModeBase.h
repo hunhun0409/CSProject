@@ -63,7 +63,7 @@ protected:
 		class AC_Field* Map;
 
 	UPROPERTY()
-		TArray<TSubclassOf<class C_CSCharacter>> TeamOrganization;
+		TArray<TSubclassOf<class AC_CSCharacter>> TeamOrganization;
 
 private:
 	float CostRegenRatio = 1.0f;

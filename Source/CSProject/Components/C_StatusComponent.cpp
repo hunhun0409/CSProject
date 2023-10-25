@@ -27,6 +27,7 @@ UC_StatusComponent::UC_StatusComponent()
 void UC_StatusComponent::ApplyStatus(FStatusData InData)
 {
 	Name = InData.Name;
+	Cost = InData.Cost;
 	CharacterRank = InData.CharacterRank;
 	CharacterType = InData.CharacterType;
 	ClassType = InData.ClassType;
