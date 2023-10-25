@@ -137,13 +137,13 @@ void AC_GameModeBase::CheckHP()
 {
 	if (AC_Base* LeftBase = Map->AccessBaseData(1))
 	{
-		LeftBaseData.CurHP = LeftBase->GetHP();
-		LeftBaseData.MaxHP = LeftBase->GetMaxHP();
+		LeftBaseData.CurHP = LeftBase->GetStatus()->GetCurHealth();
+		LeftBaseData.MaxHP = LeftBase->GetStatus()->GetMaxHealth();
 	}
 	if (AC_Base* RightBase = Map->AccessBaseData(0))
 	{
-		RightBaseData.CurHP = RightBase->GetHP();
-		RightBaseData.MaxHP = RightBase->GetMaxHP();
+		RightBaseData.CurHP = RightBase->GetStatus()->GetCurHealth();
+		RightBaseData.MaxHP = RightBase->GetStatus()->GetMaxHealth();
 	}
 
 	Datas.PlayerBaseHP = LeftBaseData.CurHP / LeftBaseData.MaxHP;

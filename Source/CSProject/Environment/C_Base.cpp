@@ -4,6 +4,9 @@
 #include "C_Base.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Enum/EClassType.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "Kismet/GameplayStatics.h"
+#include "Character/C_CSCharacter.h"
 
 // Sets default values
 AC_Base::AC_Base()
@@ -20,8 +23,30 @@ void AC_Base::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	CurHP = MaxHP;
+	if (DataTable != nullptr)
+	{
+		TArray<FStatusData const*> Rows;
+		DataTable->GetAllRows("", Rows);
 
+		TArray<FStatusData> Value;
+		for (auto& Row : Rows)
+		{
+			if (Row->Name == Name)
+			{
+				Value.Add(*Row);
+			}
+		}
+		StatusMap.Add(Name, Value);
+
+
+		TArray<FStatusData> Data = StatusMap[Name];
+		if (Data.Num())
+		{
+			Status->ApplyStatus(Data[0]);
+		}
+	}
+
+	
 }
 
 float AC_Base::CalculateDamage(float Damage, AActor* DamageCauser)
@@ -34,10 +59,10 @@ float AC_Base::CalculateDamage(float Damage, AActor* DamageCauser)
 
 	//가해자 정보
 	auto* MyDamageCauser = DamageCauser->GetInstigator();
-	EClassType CauserClass = Cast<IC_DamageHandleInterface>(MyDamageCauser)->GetStatus()->GetClassType();
-	float CauserHit = Cast<IC_DamageHandleInterface>(MyDamageCauser)->GetStatus()->GetHit();
-	float CauserCrit = Cast<IC_DamageHandleInterface>(MyDamageCauser)->GetStatus()->GetCrit();
-	float CauserCritDamage = Cast<IC_DamageHandleInterface>(MyDamageCauser)->GetStatus()->GetCritDamage();
+	EClassType CauserClass = Cast<AC_CSCharacter>(MyDamageCauser)->GetStatus()->GetClassType();
+	float CauserHit = Cast<AC_CSCharacter>(MyDamageCauser)->GetStatus()->GetHit();
+	float CauserCrit = Cast<AC_CSCharacter>(MyDamageCauser)->GetStatus()->GetCrit();
+	float CauserCritDamage = Cast<AC_CSCharacter>(MyDamageCauser)->GetStatus()->GetCritDamage();
 
 	//피해자 정보
 	float Defense = Status->GetDefense();
@@ -143,11 +168,9 @@ float AC_Base::CalculateDamage(float Damage, AActor* DamageCauser)
 	float RandomAdjust = UKismetMathLibrary::RandomFloatInRange(0.95f, 1.05f);
 	float FinalDamage = Damage * FinalAdjustment * RandomAdjust;
 
-
 	//GameModeBase::PrintDamage
 	//AGameModeBase* GameMode = UGameplayStatics::GetGameMode(GetWorld());
 	//Cast<IC_DamageHandleInterface>(GameMode)->PrintDamage(FinalDamage, bCrit, bEvade, GetActorLocation());
-
 
 	return FinalDamage;
 }
@@ -158,12 +181,3 @@ void AC_Base::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 }
-
-void AC_Base::DamagedHP(const int& InDamage)
-{
-	CurHP -= InDamage;
-
-	UpdateHP.Broadcast();
-
-}
-

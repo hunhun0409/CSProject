@@ -21,5 +21,4 @@ class CSPROJECT_API IC_DamageHandleInterface
 public:
 	virtual float CalculateDamage(float Damage, AActor* DamageCauser)	PURE_VIRTUAL(IC_DamageHandleInterface::CalculateDamage, return 0.0f;)
 	virtual void PrintDamage(float FinalDamage, bool bCrit, bool bEvade, FVector ActorLocation)	PURE_VIRTUAL(IC_DamageHandleInterface::PrintDamage, return;)
-
 };
