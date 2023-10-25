@@ -29,7 +29,8 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	TDelegate<FUIData()> GetUIData;
-	TDelegate<void(FVector, int)> SpawnOrder;
+	TDelegate<void(FVector, int, bool)> SpawnOrder;
+	TDelegate<void(bool)> ShowAreaOrder;
 
 protected:
 	UFUNCTION()

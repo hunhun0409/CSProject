@@ -24,7 +24,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	AC_Base* AccessBaseData(bool isLeftBase);
+	AC_Base* AccessBaseData(const bool& isLeftBase);
+	void SetVisiblePlayerSpawnArea(const bool& IsVisible);
+	class UBoxComponent* GetSpawnCollider(const bool& IsLeft);
 
 protected:
 	UFUNCTION()

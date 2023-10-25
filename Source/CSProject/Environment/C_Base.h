@@ -4,12 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Interface/C_DamageHandleInterface.h"
 #include "C_Base.generated.h"
 
 UCLASS(Abstract)
-class CSPROJECT_API AC_Base : public AActor
+class CSPROJECT_API AC_Base : public AActor, public IC_DamageHandleInterface
 {
 	GENERATED_BODY()
+		//타워속성
 	
 public:	
 	// Sets default values for this actor's properties
@@ -19,6 +21,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	virtual float CalculateDamage(float Damage, AActor* DamageCauser) override;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
