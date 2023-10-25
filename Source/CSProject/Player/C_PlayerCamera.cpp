@@ -46,7 +46,7 @@ void AC_PlayerCamera::BeginPlay()
 	if (UIWidgetClass)
 	{
 		UIWidget = Cast<UC_UserWidget>(CreateWidget(GetController()->CastToPlayerController(), UIWidgetClass, "UIWidget"));
-		
+
 
 		if (UIWidget)
 		{

@@ -4,6 +4,7 @@
 #include "Particles/ParticleSystemComponent.h"
 
 #include "Components/SkeletalMeshComponent.h"
+#include "Components/StaticMeshComponent.h"
 #include "Components/C_StatusComponent.h"
 
 
@@ -16,6 +17,7 @@ Component = CreateDefaultSubobject<std::remove_reference<decltype(*Component)>::
 AC_Weapon::AC_Weapon()
 {
 	Mesh = CreateDefaultSubobject<USkeletalMeshComponent>("Mesh");
+
 	SetRootComponent(Mesh);
 
 	CreateDefaultSubobjectAuto(Trail);
@@ -24,6 +26,8 @@ AC_Weapon::AC_Weapon()
 	CreateDefaultSubobjectAuto(Effect);
 	Effect->SetupAttachment(Mesh);
 
+	
+
 	CreateDefaultSubobjectAuto(AttackMontage);
 
 
@@ -31,7 +35,7 @@ AC_Weapon::AC_Weapon()
 
 USkeletalMeshComponent* AC_Weapon::GetMesh()
 {
-	return Mesh;
+	return nullptr;
 }
 
 void AC_Weapon::BeginPlay()

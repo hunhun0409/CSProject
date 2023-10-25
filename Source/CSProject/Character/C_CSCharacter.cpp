@@ -139,12 +139,16 @@ void AC_CSCharacter::CharacterMontageBlendingOut(UAnimMontage* const montage, bo
 void AC_CSCharacter::Tick(float DeltaTime)
 {
 	if (IsDead())
+	{
+		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, "IsDead!");
 		return;
+	}
+		
 	Super::Tick(DeltaTime);
-	
+	PrintState();
+	if(bMove)
+		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, "bMove == true!");
 
-	if(Status->GetClassType() == EClassType::Striker)
-		PrintState();
 
 	if(bMove && *CharacterState == ECharacterState::Idle)
 		MoveForward();
@@ -329,6 +333,8 @@ void AC_CSCharacter::InitSkill()
 
 void AC_CSCharacter::MoveForward()
 {
+	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, "WalkForward!!");
+
 	//walk Forward
 	FVector Direction;
 	switch(TeamID)
@@ -483,8 +489,8 @@ float AC_CSCharacter::CalculateDamage(float Damage, AActor* DamageCauser)
 
 	
 	//GameModeBase::PrintDamage
-	AGameModeBase* GameMode = UGameplayStatics::GetGameMode(GetWorld());
-	Cast<IC_DamageHandleInterface>(GameMode)->PrintDamage(FinalDamage, bCrit, bEvade, GetActorLocation());
+	//AGameModeBase* GameMode = UGameplayStatics::GetGameMode(GetWorld());
+	//Cast<IC_DamageHandleInterface>(GameMode)->PrintDamage(FinalDamage, bCrit, bEvade, GetActorLocation());
 	
 
 	return FinalDamage;
