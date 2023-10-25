@@ -464,6 +464,7 @@ float AC_CSCharacter::CalculateDamage(float Damage, AActor* DamageCauser)
 	if (bEvade)
 	{
 		EvadeReduceRate = 0.9 - (CauserHit / (CauserHit + 1500));
+		bCrit = false;
 	}
 	else//치명 여부
 	{
@@ -488,9 +489,10 @@ float AC_CSCharacter::CalculateDamage(float Damage, AActor* DamageCauser)
 	float FinalDamage = Damage * FinalAdjustment * RandomAdjust;
 
 	
+
 	//GameModeBase::PrintDamage
-	//AGameModeBase* GameMode = UGameplayStatics::GetGameMode(GetWorld());
-	//Cast<IC_DamageHandleInterface>(GameMode)->PrintDamage(FinalDamage, bCrit, bEvade, GetActorLocation());
+	AGameModeBase* GameMode = UGameplayStatics::GetGameMode(GetWorld());
+	Cast<IC_DamageHandleInterface>(GameMode)->PrintDamage(FinalDamage, bCrit, bEvade, GetActorLocation());
 	
 
 	return FinalDamage;

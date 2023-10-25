@@ -32,6 +32,8 @@ void AC_PlayerCamera::BeginPlay()
 {
 	Super::BeginPlay();
 
+	
+
 	if (auto* GameMode = Cast<AC_GameModeBase>(GetWorld()->GetAuthGameMode()))
 	{
 		if (!GameMode->UIDataUpdated.IsBound())
@@ -59,7 +61,7 @@ void AC_PlayerCamera::BeginPlay()
 	if (UIWidgetClass)
 	{
 		UIWidget = Cast<UC_UserWidget>(CreateWidget(GetController()->CastToPlayerController(), UIWidgetClass, "UIWidget"));
-
+		
 
 		if (UIWidget)
 		{

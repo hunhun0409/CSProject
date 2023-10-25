@@ -17,6 +17,7 @@ struct FStatusData : public FTableRowBase
 	GENERATED_BODY()
 public:
 	UPROPERTY(EditAnywhere) FName Name;
+	UPROPERTY(EditAnywhere) uint8 Cost;
 	UPROPERTY(EditAnywhere) ECharacterRank CharacterRank;
 	UPROPERTY(EditAnywhere) ECharacterType CharacterType;
 	UPROPERTY(EditAnywhere) EClassType ClassType;

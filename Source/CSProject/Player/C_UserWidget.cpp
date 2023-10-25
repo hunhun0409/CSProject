@@ -24,7 +24,7 @@ void UC_UserWidget::NativePreConstruct()
 void UC_UserWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
-
+	
 	if (!CostImage.IsNone())
 	{
 		CostWidget = Cast<UImage>(GetWidgetFromName(CostImage));

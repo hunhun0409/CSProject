@@ -51,6 +51,7 @@ public:
 
 	FORCEINLINE UC_StatusComponent* GetStatus() { return Status; }
 	FORCEINLINE uint8 GetTeamID() { return TeamID; }
+	FORCEINLINE void SetTeamID(uint8 InTeamID) { TeamID = InTeamID; }
 	FORCEINLINE class UBehaviorTree* GetTree() { return BehaviorTree; }
 	FORCEINLINE ECharacterState GetCharacterState() { return *CharacterState; }
 
@@ -58,7 +59,6 @@ public:
 
 	
 protected:
-	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	void OnConstruction(FTransform const& Transform) override;

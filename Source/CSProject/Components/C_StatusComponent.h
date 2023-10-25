@@ -25,6 +25,9 @@ protected:
 		FName Name;
 
 	UPROPERTY(VisibleAnywhere)
+		uint8 Cost;
+
+	UPROPERTY(VisibleAnywhere)
 		ECharacterRank CharacterRank;
 
 	UPROPERTY(VisibleAnywhere)
@@ -110,6 +113,7 @@ protected:
 
 public:
 	FORCEINLINE FName GetCharacterName() { return Name; }
+	FORCEINLINE uint8 GetCost() { return Cost; }
 	FORCEINLINE ECharacterRank GetCharacterRank() { return CharacterRank; }
 	FORCEINLINE ECharacterType GetCharacterType() { return CharacterType; }
 	FORCEINLINE EClassType GetClassType() { return ClassType; }
@@ -129,6 +133,7 @@ public:
 	FORCEINLINE float GetMovementSpeed() { return MovementSpeed; }
 
 	void SetMaxHealth(float Value);
+	FORCEINLINE void SetCost(float Value) { Cost = Value; }
 	FORCEINLINE void SetAttack(float Value) {  Attack = Value; }
 	FORCEINLINE void SetDefense(float Value) {  Defense = Value; }
 	FORCEINLINE void SetCrit(float Value) {  Crit = Value; }
