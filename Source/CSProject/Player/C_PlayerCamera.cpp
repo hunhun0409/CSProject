@@ -42,6 +42,7 @@ void AC_PlayerCamera::BeginPlay()
 			CameraMovableY = GameMode->GetMaxYPos();
 			GetUIData.BindUFunction(GameMode, "GetUIData");
 			SpawnOrder.BindUFunction(GameMode, "SpawnCharacter");
+			ShowAreaOrder.BindUFunction(GameMode, "SetVisiblePlayerSpawnableArea");
 		}
 
 		Datas = GameMode->GetUIData();
@@ -119,13 +120,6 @@ void AC_PlayerCamera::Tick(float DeltaTime)
 			SpawnLocation = FindCurserHitResult.Execute().Location;
 
 		UKismetSystemLibrary::DrawDebugSphere(GetWorld(), SpawnLocation);
-
-		/*UKismetSystemLibrary::LineTraceSingle(GetWorld(),
-			GetActorLocation() + Camera->GetRelativeLocation(),
-			Camera->GetForwardVector() * 1000, TraceTypeQuery1, false,
-			{},
-			EDrawDebugTrace::ForOneFrame
-			, Result, true);*/
 	}
 }
 
@@ -206,7 +200,8 @@ void AC_PlayerCamera::Spawn(int SlotNum)
 
 	CalculatePreviewLoc = false;
 
-	SpawnOrder.ExecuteIfBound(SpawnLocation, SlotNum);
+	SpawnOrder.ExecuteIfBound(SpawnLocation, SlotNum, true);
+	ShowAreaOrder.ExecuteIfBound(false);
 }
 
 void AC_PlayerCamera::Preview(int SlotNum)
@@ -214,10 +209,13 @@ void AC_PlayerCamera::Preview(int SlotNum)
 	SelectedSlot = SlotNum;
 	CalculatePreviewLoc = true;
 
+	ShowAreaOrder.ExecuteIfBound(true);
 	//SpawnLocation 기록 <- Tick에서 실시간 충돌
 }
 
 void AC_PlayerCamera::CancelSelect()
 {
 	CalculatePreviewLoc = false;
+	
+	ShowAreaOrder.ExecuteIfBound(false);
 }

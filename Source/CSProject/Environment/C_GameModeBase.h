@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "Structs.h"
+#include "Interface/C_DamageHandleInterface.h"
 #include "C_GameModeBase.generated.h"
 
 
@@ -12,10 +13,10 @@
  * 
  */
 
-
+class AC_CSCharacter;
 class AC_Field;
 UCLASS(Abstract)
-class CSPROJECT_API AC_GameModeBase : public AGameModeBase
+class CSPROJECT_API AC_GameModeBase : public AGameModeBase, public IC_DamageHandleInterface
 {
 	GENERATED_BODY()
 
@@ -35,9 +36,14 @@ public:
 	const FVector2D& GetMaxYPos() { return CameraMovablePosY; }
 
 	UFUNCTION()
-		void SpawnCharacter(const FVector& Location, const int& SlotNum);
+		void SpawnCharacter(const FVector& Location, const int& SlotNum, const bool& IsLeftTeam = true);
+
+	UFUNCTION()
+		void SetVisiblePlayerSpawnableArea(const bool& IsVisible);
 
 protected:
+	virtual void PrintDamage(float FinalDamage, bool bCrit, bool bEvade, FVector ActorLocation) override;
+
 	virtual void OnConstruction(const FTransform& Transform) override;
 
 	virtual void BeginPlay() override;
@@ -62,8 +68,15 @@ protected:
 	UPROPERTY()
 		class AC_Field* Map;
 
+	UPROPERTY(EditDefaultsOnly)
+		TArray<TSubclassOf<class AC_CSCharacter>> LeftTeamOrganization;
+	UPROPERTY(EditDefaultsOnly)
+		TArray<TSubclassOf<class AC_CSCharacter>> RightTeamOrganization;
+
 	UPROPERTY()
-		TArray<TSubclassOf<class AC_CSCharacter>> TeamOrganization;
+		TArray<TSubclassOf<class AC_CSCharacter>> LeftTeamSpawnCycle;
+	UPROPERTY()
+		TArray<TSubclassOf<class AC_CSCharacter>> RightTeamSpawnCycle;
 
 private:
 	float CostRegenRatio = 1.0f;
@@ -72,4 +85,5 @@ private:
 	FBasicData LeftBaseData;
 	FUIData Datas;
 	FVector2D CameraMovablePosY;
+	FVector AIUnitSpawnLocaiton;
 };

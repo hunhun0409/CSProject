@@ -3,11 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "GameFramework/HUD.h"
 #include "C_HitResultDisplayer.generated.h"
 
 UCLASS()
-class CSPROJECT_API AC_HitResultDisplayer : public AActor
+class CSPROJECT_API AC_HitResultDisplayer : public AHUD
 {
 	GENERATED_BODY()
 	

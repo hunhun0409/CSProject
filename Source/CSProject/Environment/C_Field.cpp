@@ -48,12 +48,25 @@ void AC_Field::Tick(float DeltaTime)
 
 }
 
-AC_Base* AC_Field::AccessBaseData(bool isLeftBase)
+AC_Base* AC_Field::AccessBaseData(const bool& isLeftBase)
 {
 	if (isLeftBase)
 		return LeftBase;
 	else
 		return RightBase;
+}
+
+void AC_Field::SetVisiblePlayerSpawnArea(const bool& IsVisible)
+{
+	LeftSpawnCollider->SetHiddenInGame(!IsVisible);
+}
+
+UBoxComponent* AC_Field::GetSpawnCollider(const bool& IsLeft)
+{
+	if (IsLeft)
+		return LeftSpawnCollider;
+	else
+		return RightSpawnCollider;
 }
 
 void AC_Field::UpdateSpawnCollider()
