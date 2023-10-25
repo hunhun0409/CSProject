@@ -33,6 +33,9 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
 		class UWidgetComponent* StatusUI;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
+		UTexture2D* CharacterImage;
+
 	UPROPERTY(EditDefaultsOnly, Category = "OnDamaged")
 		class UParticleSystem* HitEffect;
 
@@ -113,12 +116,12 @@ public:
 	//SpecialSkill
 	UPROPERTY(EditAnywhere, Category = "Skill")
 		TSubclassOf<class AC_Skill> SpecialSkillClass;
-	class IC_SkillInterface* SpecialSkill;
+	class IC_SkillInterface* SpecialSkill = nullptr;
 
 	//UltimateSkill
 	UPROPERTY(EditAnywhere, Category = "Skill")
 		TSubclassOf<class AC_Skill> UltimateSkillClass;
-	class IC_SkillInterface* UltimateSkill;
+	class IC_SkillInterface* UltimateSkill = nullptr;
 
 	TSharedPtr<ECharacterState> CharacterState;
 	TMap<ECharacterState, FString> StateToName;

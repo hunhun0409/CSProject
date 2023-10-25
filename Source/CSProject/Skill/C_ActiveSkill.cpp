@@ -74,8 +74,8 @@ void AC_ActiveSkill::RestartCooldown()
 	CurCooldown = 0;
 	//미완
 	//전장에 스폰여부를 확인하고 스폰돼있을때만 쿨이 돌게 해야함
-	FTimerHandle Timer;
-	GetWorld()->GetTimerManager().SetTimer(Timer, this, &ThisClass::AddCooldown, AddInterval, true, AddInterval);
+	if (Timer == FTimerHandle())
+		GetWorld()->GetTimerManager().SetTimer(Timer, this, &ThisClass::AddCooldown, AddInterval, true, AddInterval);
 }
 
 void AC_ActiveSkill::OnNotifyStart(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload)
@@ -86,4 +86,27 @@ void AC_ActiveSkill::OnNotifyStart(FName NotifyName, const FBranchingPointNotify
 void AC_ActiveSkill::OnSkillMontageEnded(UAnimMontage* Montage, bool bInterrupted)
 {
 	EndAction();
+}
+
+
+void AC_ActiveSkill::AddCooldown()
+{
+	CurCooldown += AddInterval;
+	CurCooldown = FMath::Clamp(CurCooldown, 0.0f, MaxCooldown);
+
+	if (CurCooldown == MaxCooldown)
+	{
+		if (Timer != FTimerHandle())
+			GetWorld()->GetTimerManager().ClearTimer(Timer);
+	}
+}
+
+bool AC_ActiveSkill::CanActivate()
+{
+	return CurCooldown == MaxCooldown;
+}
+
+float AC_ActiveSkill::GetSkillCoolDown()
+{
+	return MaxCooldown / CurCooldown;
 }

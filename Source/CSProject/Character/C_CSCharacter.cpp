@@ -21,6 +21,7 @@
 #include "Skill/C_PassiveSkill.h"
 #include "Skill/C_ActiveSkill.h"
 
+#include "Engine/Texture2D.h" 
 
 #include "Components/C_StatusComponent.h"
 
@@ -48,6 +49,10 @@ AC_CSCharacter::AC_CSCharacter()
 	CreateDefaultSubobjectAuto(HitEffect);
 
 	CreateDefaultSubobjectAuto(StatusUI);
+
+	CreateDefaultSubobjectAuto(CharacterImage);
+
+
 
 	StatusUI->SetWidgetSpace(EWidgetSpace::Screen);
 	StatusUI->SetDrawAtDesiredSize(true);
@@ -202,6 +207,17 @@ void AC_CSCharacter::Die()
 
 	Cast<AActor>(Weapon)->Destroy();
 	StatusUI->SetVisibility(false);
+
+	if (SpecialSkill)
+	{
+		//0~1사이값 반환, 0.5면 50% 찼다는 뜻
+		float SPCoolRate = SpecialSkill->GetSkillCoolDown();
+		
+	}
+	if (UltimateSkill)
+	{
+		float ULTCoolRate = UltimateSkill->GetSkillCoolDown();
+	}
 
 	//Todo
 	//상대 함선에게 죽음을 알림 : 미완성
@@ -378,10 +394,26 @@ float AC_CSCharacter::CalculateDamage(float Damage, AActor* DamageCauser)
 
 	//가해자 정보
 	auto* MyDamageCauser = DamageCauser->GetInstigator();
-	EClassType CauserClass = Cast<AC_CSCharacter>(MyDamageCauser)->GetStatus()->GetClassType();
-	float CauserHit = Cast<AC_CSCharacter>(MyDamageCauser)->GetStatus()->GetHit();
-	float CauserCrit = Cast<AC_CSCharacter>(MyDamageCauser)->GetStatus()->GetCrit();
-	float CauserCritDamage = Cast<AC_CSCharacter>(MyDamageCauser)->GetStatus()->GetCritDamage();
+	EClassType CauserClass;
+	float CauserHit;
+	float CauserCrit;
+	float CauserCritDamage;
+
+	if (MyDamageCauser->IsA<AC_CSCharacter>())
+	{
+		CauserClass = Cast<AC_CSCharacter>(MyDamageCauser)->GetStatus()->GetClassType();
+		CauserHit = Cast<AC_CSCharacter>(MyDamageCauser)->GetStatus()->GetHit();
+		CauserCrit = Cast<AC_CSCharacter>(MyDamageCauser)->GetStatus()->GetCrit();
+		CauserCritDamage = Cast<AC_CSCharacter>(MyDamageCauser)->GetStatus()->GetCritDamage();
+	}
+	else if (MyDamageCauser->IsA<AC_Base>())
+	{
+		CauserClass = Cast<AC_Base>(MyDamageCauser)->GetStatus()->GetClassType();
+		CauserHit = Cast<AC_Base>(MyDamageCauser)->GetStatus()->GetHit();
+		CauserCrit = Cast<AC_Base>(MyDamageCauser)->GetStatus()->GetCrit();
+		CauserCritDamage = Cast<AC_Base>(MyDamageCauser)->GetStatus()->GetCritDamage();
+	}
+	
 
 	//피해자 정보
 	float Defense = Status->GetDefense();
