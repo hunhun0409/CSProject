@@ -413,7 +413,11 @@ float AC_CSCharacter::CalculateDamage(float Damage, AActor* DamageCauser)
 		CauserCrit = Cast<AC_Base>(MyDamageCauser)->GetStatus()->GetCrit();
 		CauserCritDamage = Cast<AC_Base>(MyDamageCauser)->GetStatus()->GetCritDamage();
 	}
-	
+	else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, "Wrong DamageCauserType!");
+		return 0;
+	}
 
 	//피해자 정보
 	float Defense = Status->GetDefense();
