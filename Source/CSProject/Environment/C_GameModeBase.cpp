@@ -22,28 +22,39 @@ void AC_GameModeBase::SpawnCharacter(const FVector& Location, const int& SlotNum
 		{
 			FTransform SpawnTransform;
 			SpawnTransform.SetLocation(Location);
+			//생성 단계 전에 Cost를 확인해야 함.
 			auto* Unit = Cast<AC_CSCharacter>(GetWorld()->SpawnActor(LeftTeamSpawnCycle[SlotNum], &SpawnTransform));
-			// 팀 소속 설정.(세터 없어!)
-			//코스트 받아오기(없잖아!) 그값을 깎는다.
+			Unit->SetTeamID(0);
+			int UnitCost = Unit->GetStatus()->GetCost();
 
-
-			if (LeftTeamSpawnCycle.Num() > 4)
+			if (LeftBaseData.CurCost >= UnitCost)
 			{
-				TSubclassOf<AC_CSCharacter> TempClassData = LeftTeamSpawnCycle[SlotNum];
-				LeftTeamSpawnCycle[SlotNum] = LeftTeamSpawnCycle[5];
-				LeftTeamSpawnCycle[5] = TempClassData;
+				CostReduce(true, UnitCost);
 
-				for (int i = 5; i < LeftTeamSpawnCycle.Num() - 1; i++)
+
+				if (LeftTeamSpawnCycle.Num() > 4)
 				{
-					TempClassData = LeftTeamSpawnCycle[i];
-					LeftTeamSpawnCycle[i] = LeftTeamSpawnCycle[i + 1];
-					LeftTeamSpawnCycle[i + 1] = TempClassData;
+					TSubclassOf<AC_CSCharacter> TempClassData = LeftTeamSpawnCycle[SlotNum];
+					LeftTeamSpawnCycle[SlotNum] = LeftTeamSpawnCycle[5];
+					LeftTeamSpawnCycle[5] = TempClassData;
+
+					for (int i = 5; i < LeftTeamSpawnCycle.Num() - 1; i++)
+					{
+						TempClassData = LeftTeamSpawnCycle[i];
+						LeftTeamSpawnCycle[i] = LeftTeamSpawnCycle[i + 1];
+						LeftTeamSpawnCycle[i + 1] = TempClassData;
+					}
 				}
 			}
+			
+			//TArray로 UnitName에 Data.
 
+
+			// 스킬 퍼센트 및 Texture는 현재 없음.
 			// 해당 번호의 Texture2D를 Player로 보내서 위젯에 띄우기.
 			// 생존한 유닛 표기? 유닛의 스킬게이지를 기록할 필요가 있다.
 			// 생존한 유닛은 위젯에 보내 Material로 GrayScale 적용
+			// 위 정보는 FUIData를 수정하기?
 		}
 	}
 	else
@@ -51,29 +62,34 @@ void AC_GameModeBase::SpawnCharacter(const FVector& Location, const int& SlotNum
 		FTransform SpawnTransform;
 		SpawnTransform.SetLocation(Location);
 		auto* Unit = Cast<AC_CSCharacter>(GetWorld()->SpawnActor(RightTeamSpawnCycle[SlotNum], &SpawnTransform));
-		// 팀 소속 설정.(세터 없어!)
-		//코스트 받아오기(없잖아!) 그값을 깎는다.
+		Unit->SetTeamID(1);
 
-
-		if (RightTeamSpawnCycle.Num() > 4)
+		int UnitCost = Unit->GetStatus()->GetCost();
+		if (RightBaseData.CurCost >= UnitCost)
 		{
-			TSubclassOf<AC_CSCharacter> TempClassData = RightTeamSpawnCycle[SlotNum];
-			RightTeamSpawnCycle[SlotNum] = RightTeamSpawnCycle[5];
-			RightTeamSpawnCycle[5] = TempClassData;
+			CostReduce(false, UnitCost);
 
-			for (int i = 5; i < RightTeamSpawnCycle.Num() - 1; i++)
+			if (RightTeamSpawnCycle.Num() > 4)
 			{
-				TempClassData = RightTeamSpawnCycle[i];
-				RightTeamSpawnCycle[i] = RightTeamSpawnCycle[i + 1];
-				RightTeamSpawnCycle[i + 1] = TempClassData;
+				TSubclassOf<AC_CSCharacter> TempClassData = RightTeamSpawnCycle[SlotNum];
+				RightTeamSpawnCycle[SlotNum] = RightTeamSpawnCycle[5];
+				RightTeamSpawnCycle[5] = TempClassData;
+
+				for (int i = 5; i < RightTeamSpawnCycle.Num() - 1; i++)
+				{
+					TempClassData = RightTeamSpawnCycle[i];
+					RightTeamSpawnCycle[i] = RightTeamSpawnCycle[i + 1];
+					RightTeamSpawnCycle[i + 1] = TempClassData;
+				}
 			}
+
 		}
+
 	}
 
 	//맞으면 Cost 감소
 	//필드에 소환된 유닛 그룹을 만들고 확인, 이미 소환된 상태면 같은 유닛을 파괴 
 	// 해당 그룹은 Widget으로 정보를 보내 파괴될때까지 Tint와 Grayscale을 설정.
-	// 위 정보는 FUIData를 수정하기.
 	//TeamOrganization에서 1~4 번째 소환, 해당 유닛을 5번과 바꾸고, 5 6 \ 6 7 \ 7 8 스왑.
 	//스왑 후 해당 유닛의 UTexture2D를 가져와 해당 UImage로 넣기
 }
