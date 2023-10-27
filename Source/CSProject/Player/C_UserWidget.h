@@ -58,18 +58,10 @@ protected:
 		FName CostImage;
 	class UImage* CostWidget;
 
-	class UImage* UnitButton1;
+	TArray<UImage*> UnitButton;
 	UPROPERTY(EditDefaultsOnly)
-		FName Button1;
-	class UImage* UnitButton2;
-	UPROPERTY(EditDefaultsOnly)
-		FName Button2;
-	class UImage* UnitButton3;
-	UPROPERTY(EditDefaultsOnly)
-		FName Button3;
-	class UImage* UnitButton4;
-	UPROPERTY(EditDefaultsOnly)
-		FName Button4;
+		TArray<FName> UnitButtonName;
+
 	FVector2D ClickedPos;
 	int ButtonNum;
 	bool UnitSelected = false;

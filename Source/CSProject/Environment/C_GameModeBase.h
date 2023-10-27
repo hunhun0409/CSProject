@@ -41,6 +41,8 @@ public:
 	UFUNCTION()
 		void SetVisiblePlayerSpawnableArea(const bool& IsVisible);
 
+	void UnitDiedDataUpdate(class AC_CSCharacter* DiedUnit, const float& SPCoolRate, const float& ULTCoolRate);
+
 protected:
 	virtual void PrintDamage(float FinalDamage, bool bCrit, bool bEvade, FVector ActorLocation) override;
 
@@ -86,4 +88,5 @@ private:
 	FUIData Datas;
 	FVector2D CameraMovablePosY;
 	FVector AIUnitSpawnLocaiton;
+	TMap<FName, FUnitBattleData> UnitBattleDatas;
 };

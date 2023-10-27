@@ -47,6 +47,7 @@ protected:
 public:
 	bool CanActivate() override; 
 	float GetSkillCoolDown() override; 
+	void SetSkillCoolDown(const float& InRate) override { CurCooldown = InRate; }
 
 private:
 	float CurCooldown = 0;

@@ -37,17 +37,22 @@ void UC_UserWidget::NativeConstruct()
 		MouseWidget->SetBrushFromTexture(MouseCurserNClick);
 	}
 
-	if(!Button1.IsNone())
-		UnitButton1 = Cast<UImage>(GetWidgetFromName(Button1));
+	for (int i = 0; i < UnitButtonName.Num(); i++)
+	{
+		UnitButton.Emplace(Cast<UImage>(GetWidgetFromName(UnitButtonName[i])));
+	}
 
-	if(!Button2.IsNone())
-		UnitButton2 = Cast<UImage>(GetWidgetFromName(Button2));
+	//if(!Button1.IsNone())
+	//	UnitButton1 = Cast<UImage>(GetWidgetFromName(Button1));
 
-	if(!Button3.IsNone())
-		UnitButton3 = Cast<UImage>(GetWidgetFromName(Button3));
+	//if(!Button2.IsNone())
+	//	UnitButton2 = Cast<UImage>(GetWidgetFromName(Button2));
 
-	if(!Button4.IsNone())
-		UnitButton4 = Cast<UImage>(GetWidgetFromName(Button4));
+	//if(!Button3.IsNone())
+	//	UnitButton3 = Cast<UImage>(GetWidgetFromName(Button3));
+
+	//if(!Button4.IsNone())
+	//	UnitButton4 = Cast<UImage>(GetWidgetFromName(Button4));
 
 	//UImage에 UTexture2D는 Character로부터 받아 변경. Press 입력을 받으면 Release 될때가지 마우스 위치에 있던
 	//Image의 Tint를 조정. 만약 소환된 Character면 어둡게 표시. <- 정보 받아야 함.
@@ -79,6 +84,12 @@ void UC_UserWidget::UpdateUIData(const FUIData& UIData)
 	PlayerBaseHP = UIData.PlayerBaseHP;
 	EnemyBaseHP = UIData.EnemyBaseHP;
 	CostRegenRatio = UIData.CostRegenRatio;
+	for (int i = 0; i < UnitButton.Num(); i++)
+	{
+		if(UIData.UnitImage.IsValidIndex(i))
+			UnitButton[i]->SetBrushFromTexture(UIData.UnitImage[i]);
+		//해당 값으로 GrayScale Material 설정. UIData.UnitOnFieldData.Find(UIData.ButtonUnitName[i]);
+	}
 }
 
 void UC_UserWidget::UpdateMousePos(const FVector2D& InMousePos)
@@ -109,14 +120,12 @@ void UC_UserWidget::UpdateMouseLBPressing(const bool& IsPressing)
 			//Press
 			ClickedPos = MousePos;
 			// UnitButton 위치 체크하여 tint
-			if (IsMousePosInUImage(UnitButton1))
-				SetUnitButtonSelect(true, 1);
-			else if (IsMousePosInUImage(UnitButton2))
-				SetUnitButtonSelect(true, 2);
-			else if (IsMousePosInUImage(UnitButton3))
-				SetUnitButtonSelect(true, 3);
-			else if (IsMousePosInUImage(UnitButton4))
-				SetUnitButtonSelect(true, 4);
+			for (int i = 0; i < UnitButton.Num(); i++)
+				if (IsMousePosInUImage(UnitButton[i]))
+				{
+					SetUnitButtonSelect(true, i);
+					break;
+				}
 
 			if (UnitSelected)
 				SelectedPreview.ExecuteIfBound(ButtonNum);
@@ -128,17 +137,20 @@ void UC_UserWidget::UpdateMouseLBPressing(const bool& IsPressing)
 		{
 			ClickedPos = MousePos;
 
-			if (ButtonNum != 1 && IsMousePosInUImage(UnitButton1))
-				SetUnitButtonSelect(true, 1);
-			else if (ButtonNum != 2 && IsMousePosInUImage(UnitButton2))
-				SetUnitButtonSelect(true, 2);
-			else if (ButtonNum != 3 && IsMousePosInUImage(UnitButton3))
-				SetUnitButtonSelect(true, 3);
-			else if (ButtonNum != 4 && IsMousePosInUImage(UnitButton4))
-				SetUnitButtonSelect(true, 4);
-			else
+			bool ButtonPressed = false;
+
+			for (int i = 0; i < UnitButton.Num(); i++)
 			{
-				//Spawn Unit, Selected 해제.
+				if (IsMousePosInUImage(UnitButton[i]))
+				{
+					SetUnitButtonSelect(true, i);
+					ButtonPressed = true;
+					break;
+				}
+			}
+
+			if (!ButtonPressed)
+			{
 				SetUnitButtonSelect(false);
 
 				SpawnOrdered.ExecuteIfBound(ButtonNum);
@@ -226,41 +238,17 @@ void UC_UserWidget::SetUnitButtonSelect(const bool& Selected, const int& ButtonN
 	if (UnitSelected)
 	{
 		ButtonNum = ButtonNumber;
-		switch (ButtonNum)
+		for (int i = 0; i < UnitButton.Num(); i++)
 		{
-		case 1:
-			UnitButton1->SetRenderScale(FVector2D(1.1f));
-			UnitButton2->SetRenderScale(FVector2D(1.0f));
-			UnitButton3->SetRenderScale(FVector2D(1.0f));
-			UnitButton4->SetRenderScale(FVector2D(1.0f));
-			break;
-		case 2:
-			UnitButton1->SetRenderScale(FVector2D(1.0f));
-			UnitButton2->SetRenderScale(FVector2D(1.1f));
-			UnitButton3->SetRenderScale(FVector2D(1.0f));
-			UnitButton4->SetRenderScale(FVector2D(1.0f));
-			break;
-		case 3:
-			UnitButton1->SetRenderScale(FVector2D(1.0f));
-			UnitButton2->SetRenderScale(FVector2D(1.0f));
-			UnitButton3->SetRenderScale(FVector2D(1.1f));
-			UnitButton4->SetRenderScale(FVector2D(1.0f));
-			break;
-		case 4:
-			UnitButton1->SetRenderScale(FVector2D(1.0f));
-			UnitButton2->SetRenderScale(FVector2D(1.0f));
-			UnitButton3->SetRenderScale(FVector2D(1.0f));
-			UnitButton4->SetRenderScale(FVector2D(1.1f));
-			break;
-		default:
-			break;
+			if (i == ButtonNum)
+				UnitButton[i]->SetRenderScale(FVector2D(1.1f));
+			else
+				UnitButton[i]->SetRenderScale(FVector2D(1.0f));
 		}
 	}
 	else
 	{
-		UnitButton1->SetRenderScale(FVector2D(1.0f));
-		UnitButton2->SetRenderScale(FVector2D(1.0f));
-		UnitButton3->SetRenderScale(FVector2D(1.0f));
-		UnitButton4->SetRenderScale(FVector2D(1.0f));
+		for (int i = 0; i < UnitButton.Num(); i++)
+			UnitButton[i]->SetRenderScale(FVector2D(1.0f));
 	}
 }

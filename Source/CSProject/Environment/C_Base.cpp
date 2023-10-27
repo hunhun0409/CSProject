@@ -7,6 +7,8 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "Character/C_CSCharacter.h"
+#include "Components/C_StatusComponent.h"
+#include "Particles/ParticleSystem.h"
 
 // Sets default values
 AC_Base::AC_Base()
@@ -16,6 +18,9 @@ AC_Base::AC_Base()
 
 	AIPerception = CreateDefaultSubobject<UAIPerceptionComponent>("AIPerception");
 
+	Status = CreateDefaultSubobject<UC_StatusComponent>("StatusComponent");
+
+	HitEffect = CreateDefaultSubobject<UParticleSystem>("ParticleSystem");
 }
 
 // Called when the game starts or when spawned
@@ -45,6 +50,13 @@ void AC_Base::BeginPlay()
 			Status->ApplyStatus(Data[0]);
 		}
 	}
+
+	
+}
+
+void AC_Base::OnConstruction(const FTransform& Transform)
+{
+	Super::OnConstruction(Transform);
 
 	
 }

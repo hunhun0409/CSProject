@@ -20,4 +20,14 @@ struct FUIData
 	float PlayerBaseHP;
 	float EnemyBaseHP;
 	float CostRegenRatio;
+	TArray<UTexture2D*> UnitImage;
+	TArray<FName> ButtonUnitName;
+	TMap<FName, bool> UnitOnFieldData;
+
+};
+
+struct FUnitBattleData
+{
+	float SPCoolRate;
+	float ULTCoolRate;
 };

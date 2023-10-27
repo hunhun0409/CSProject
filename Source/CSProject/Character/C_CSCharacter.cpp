@@ -10,6 +10,7 @@
 
 
 #include "Environment/C_Base.h"
+#include "Environment/C_GameModeBase.h"
 
 #include "Interface/C_DamageHandleInterface.h"
 #include "Interface/C_WeaponInterface.h"
@@ -22,8 +23,6 @@
 #include "Skill/C_ActiveSkill.h"
 
 #include "Engine/Texture2D.h" 
-
-#include "Components/C_StatusComponent.h"
 
 #include "Particles/ParticleSystem.h"
 
@@ -91,7 +90,7 @@ void AC_CSCharacter::BeginPlay()
 			}
 		}
 		StatusMap.Add(Name, Value);
-			
+
 
 		TArray<FStatusData> Data = StatusMap[Name];
 		if (Data.Num())
@@ -112,6 +111,8 @@ void AC_CSCharacter::BeginPlay()
 void AC_CSCharacter::OnConstruction(FTransform const& Transform)
 {
 	Super::OnConstruction(Transform);
+
+	
 
 	GetMesh()->SetRelativeLocation(FVector(0, 0, -88.5f));
 	GetMesh()->SetRelativeRotation(FRotator(0, -90, 0).Quaternion());
@@ -157,6 +158,18 @@ void AC_CSCharacter::Tick(float DeltaTime)
 
 	if(bMove && *CharacterState == ECharacterState::Idle)
 		MoveForward();
+}
+
+void AC_CSCharacter::SetSPSkillCoolRate(const float& InRate)
+{
+	if (SpecialSkill)
+		SpecialSkill->SetSkillCoolDown(InRate);
+}
+
+void AC_CSCharacter::SetULTSkillCoolRate(const float& InRate)
+{
+	if (UltimateSkill)
+		UltimateSkill->SetSkillCoolDown(InRate);
 }
 
 void AC_CSCharacter::Attack()
@@ -208,16 +221,20 @@ void AC_CSCharacter::Die()
 	Cast<AActor>(Weapon)->Destroy();
 	StatusUI->SetVisibility(false);
 
+	auto* GameMode = Cast<AC_GameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+	float SPCoolRate = 0.0f;
+	float ULTCoolRate = 0.0f;
 	if (SpecialSkill)
 	{
 		//0~1사이값 반환, 0.5면 50% 찼다는 뜻
-		float SPCoolRate = SpecialSkill->GetSkillCoolDown();
-		
+		SPCoolRate = SpecialSkill->GetSkillCoolDown();
 	}
 	if (UltimateSkill)
 	{
-		float ULTCoolRate = UltimateSkill->GetSkillCoolDown();
+		ULTCoolRate = UltimateSkill->GetSkillCoolDown();
 	}
+
+	GameMode->UnitDiedDataUpdate(this, SPCoolRate, ULTCoolRate);
 
 	//Todo
 	//상대 함선에게 죽음을 알림 : 미완성

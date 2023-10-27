@@ -35,4 +35,6 @@ public:
 
 		virtual bool CanActivate() PURE_VIRTUAL(IC_SkillInterface::CanActivate, return false;)
 		virtual float GetSkillCoolDown() PURE_VIRTUAL(IC_SkillInterface::GetSkillCoolDown, return 0.0f;)
+		virtual void SetSkillCoolDown(const float& InRate) PURE_VIRTUAL(IC_SkillInterface::SetSkillCoolDown, return;)
+
 };

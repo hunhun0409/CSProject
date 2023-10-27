@@ -59,8 +59,8 @@ public:
 	FORCEINLINE ECharacterState GetCharacterState() { return *CharacterState; }
 
 	FORCEINLINE bool IsDead() { return *CharacterState == ECharacterState::Dead; }
-
-	
+	FORCEINLINE UTexture2D* GetCharacterButtonImage() { return CharacterImage; }
+	FORCEINLINE FName GetCharacterName() { return Name; }
 protected:
 	virtual void BeginPlay() override;
 
@@ -78,6 +78,9 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	void SetSPSkillCoolRate(const float& InRate);
+	void SetULTSkillCoolRate(const float& InRate);
 
 protected:
 	void Attack() override;
