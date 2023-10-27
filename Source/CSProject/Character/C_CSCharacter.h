@@ -34,7 +34,7 @@ private:
 		class UWidgetComponent* StatusUI;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "UI", meta = (AllowPrivateAccess = "true"))
-		UTexture2D* CharacterImage;
+		class UTexture2D* CharacterImage;
 
 	UPROPERTY(EditDefaultsOnly, Category = "OnDamaged")
 		class UParticleSystem* HitEffect;

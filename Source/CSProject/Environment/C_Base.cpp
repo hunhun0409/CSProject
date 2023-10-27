@@ -8,7 +8,10 @@
 #include "Kismet/GameplayStatics.h"
 #include "Character/C_CSCharacter.h"
 #include "Components/C_StatusComponent.h"
+<<<<<<< Updated upstream
 #include "Particles/ParticleSystem.h"
+=======
+>>>>>>> Stashed changes
 
 // Sets default values
 AC_Base::AC_Base()
@@ -17,6 +20,8 @@ AC_Base::AC_Base()
 	PrimaryActorTick.bCanEverTick = true;
 
 	AIPerception = CreateDefaultSubobject<UAIPerceptionComponent>("AIPerception");
+	Status = CreateDefaultSubobject<UC_StatusComponent>("Status");
+	
 
 	Status = CreateDefaultSubobject<UC_StatusComponent>("StatusComponent");
 
