@@ -8,10 +8,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "Character/C_CSCharacter.h"
 #include "Components/C_StatusComponent.h"
-<<<<<<< Updated upstream
 #include "Particles/ParticleSystem.h"
-=======
->>>>>>> Stashed changes
 
 // Sets default values
 AC_Base::AC_Base()
@@ -56,7 +53,7 @@ void AC_Base::BeginPlay()
 		}
 	}
 
-	
+	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Magenta, "Hello!");
 }
 
 void AC_Base::OnConstruction(const FTransform& Transform)

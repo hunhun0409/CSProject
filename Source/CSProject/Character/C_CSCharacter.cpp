@@ -319,7 +319,7 @@ void AC_CSCharacter::InitWeapon()
 	SpawnParameters.Owner = SpawnParameters.Instigator = this;
 	
 	auto* const SpawnedWeapon = GetWorld()->SpawnActor<AC_Weapon>(WeaponClass, SpawnParameters);
-	SpawnedWeapon->GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	//SpawnedWeapon->GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	FAttachmentTransformRules const Rules(EAttachmentRule::SnapToTarget, true);
 
