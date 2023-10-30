@@ -17,6 +17,8 @@ AC_Base::AC_Base()
 	PrimaryActorTick.bCanEverTick = true;
 
 	AIPerception = CreateDefaultSubobject<UAIPerceptionComponent>("AIPerception");
+	Status = CreateDefaultSubobject<UC_StatusComponent>("Status");
+	
 
 	Status = CreateDefaultSubobject<UC_StatusComponent>("StatusComponent");
 
@@ -52,7 +54,7 @@ void AC_Base::BeginPlay()
 	
 	
 
-	
+	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Magenta, "Hello!");
 }
 
 void AC_Base::OnConstruction(const FTransform& Transform)
