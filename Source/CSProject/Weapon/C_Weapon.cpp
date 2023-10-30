@@ -35,7 +35,7 @@ AC_Weapon::AC_Weapon()
 
 USkeletalMeshComponent* AC_Weapon::GetMesh()
 {
-	return nullptr;
+	return Mesh;
 }
 
 void AC_Weapon::BeginPlay()

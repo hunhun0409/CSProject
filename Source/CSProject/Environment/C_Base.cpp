@@ -54,7 +54,7 @@ void AC_Base::BeginPlay()
 	
 	
 
-	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Magenta, "Hello!");
+	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, "Hello!");
 }
 
 void AC_Base::OnConstruction(const FTransform& Transform)

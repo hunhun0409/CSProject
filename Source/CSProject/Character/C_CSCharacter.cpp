@@ -71,6 +71,13 @@ AC_CSCharacter::AC_CSCharacter()
 	GetMesh()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Block);
 	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
 
+	
+}
+
+void AC_CSCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
 	if (DataTable && !Name.IsNone())
 	{
 		TArray<FStatusData const*> Rows;
@@ -92,37 +99,11 @@ AC_CSCharacter::AC_CSCharacter()
 			Status->ApplyStatus(Data[0]);
 		}
 	}
-}
-
-void AC_CSCharacter::BeginPlay()
-{
-	Super::BeginPlay();
-
-	/*if (DataTable != nullptr)
-	{
-		TArray<FStatusData const*> Rows;
-		DataTable->GetAllRows("", Rows);
-
-		TArray<FStatusData> Value;
-		for (auto& Row : Rows)
-		{
-			if (Row->Name == Name)
-			{
-				Value.Add(*Row);
-			}
-		}
-		StatusMap.Add(Name, Value);
-
-		TArray<FStatusData> Data = StatusMap[Name];
-		if (Data.Num())
-		{
-			Status->ApplyStatus(Data[0]);
-		}
-	}*/
 
 	InitState();
 	InitWeapon();
 	InitSkill();
+	
 
 	GetMesh()->GetAnimInstance()->OnMontageEnded.AddDynamic(this, &ThisClass::CharacterMontageEnded);
 	GetMesh()->GetAnimInstance()->OnMontageBlendingOut.AddDynamic(this, &ThisClass::CharacterMontageBlendingOut);
@@ -133,8 +114,16 @@ void AC_CSCharacter::OnConstruction(FTransform const& Transform)
 {
 	Super::OnConstruction(Transform);
 
-	GetMesh()->SetRelativeLocation(FVector(0, 0, -88.5f));
-	GetMesh()->SetRelativeRotation(FRotator(0, -90, 0).Quaternion());
+	if (GetMesh())
+	{
+		GetMesh()->SetRelativeLocation(FVector(0, 0, -88.5f));
+		GetMesh()->SetRelativeRotation(FRotator(0, -90, 0).Quaternion());
+	}
+	
+	if (StatusUI)
+	{
+		StatusUI->SetRelativeLocation(FVector(0, 0, 110));
+	}
 }
 
 void AC_CSCharacter::PrintState()
@@ -337,8 +326,22 @@ void AC_CSCharacter::InitWeapon()
 	FActorSpawnParameters SpawnParameters;
 	SpawnParameters.Owner = SpawnParameters.Instigator = this;
 	
+	if(WeaponClass == nullptr)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, "Wrong WeaponClass!");
+
+		Cast<UC_AnimInstance>(GetMesh()->GetAnimInstance())->SetWeaponClass(nullptr);
+		Weapon = nullptr;
+	}
+
 	auto* const SpawnedWeapon = GetWorld()->SpawnActor<AC_Weapon>(WeaponClass, SpawnParameters);
-	//SpawnedWeapon->GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	if (SpawnedWeapon == nullptr)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, "Wrong Weapon!");
+		Cast<UC_AnimInstance>(GetMesh()->GetAnimInstance())->SetWeaponClass(nullptr);
+		Weapon = nullptr;
+	}
+	SpawnedWeapon->GetMesh()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	FAttachmentTransformRules const Rules(EAttachmentRule::SnapToTarget, true);
 

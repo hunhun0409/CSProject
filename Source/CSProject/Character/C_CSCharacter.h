@@ -26,6 +26,9 @@ private:
 	//Status
 	UPROPERTY(EditDefaultsOnly, Category = "Status", meta = (AllowPrivateAccess = "true"))
 		FName Name;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Status", meta = (AllowPrivateAccess = "true"))
+		uint8 Cost;
 	//Status
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Status", meta = (AllowPrivateAccess = "true"))
 		class UC_StatusComponent* Status;
@@ -52,6 +55,7 @@ protected:
 public:
 	AC_CSCharacter();
 
+	FORCEINLINE uint8 GetCost() { return Cost; }
 	FORCEINLINE UC_StatusComponent* GetStatus() { return Status; }
 	FORCEINLINE uint8 GetTeamID() { return TeamID; }
 	FORCEINLINE void SetTeamID(uint8 InTeamID) { TeamID = InTeamID; }
