@@ -17,10 +17,12 @@ void AC_GameModeBase::SpawnCharacter(const FVector& Location, const int& SlotNum
 {
 	if (IsLeftTeam)
 	{
+
 		if (Map->GetSpawnCollider(true)->Bounds.GetBox().IsInside(Location))
 		{
 			if (!LeftTeamSpawnCycle[SlotNum])
 				return;
+			
 			int UnitCost = LeftTeamSpawnCycle[SlotNum].GetDefaultObject()->GetStatus()->GetCost();
 
 			if (LeftBaseData.CurCost >= UnitCost)
@@ -43,17 +45,9 @@ void AC_GameModeBase::SpawnCharacter(const FVector& Location, const int& SlotNum
 				if (LeftTeamSpawnCycle.Num() > 4)
 				{
 					LeftTeamSpawnCycle.Swap(SlotNum, 5);
-					/*TSubclassOf<AC_CSCharacter> TempClassData = LeftTeamSpawnCycle[SlotNum];
-					LeftTeamSpawnCycle[SlotNum] = LeftTeamSpawnCycle[5];
-					LeftTeamSpawnCycle[5] = TempClassData;*/
 
 					for (int i = 5; i < LeftTeamSpawnCycle.Num() - 1; i++)
-					{
 						LeftTeamSpawnCycle.Swap(i, i + 1);
-						/*TempClassData = LeftTeamSpawnCycle[i];
-						LeftTeamSpawnCycle[i] = LeftTeamSpawnCycle[i + 1];
-						LeftTeamSpawnCycle[i + 1] = TempClassData;*/
-					}
 				}
 				Datas.UnitImage.EmplaceAt(SlotNum, LeftTeamSpawnCycle[SlotNum].GetDefaultObject()->GetCharacterButtonImage());
 				Datas.ButtonUnitName.EmplaceAt(SlotNum, LeftTeamSpawnCycle[SlotNum].GetDefaultObject()->GetStatus()->GetCharacterName());
@@ -84,20 +78,10 @@ void AC_GameModeBase::SpawnCharacter(const FVector& Location, const int& SlotNum
 
 			if (RightTeamSpawnCycle.Num() > 4)
 			{
-				/*TSubclassOf<AC_CSCharacter> TempClassData = RightTeamSpawnCycle[SlotNum];
-				RightTeamSpawnCycle[SlotNum] = RightTeamSpawnCycle[5];
-				RightTeamSpawnCycle[5] = TempClassData;*/
-
 				RightTeamSpawnCycle.Swap(SlotNum, 5);
 
 				for (int i = 5; i < RightTeamSpawnCycle.Num() - 1; i++)
-				{
 					RightTeamSpawnCycle.Swap(i, i + 1);
-
-					/*TempClassData = RightTeamSpawnCycle[i];
-					RightTeamSpawnCycle[i] = RightTeamSpawnCycle[i + 1];
-					RightTeamSpawnCycle[i + 1] = TempClassData;*/
-				}
 			}
 		}
 	}

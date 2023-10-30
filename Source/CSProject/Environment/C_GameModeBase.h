@@ -62,7 +62,7 @@ private:
 	void RestoreCost(const float& DeltaTime);
 
 public:
-
+	
 protected:
 	UPROPERTY(EditDefaultsOnly)
 		TSubclassOf<class AC_Field> Field;

@@ -70,13 +70,8 @@ AC_CSCharacter::AC_CSCharacter()
 	GetMesh()->SetCollisionResponseToAllChannels(ECR_Ignore);
 	GetMesh()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Block);
 	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
-}
 
-void AC_CSCharacter::BeginPlay()
-{
-	Super::BeginPlay();
-
-	if (DataTable != nullptr)
+	if (DataTable && !Name.IsNone())
 	{
 		TArray<FStatusData const*> Rows;
 		DataTable->GetAllRows("", Rows);
@@ -91,13 +86,39 @@ void AC_CSCharacter::BeginPlay()
 		}
 		StatusMap.Add(Name, Value);
 
-
 		TArray<FStatusData> Data = StatusMap[Name];
 		if (Data.Num())
 		{
 			Status->ApplyStatus(Data[0]);
 		}
 	}
+}
+
+void AC_CSCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	/*if (DataTable != nullptr)
+	{
+		TArray<FStatusData const*> Rows;
+		DataTable->GetAllRows("", Rows);
+
+		TArray<FStatusData> Value;
+		for (auto& Row : Rows)
+		{
+			if (Row->Name == Name)
+			{
+				Value.Add(*Row);
+			}
+		}
+		StatusMap.Add(Name, Value);
+
+		TArray<FStatusData> Data = StatusMap[Name];
+		if (Data.Num())
+		{
+			Status->ApplyStatus(Data[0]);
+		}
+	}*/
 
 	InitState();
 	InitWeapon();
@@ -111,8 +132,6 @@ void AC_CSCharacter::BeginPlay()
 void AC_CSCharacter::OnConstruction(FTransform const& Transform)
 {
 	Super::OnConstruction(Transform);
-
-	
 
 	GetMesh()->SetRelativeLocation(FVector(0, 0, -88.5f));
 	GetMesh()->SetRelativeRotation(FRotator(0, -90, 0).Quaternion());

@@ -21,14 +21,8 @@ AC_Base::AC_Base()
 	Status = CreateDefaultSubobject<UC_StatusComponent>("StatusComponent");
 
 	HitEffect = CreateDefaultSubobject<UParticleSystem>("ParticleSystem");
-}
 
-// Called when the game starts or when spawned
-void AC_Base::BeginPlay()
-{
-	Super::BeginPlay();
-	
-	if (DataTable != nullptr)
+	if (DataTable && !Name.IsNone())
 	{
 		TArray<FStatusData const*> Rows;
 		DataTable->GetAllRows("", Rows);
@@ -43,13 +37,20 @@ void AC_Base::BeginPlay()
 		}
 		StatusMap.Add(Name, Value);
 
-
 		TArray<FStatusData> Data = StatusMap[Name];
 		if (Data.Num())
 		{
 			Status->ApplyStatus(Data[0]);
 		}
 	}
+}
+
+// Called when the game starts or when spawned
+void AC_Base::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	
 
 	
 }
