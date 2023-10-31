@@ -25,6 +25,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	AC_Base* AccessBaseData(const bool& isLeftBase);
+
 	void SetVisiblePlayerSpawnArea(const bool& IsVisible);
 	class UBoxComponent* GetSpawnCollider(const bool& IsLeft);
 

@@ -21,6 +21,8 @@ public:
 	FORCEINLINE UC_StatusComponent* GetStatus() { return Status; }
 	FORCEINLINE uint8 GetTeamID() { return TeamID; }
 
+	TDelegate<void(FVector, int, bool)> Spawn;
+	// 플레이어 구분해서 true -> 플레이어 컨트롤러에서 설정(소환 연결), false ->자동 소환
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -28,16 +30,18 @@ protected:
 
 	virtual float CalculateDamage(float Damage, AActor* DamageCauser) override;
 
-	void SpawnCharacter(const FVector& Location, const int& SlotNum, const bool& IsLeftTeam);
+	UFUNCTION()
+		void SpawnCharacter(const FVector& Location, const int& SlotNum, const bool& IsLeftTeam);
 
-	TDelegate<void(const FVector&, const int&, const bool&)> Spawn;
-	// 플레이어 구분해서 true -> 플레이어 컨트롤러에서 설정(소환 연결), false ->자동 소환
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	TMulticastDelegate<void()> UpdateHP;
 	void SetTeamID(uint8 InTeamID);
+
+	const bool& GetAutoPlay() { return IsAutoSpawning; }
+	void SetAutoPlay(const bool& IsAuto) { IsAutoSpawning = IsAuto; }
 
 protected:
 
