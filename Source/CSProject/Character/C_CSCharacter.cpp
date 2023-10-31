@@ -71,7 +71,7 @@ AC_CSCharacter::AC_CSCharacter()
 	GetMesh()->SetCollisionResponseToChannel(ECC_WorldDynamic, ECR_Block);
 	GetMesh()->SetCollisionResponseToChannel(ECC_WorldStatic, ECR_Block);
 
-	
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 }
 
 void AC_CSCharacter::BeginPlay()
@@ -159,9 +159,9 @@ void AC_CSCharacter::Tick(float DeltaTime)
 	}
 		
 	Super::Tick(DeltaTime);
-	PrintState();
-	if(bMove)
-		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, "bMove == true!");
+	//PrintState();
+	/*if(bMove)
+		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, "bMove == true!");*/
 
 
 	if(bMove && *CharacterState == ECharacterState::Idle)
@@ -388,7 +388,7 @@ void AC_CSCharacter::InitSkill()
 
 void AC_CSCharacter::MoveForward()
 {
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, "WalkForward!!");
+	//GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, "WalkForward!!");
 
 	//walk Forward
 	FVector Direction;

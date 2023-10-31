@@ -35,6 +35,7 @@ void AC_Field::BeginPlay()
 
 	FTransform RBTransform = GetActorTransform();
 	RBTransform.SetLocation(RBTransform.GetLocation() + RightSpawnCollider->GetComponentLocation());
+	RBTransform.SetScale3D(FVector(3, 3, 3));
 	RightBase = Cast<AC_Base>(GetWorld()->SpawnActor(RightBaseType, &RBTransform));
 	RightBase->UpdateHP.AddUFunction(this, "UpdateSpawnCollider");
 	ColliderScaleYOffset.Y = RightSpawnCollider->GetRelativeScale3D().Y;

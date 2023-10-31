@@ -29,6 +29,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Status", meta = (AllowPrivateAccess = "true"))
 		uint8 Cost;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Status", meta = (AllowPrivateAccess = "true"))
+		float MaxSightRange;
 	//Status
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Status", meta = (AllowPrivateAccess = "true"))
 		class UC_StatusComponent* Status;
@@ -56,6 +59,7 @@ public:
 	AC_CSCharacter();
 
 	FORCEINLINE uint8 GetCost() { return Cost; }
+	FORCEINLINE float GetMaxSightRange() { return MaxSightRange; }
 	FORCEINLINE UC_StatusComponent* GetStatus() { return Status; }
 	FORCEINLINE uint8 GetTeamID() { return TeamID; }
 	FORCEINLINE void SetTeamID(uint8 InTeamID) { TeamID = InTeamID; }

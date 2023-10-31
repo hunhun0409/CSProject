@@ -37,7 +37,7 @@ public:
 
 	void ChangeType(EBehaviorType InType);
 
-	class AC_CSCharacter* GetTarget();
+	AActor* GetTarget();
 
 	void SetBlackboard(class UBlackboardComponent* InBlackboard) { Blackboard = InBlackboard; }
 
