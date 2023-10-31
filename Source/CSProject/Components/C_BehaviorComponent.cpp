@@ -16,9 +16,9 @@ void UC_BehaviorComponent::ChangeType(EBehaviorType InType)
 	Blackboard->SetValueAsEnum(BehaviorKey, (uint8)InType);
 }
 
-AC_CSCharacter* UC_BehaviorComponent::GetTarget()
+AActor* UC_BehaviorComponent::GetTarget()
 {
-	return Cast<AC_CSCharacter>(Blackboard->GetValueAsObject(TargetKey));
+	return Cast<AActor>(Blackboard->GetValueAsObject(TargetKey));
 }
 
 EBehaviorType UC_BehaviorComponent::GetType()

@@ -22,20 +22,7 @@ AC_CSAIController::AC_CSAIController()
 
 	CreateDefaultSubobjectAuto(Sight);
 	
-	Sight->SightRadius = Sight->LoseSightRadius = 1000;
-	Sight->PeripheralVisionAngleDegrees = 180.0f;
-	Sight->SetMaxAge(0);
-	Sight->DetectionByAffiliation.bDetectEnemies = true;
-	Sight->DetectionByAffiliation.bDetectNeutrals = true;
-	Sight->DetectionByAffiliation.bDetectFriendlies = true;
 	
-
-
-
-
-	Perception->ConfigureSense(*Sight);
-
-	Perception->SetDominantSense(*Sight->GetSenseImplementation());
 	Target = nullptr;
 }
 
@@ -51,18 +38,21 @@ void AC_CSAIController::Tick(const float DeltaSecond)
 				false, -1.0f, 0, 0, FVector::RightVector, FVector::ForwardVector);
 		}
 	}
-	
-
-	if (SensedActors.Num())
-	{
-		GetClosestActor();
-		
-	}
 }
 
 void AC_CSAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
+
+	Sight->SightRadius = Sight->LoseSightRadius = Cast<AC_CSCharacter>(InPawn)->GetMaxSightRange();
+	Sight->PeripheralVisionAngleDegrees = 180.0f;
+	Sight->SetMaxAge(0);
+	Sight->DetectionByAffiliation.bDetectEnemies = true;
+	Sight->DetectionByAffiliation.bDetectNeutrals = true;
+	Sight->DetectionByAffiliation.bDetectFriendlies = true;
+
+	Perception->ConfigureSense(*Sight);
+	Perception->SetDominantSense(*Sight->GetSenseImplementation());
 
 	//Sight->SightRadius = Cast<AC_CSCharacter>(Owner)->GetStatus()->GetMaxSightRange();
 
@@ -77,11 +67,20 @@ void AC_CSAIController::OnPossess(APawn* InPawn)
 	Behavior->SetBlackboard(Blackboard);
 
 	RunBehaviorTree(Owner->GetTree());
+
+	if (Timer == FTimerHandle())
+	{
+		GetWorld()->GetTimerManager().SetTimer(Timer, this, &ThisClass::GetClosestActor, 0.1f, true, 0);
+	}
 }
 
 void AC_CSAIController::OnUnPossess()
 {
 	Super::OnUnPossess();
+	if (Timer != FTimerHandle())
+	{
+		GetWorld()->GetTimerManager().ClearTimer(Timer);
+	}
 }
 
 void AC_CSAIController::RemoveTarget(AActor* Inactor)
@@ -107,6 +106,8 @@ void AC_CSAIController::OnPerceptionUpdated(const TArray<AActor*>& UpdateActors)
 	TArray<AActor*> actors;
 	Perception->GetCurrentlyPerceivedActors(nullptr, actors);
 
+	GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Red, "Sensed Actor!");
+
 	for (AActor* actor : actors)
 	{
 		
@@ -114,6 +115,8 @@ void AC_CSAIController::OnPerceptionUpdated(const TArray<AActor*>& UpdateActors)
 			continue;
 		if (Cast<AC_CSCharacter>(actor)->GetTeamID() == OwningPawn->GetTeamID())
 			continue;
+		//else if (Cast<AC_Base>(actor)->GetTeamID() == OwningPawn->GetTeamID())
+		//	continue;
 
 		if (SensedActors.Contains(actor))
 		{
@@ -126,30 +129,30 @@ void AC_CSAIController::OnPerceptionUpdated(const TArray<AActor*>& UpdateActors)
 		}
 		else
 		{
-			if (!Cast<AC_CSCharacter>(actor)->IsDead())
-			{
-				SensedActors.Add(actor);
-			}
+			SensedActors.Add(actor);
 		}
 	}
 }
 
 void AC_CSAIController::GetClosestActor()
 {
-	AC_CSCharacter* OwningPawn = Cast<AC_CSCharacter>(GetPawn());
-	AActor* ClosestActor = nullptr;
-
-	float ClosestDist = OwningPawn->GetStatus()->GetMaxSightRange();
-	for (AActor* actor : SensedActors)
+	if (SensedActors.Num())
 	{
-		if (OwningPawn->GetDistanceTo(actor) <= ClosestDist)
+		AC_CSCharacter* OwningPawn = Cast<AC_CSCharacter>(GetPawn());
+		AActor* ClosestActor = nullptr;
+
+		float ClosestDist = OwningPawn->GetStatus()->GetMaxSightRange();
+		for (AActor* actor : SensedActors)
 		{
-			ClosestDist = OwningPawn->GetDistanceTo(actor);
-			ClosestActor = actor;
+			if (OwningPawn->GetDistanceTo(actor) <= ClosestDist)
+			{
+				ClosestDist = OwningPawn->GetDistanceTo(actor);
+				ClosestActor = actor;
+			}
 		}
+		TargetDist = ClosestDist;
+		Target = ClosestActor;
+		OwningPawn->Target = Target;
+		Blackboard->SetValueAsObject("Target", Target);
 	}
-	TargetDist = ClosestDist;
-	Target = ClosestActor;
-	Cast<AC_CSCharacter>(GetPawn())->Target = Target;
-	Blackboard->SetValueAsObject("Target", Target);
 }

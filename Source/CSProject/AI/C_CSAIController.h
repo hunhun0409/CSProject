@@ -56,6 +56,6 @@ private:
 	AActor* Target;
 	float TargetDist;
 
-	
+	FTimerHandle Timer;
 
 };

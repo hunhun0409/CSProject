@@ -24,6 +24,14 @@ AC_Base::AC_Base()
 
 	HitEffect = CreateDefaultSubobject<UParticleSystem>("ParticleSystem");
 
+	
+}
+
+// Called when the game starts or when spawned
+void AC_Base::BeginPlay()
+{
+	Super::BeginPlay();
+	
 	if (DataTable && !Name.IsNone())
 	{
 		TArray<FStatusData const*> Rows;
@@ -45,14 +53,6 @@ AC_Base::AC_Base()
 			Status->ApplyStatus(Data[0]);
 		}
 	}
-}
-
-// Called when the game starts or when spawned
-void AC_Base::BeginPlay()
-{
-	Super::BeginPlay();
-	
-	
 
 	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, "Hello!");
 }

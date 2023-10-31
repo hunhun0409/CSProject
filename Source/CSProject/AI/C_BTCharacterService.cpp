@@ -19,7 +19,7 @@ void UC_BTCharacterService::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* N
 	UC_BehaviorComponent* behavior = controller->GetBehavior();
 
 	AC_CSCharacter* unit = Cast<AC_CSCharacter>(controller->GetPawn());
-	AC_CSCharacter* target = Cast<AC_CSCharacter>(behavior->GetTarget());
+	AActor* target = behavior->GetTarget();
 
 
 	if (unit->IsDead())
