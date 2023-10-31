@@ -186,7 +186,10 @@ void AC_CSCharacter::Attack()
 		return;
 	if (bCanActivateAttack)
 	{
+		if (!IsValid(Target) || Cast<AC_CSCharacter>(Target)->IsDead())
+			return;
 		FRotator rot = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), Target->GetActorLocation());
+		rot = FRotator(0, rot.Yaw, 0);
 		SetActorRotation(rot.Quaternion(), ETeleportType::TeleportPhysics);
 
 		*CharacterState = ECharacterState::Attacking;
