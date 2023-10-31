@@ -182,29 +182,29 @@ void UC_UserWidget::KeyBoardNumPress(const int& InNum)
 {
 	switch (InNum)
 	{
-	case 1:
+	case 0:
 		if (ButtonNum == 1 && UnitSelected)
+			SetUnitButtonSelect(false);
+		else
+			SetUnitButtonSelect(true, 0);
+		break;
+	case 1:
+		if (ButtonNum == 2 && UnitSelected)
 			SetUnitButtonSelect(false);
 		else
 			SetUnitButtonSelect(true, 1);
 		break;
 	case 2:
-		if (ButtonNum == 2 && UnitSelected)
+		if (ButtonNum == 3 && UnitSelected)
 			SetUnitButtonSelect(false);
 		else
 			SetUnitButtonSelect(true, 2);
 		break;
 	case 3:
-		if (ButtonNum == 3 && UnitSelected)
-			SetUnitButtonSelect(false);
-		else
-			SetUnitButtonSelect(true, 3);
-		break;
-	case 4:
 		if (ButtonNum == 4 && UnitSelected)
 			SetUnitButtonSelect(false);
 		else
-			SetUnitButtonSelect(true, 4);
+			SetUnitButtonSelect(true, 3);
 		break;
 	default:
 		break;
@@ -238,9 +238,10 @@ void UC_UserWidget::SetUnitButtonSelect(const bool& Selected, const int& ButtonN
 	if (UnitSelected)
 	{
 		ButtonNum = ButtonNumber;
+
 		for (int i = 0; i < UnitButton.Num(); i++)
 		{
-			if (i == ButtonNum - 1)
+			if (i == ButtonNum)
 				UnitButton[i]->SetRenderScale(FVector2D(1.1f));
 			else
 				UnitButton[i]->SetRenderScale(FVector2D(1.0f));

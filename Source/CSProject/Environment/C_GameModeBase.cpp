@@ -6,7 +6,7 @@
 #include "C_Field.h"
 #include "C_Base.h"
 #include "Character/C_CSCharacter.h"
-#include "Engine/World.h"
+#include "Kismet/GameplayStatics.h"
 
 AC_GameModeBase::AC_GameModeBase()
 {
@@ -27,8 +27,27 @@ void AC_GameModeBase::SpawnCharacter(const FVector& Location, const int& SlotNum
 
 			if (LeftBaseData.CurCost >= UnitCost)
 			{
-				CostReduce(true, UnitCost);
 
+				if (LeftBaseData.UnitOnFieldData.Find(LeftTeamSpawnCycle[SlotNum].GetDefaultObject()->GetCharacterName()))
+				{
+					if (LeftBaseData.IsAutoPlayMode)
+						return;
+					TArray<AActor*> FoundActors;
+
+					UGameplayStatics::GetAllActorsOfClass(GetWorld(), LeftTeamSpawnCycle[SlotNum], FoundActors);
+
+					for (auto& Character : FoundActors)
+					{
+						if (auto* Unit = Cast<AC_CSCharacter>(Character))
+						{
+							if (Unit->GetTeamID() == 0 && !Unit->IsDead())
+								Unit->Die();
+						}
+					}
+				}
+
+				CostReduce(true, UnitCost);
+				
 				FTransform SpawnTransform;
 				SpawnTransform.SetLocation(Location);
 				auto* Unit = Cast<AC_CSCharacter>(GetWorld()->SpawnActor(LeftTeamSpawnCycle[SlotNum], &SpawnTransform));
@@ -41,7 +60,7 @@ void AC_GameModeBase::SpawnCharacter(const FVector& Location, const int& SlotNum
 				}
 
 				Datas.UnitOnFieldData.Emplace(Unit->GetStatus()->GetCharacterName(), true);
-
+				LeftBaseData.UnitOnFieldData.Emplace(Unit->GetStatus()->GetCharacterName(), true);
 				
 				if (LeftTeamSpawnCycle.Num() > 4)
 				{
@@ -66,6 +85,25 @@ void AC_GameModeBase::SpawnCharacter(const FVector& Location, const int& SlotNum
 
 		if (RightBaseData.CurCost >= UnitCost)
 		{
+			if (RightBaseData.UnitOnFieldData.Find(RightTeamSpawnCycle[SlotNum].GetDefaultObject()->GetCharacterName()))
+			{
+				if (RightBaseData.IsAutoPlayMode)
+					return;
+
+				TArray<AActor*> FoundActors;
+
+				UGameplayStatics::GetAllActorsOfClass(GetWorld(), RightTeamSpawnCycle[SlotNum], FoundActors);
+
+				for (auto& Character : FoundActors)
+				{
+					if (auto* Unit = Cast<AC_CSCharacter>(Character))
+					{
+						if (Unit->GetTeamID() == 0 && !Unit->IsDead())
+							Unit->Die();
+					}
+				}
+			}
+
 			CostReduce(false, UnitCost);
 
 			FTransform SpawnTransform;
@@ -78,6 +116,8 @@ void AC_GameModeBase::SpawnCharacter(const FVector& Location, const int& SlotNum
 				Unit->SetSPSkillCoolRate(Data->SPCoolRate);
 				Unit->SetULTSkillCoolRate(Data->ULTCoolRate);
 			}
+
+			RightBaseData.UnitOnFieldData.Emplace(Unit->GetStatus()->GetCharacterName(), true);
 
 			if (RightTeamSpawnCycle.Num() > 4)
 			{
@@ -102,6 +142,11 @@ void AC_GameModeBase::UnitDiedDataUpdate(AC_CSCharacter* DiedUnit, const float& 
 	NewData.SPCoolRate = SPCoolRate;
 	NewData.ULTCoolRate = ULTCoolRate;
 	UnitBattleDatas.Emplace(DiedUnitName, NewData);
+
+	if(DiedUnit->GetTeamID() == 0)
+		LeftBaseData.UnitOnFieldData.Emplace(DiedUnit->GetStatus()->GetCharacterName(), false);
+	else
+		RightBaseData.UnitOnFieldData.Emplace(DiedUnit->GetStatus()->GetCharacterName(), false);
 
 	if (DiedUnit->GetTeamID() == 0)
 	{
@@ -240,7 +285,7 @@ void AC_GameModeBase::RestoreCost(const float& DeltaTime)
 			RightBaseData.IsCostFull = true;
 		}
 
-	if (RightBaseData.CurCost - (int)RightBaseData.CurCost < 0.01f)
+	if (RightBaseData.CurCost - (int)RightBaseData.CurCost < 0.01f || RightBaseData.IsCostFull)
 		AutoPlay(false);
 
 
@@ -262,7 +307,7 @@ void AC_GameModeBase::RestoreCost(const float& DeltaTime)
 		}
 	}
 
-	if (LeftBaseData.CurCost - (int)LeftBaseData.CurCost < 0.01f)
+	if (LeftBaseData.CurCost - (int)LeftBaseData.CurCost < 0.01f || LeftBaseData.IsCostFull)
 			AutoPlay(true);
 }
 
