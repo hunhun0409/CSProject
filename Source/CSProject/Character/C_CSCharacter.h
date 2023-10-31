@@ -90,11 +90,14 @@ public:
 	void SetSPSkillCoolRate(const float& InRate);
 	void SetULTSkillCoolRate(const float& InRate);
 
-	void Die() override;
+	
 protected:
 	void Attack() override;
 	void SPSkill() override;
 	void ULTSkill() override;
+
+	void Respawn() override;
+	void Die() override;
 
 private:
 	void InitState();

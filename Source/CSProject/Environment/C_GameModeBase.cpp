@@ -41,7 +41,7 @@ void AC_GameModeBase::SpawnCharacter(const FVector& Location, const int& SlotNum
 						if (auto* Unit = Cast<AC_CSCharacter>(Character))
 						{
 							if (Unit->GetTeamID() == 0 && !Unit->IsDead())
-								Unit->Die();
+								Cast<IC_CharacterInterface>(Unit)->Respawn();
 						}
 					}
 				}
@@ -99,7 +99,7 @@ void AC_GameModeBase::SpawnCharacter(const FVector& Location, const int& SlotNum
 					if (auto* Unit = Cast<AC_CSCharacter>(Character))
 					{
 						if (Unit->GetTeamID() == 0 && !Unit->IsDead())
-							Unit->Die();
+							Cast<IC_CharacterInterface>(Unit)->Respawn();
 					}
 				}
 			}
