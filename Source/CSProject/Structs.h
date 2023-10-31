@@ -12,6 +12,7 @@ struct FBasicData
 	bool IsAutoPlayMode = false;
 	int AutoSpawnNum = 0;
 	int MaxUnitCount = 0;
+	TMap<FName, bool> UnitOnFieldData;
 };
 
 USTRUCT()
@@ -26,7 +27,6 @@ struct FUIData
 	TArray<UTexture2D*> UnitImage;
 	TArray<FName> ButtonUnitName;
 	TMap<FName, bool> UnitOnFieldData;
-
 };
 
 struct FUnitBattleData

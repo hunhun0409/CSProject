@@ -59,10 +59,6 @@ void AC_Base::BeginPlay()
 	{
 		Spawn.BindUFunction(GameMode, "SpawnCharacter");
 	}
-	
-	
-
-	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, "Hello!");
 }
 
 void AC_Base::OnConstruction(const FTransform& Transform)
