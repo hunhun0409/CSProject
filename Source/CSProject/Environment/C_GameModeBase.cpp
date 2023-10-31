@@ -17,13 +17,12 @@ void AC_GameModeBase::SpawnCharacter(const FVector& Location, const int& SlotNum
 {
 	if (IsLeftTeam)
 	{
-
 		if (Map->GetSpawnCollider(true)->Bounds.GetBox().IsInside(Location))
 		{
 			if (!LeftTeamSpawnCycle[SlotNum])
 				return;
 			
-			int UnitCost = LeftTeamSpawnCycle[SlotNum].GetDefaultObject()->GetStatus()->GetCost();
+			int UnitCost = LeftTeamSpawnCycle[SlotNum].GetDefaultObject()->GetCost();
 
 			if (LeftBaseData.CurCost >= UnitCost)
 			{
@@ -59,7 +58,7 @@ void AC_GameModeBase::SpawnCharacter(const FVector& Location, const int& SlotNum
 	{
 		if (!RightTeamSpawnCycle[SlotNum])
 			return;
-		int UnitCost = RightTeamSpawnCycle[SlotNum].GetDefaultObject()->GetStatus()->GetCost();
+		int UnitCost = RightTeamSpawnCycle[SlotNum].GetDefaultObject()->GetCost();
 
 		if (RightBaseData.CurCost >= UnitCost)
 		{

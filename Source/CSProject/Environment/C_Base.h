@@ -27,12 +27,17 @@ protected:
 	virtual void OnConstruction(const FTransform& Transform) override;
 
 	virtual float CalculateDamage(float Damage, AActor* DamageCauser) override;
+
+	void SpawnCharacter(const FVector& Location, const int& SlotNum, const bool& IsLeftTeam);
+
+	TDelegate<void(const FVector&, const int&, const bool&)> Spawn;
+	// 플레이어 구분해서 true -> 플레이어 컨트롤러에서 설정(소환 연결), false ->자동 소환
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	TMulticastDelegate<void()> UpdateHP;
-	void SetTeamID(uint8 InTeamID) { TeamID = InTeamID; }
+	void SetTeamID(uint8 InTeamID);
 
 protected:
 
@@ -49,6 +54,9 @@ protected:
 	TMap<FName, TArray<FStatusData>> StatusMap;
 
 private:
+	bool IsAutoSpawning = false;
+	FVector AutoSpawnLocation;
+
 	//Status
 	UPROPERTY(EditDefaultsOnly, Category = "Status", meta = (AllowPrivateAccess = "true"))
 		FName Name;

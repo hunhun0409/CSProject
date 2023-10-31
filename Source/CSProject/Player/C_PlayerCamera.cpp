@@ -41,7 +41,8 @@ void AC_PlayerCamera::BeginPlay()
 			GameMode->UIDataUpdated.BindUFunction(this, "UpdateUIData");
 			CameraMovableY = GameMode->GetMaxYPos();
 			GetUIData.BindUFunction(GameMode, "GetUIData");
-			SpawnOrder.BindUFunction(GameMode, "SpawnCharacter");
+			//SpawnOrder.BindUFunction(GameMode, "SpawnCharacter");
+			SpawnOrder.BindUFunction(GameMode->GetPlayerBase(), "SpawnCharacter");
 			ShowAreaOrder.BindUFunction(GameMode, "SetVisiblePlayerSpawnableArea");
 		}
 

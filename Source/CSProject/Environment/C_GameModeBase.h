@@ -15,6 +15,7 @@
 
 class AC_CSCharacter;
 class AC_Field;
+class AC_Base;
 UCLASS(Abstract)
 class CSPROJECT_API AC_GameModeBase : public AGameModeBase, public IC_DamageHandleInterface
 {
@@ -24,6 +25,8 @@ public:
 	AC_GameModeBase();
 
 	const AC_Field* GetField() { return Map; }
+
+	AC_Base* GetPlayerBase() { return Map->AccessBaseData(true); }
 
 	UFUNCTION()
 		const FUIData& GetUIData() { return Datas; }
