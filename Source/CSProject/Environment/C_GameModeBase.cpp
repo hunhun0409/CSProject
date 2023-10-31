@@ -6,6 +6,7 @@
 #include "C_Field.h"
 #include "C_Base.h"
 #include "Character/C_CSCharacter.h"
+#include "Engine/World.h"
 
 AC_GameModeBase::AC_GameModeBase()
 {
@@ -48,9 +49,11 @@ void AC_GameModeBase::SpawnCharacter(const FVector& Location, const int& SlotNum
 
 					for (int i = 5; i < LeftTeamSpawnCycle.Num() - 1; i++)
 						LeftTeamSpawnCycle.Swap(i, i + 1);
-				}
+
 				Datas.UnitImage.EmplaceAt(SlotNum, LeftTeamSpawnCycle[SlotNum].GetDefaultObject()->GetCharacterButtonImage());
 				Datas.ButtonUnitName.EmplaceAt(SlotNum, LeftTeamSpawnCycle[SlotNum].GetDefaultObject()->GetStatus()->GetCharacterName());
+				}
+
 				UIDataUpdated.ExecuteIfBound();
 			}
 		}

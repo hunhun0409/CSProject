@@ -199,7 +199,7 @@ void AC_PlayerCamera::Spawn(int SlotNum)
 
 	CalculatePreviewLoc = false;
 
-	SpawnOrder.ExecuteIfBound(SpawnLocation, SlotNum, true);
+	SpawnOrder.ExecuteIfBound(SpawnLocation, SlotNum + 1, true);
 	ShowAreaOrder.ExecuteIfBound(false);
 }
 

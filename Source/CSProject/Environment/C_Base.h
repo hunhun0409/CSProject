@@ -3,13 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Pawn.h"
+#include "GameFramework/Actor.h"
 #include "Interface/C_DamageHandleInterface.h"
 #include "Components/C_StatusComponent.h"
 #include "C_Base.generated.h"
 
 UCLASS(Abstract)
-class CSPROJECT_API AC_Base : public APawn, public IC_DamageHandleInterface
+class CSPROJECT_API AC_Base : public AActor, public IC_DamageHandleInterface
 {
 	GENERATED_BODY()
 		//타워속성
