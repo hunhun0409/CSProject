@@ -10,6 +10,8 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Environment/C_GameModeBase.h"
 #include "C_UserWidget.h"
+#include "Environment/C_Field.h"
+#include "Environment/C_Base.h"
 
 // Sets default values
 AC_PlayerCamera::AC_PlayerCamera()
@@ -32,8 +34,6 @@ void AC_PlayerCamera::BeginPlay()
 {
 	Super::BeginPlay();
 
-	
-
 	if (auto* GameMode = Cast<AC_GameModeBase>(GetWorld()->GetAuthGameMode()))
 	{
 		if (!GameMode->UIDataUpdated.IsBound())
@@ -41,7 +41,8 @@ void AC_PlayerCamera::BeginPlay()
 			GameMode->UIDataUpdated.BindUFunction(this, "UpdateUIData");
 			CameraMovableY = GameMode->GetMaxYPos();
 			GetUIData.BindUFunction(GameMode, "GetUIData");
-			SpawnOrder.BindUFunction(GameMode, "SpawnCharacter");
+			//SpawnOrder.BindUFunction(GameMode, "SpawnCharacter");
+			SpawnOrder.BindUFunction(GameMode->GetField()->AccessBaseData(1), "SpawnCharacter");
 			ShowAreaOrder.BindUFunction(GameMode, "SetVisiblePlayerSpawnableArea");
 		}
 
@@ -56,12 +57,10 @@ void AC_PlayerCamera::BeginPlay()
 	}
 
 	UpdateUIData();
-
 	
 	if (UIWidgetClass)
 	{
 		UIWidget = Cast<UC_UserWidget>(CreateWidget(GetController()->CastToPlayerController(), UIWidgetClass, "UIWidget"));
-		
 
 		if (UIWidget)
 		{

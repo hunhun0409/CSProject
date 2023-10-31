@@ -7,8 +7,11 @@ struct FBasicData
 	float CurCost;
 	float CurHP;
 	float MaxHP;
-	bool IsCostFull;
+	bool IsCostFull = true;
 	float YPosition;
+	bool IsAutoPlayMode = false;
+	int AutoSpawnNum = 0;
+	int MaxUnitCount = 0;
 };
 
 USTRUCT()

@@ -15,6 +15,7 @@
 
 class AC_CSCharacter;
 class AC_Field;
+class AC_Base;
 UCLASS(Abstract)
 class CSPROJECT_API AC_GameModeBase : public AGameModeBase, public IC_DamageHandleInterface
 {
@@ -23,7 +24,7 @@ class CSPROJECT_API AC_GameModeBase : public AGameModeBase, public IC_DamageHand
 public:
 	AC_GameModeBase();
 
-	const AC_Field* GetField() { return Map; }
+	AC_Field* GetField() { return Map; }
 
 	UFUNCTION()
 		const FUIData& GetUIData() { return Datas; }
@@ -58,9 +59,12 @@ protected:
 	UFUNCTION(BlueprintCallable)
 		void CostReduce(const bool& IsLeft = true, const int& Cost = 0);
 
+	void AutoPlay(const bool& IsLeft);
+
 private:
 	void RestoreCost(const float& DeltaTime);
 
+	void InitBaseData();
 public:
 	
 protected:
@@ -89,4 +93,5 @@ private:
 	FVector2D CameraMovablePosY;
 	FVector AIUnitSpawnLocaiton;
 	TMap<FName, FUnitBattleData> UnitBattleDatas;
+
 };

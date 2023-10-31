@@ -9,6 +9,7 @@
 #include "Character/C_CSCharacter.h"
 #include "Components/C_StatusComponent.h"
 #include "Particles/ParticleSystem.h"
+#include "C_GameModeBase.h"
 
 // Sets default values
 AC_Base::AC_Base()
@@ -31,7 +32,7 @@ AC_Base::AC_Base()
 void AC_Base::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 	if (DataTable && !Name.IsNone())
 	{
 		TArray<FStatusData const*> Rows;
@@ -53,6 +54,13 @@ void AC_Base::BeginPlay()
 			Status->ApplyStatus(Data[0]);
 		}
 	}
+
+	if (auto* GameMode = Cast<AC_GameModeBase>(GetWorld()->GetAuthGameMode()))
+	{
+		Spawn.BindUFunction(GameMode, "SpawnCharacter");
+	}
+	
+	
 
 	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, "Hello!");
 }
@@ -190,9 +198,35 @@ float AC_Base::CalculateDamage(float Damage, AActor* DamageCauser)
 	return FinalDamage;
 }
 
+void AC_Base::SpawnCharacter(const FVector& Location, const int& SlotNum, const bool& IsLeftTeam)
+{
+	if (IsAutoSpawning)
+	{
+		Spawn.ExecuteIfBound(AutoSpawnLocation, SlotNum, IsLeftTeam);
+	}
+	else
+	{
+		Spawn.ExecuteIfBound(Location, SlotNum, IsLeftTeam);
+	}
+}
+
 // Called every frame
 void AC_Base::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void AC_Base::SetTeamID(uint8 InTeamID)
+{
+	TeamID = InTeamID;
+	if (TeamID == 0)
+	{
+		AutoSpawnLocation = GetActorLocation() + GetActorForwardVector() * 10;
+	}
+	else
+	{
+		AutoSpawnLocation = GetActorLocation() - GetActorForwardVector() * 10;
+		IsAutoSpawning = true;
+	}
 }

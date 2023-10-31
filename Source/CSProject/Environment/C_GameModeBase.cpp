@@ -17,13 +17,12 @@ void AC_GameModeBase::SpawnCharacter(const FVector& Location, const int& SlotNum
 {
 	if (IsLeftTeam)
 	{
-
 		if (Map->GetSpawnCollider(true)->Bounds.GetBox().IsInside(Location))
 		{
 			if (!LeftTeamSpawnCycle[SlotNum])
 				return;
 			
-			int UnitCost = LeftTeamSpawnCycle[SlotNum].GetDefaultObject()->GetStatus()->GetCost();
+			int UnitCost = LeftTeamSpawnCycle[SlotNum].GetDefaultObject()->GetCost();
 
 			if (LeftBaseData.CurCost >= UnitCost)
 			{
@@ -59,7 +58,7 @@ void AC_GameModeBase::SpawnCharacter(const FVector& Location, const int& SlotNum
 	{
 		if (!RightTeamSpawnCycle[SlotNum])
 			return;
-		int UnitCost = RightTeamSpawnCycle[SlotNum].GetDefaultObject()->GetStatus()->GetCost();
+		int UnitCost = RightTeamSpawnCycle[SlotNum].GetDefaultObject()->GetCost();
 
 		if (RightBaseData.CurCost >= UnitCost)
 		{
@@ -125,10 +124,7 @@ void AC_GameModeBase::BeginPlay()
 
 	if (Field)
 		Map = Cast<AC_Field>(GetWorld()->SpawnActor(Field));
-
-	LeftBaseData.CurCost = MaxCost;
-	RightBaseData.CurCost = MaxCost;
-
+	
 	for (size_t i = 0; i < 2; i++)
 	{
 		Map->AccessBaseData((bool)i)->UpdateHP.AddUFunction(this, "CheckHP");
@@ -151,8 +147,7 @@ void AC_GameModeBase::BeginPlay()
 		RightTeamSpawnCycle.Add(RightTeamOrganization[i]);
 	}
 
-	RestoreCost(0.0f);
-	CheckHP();
+	InitBaseData();
 
 }
 
@@ -198,6 +193,37 @@ void AC_GameModeBase::CostReduce(const bool& IsLeft, const int& Cost)
 	UIDataUpdated.ExecuteIfBound();
 }
 
+void AC_GameModeBase::AutoPlay(const bool& IsLeft)
+{
+	if (LeftBaseData.IsAutoPlayMode && IsLeft)
+	{
+		if (LeftBaseData.AutoSpawnNum <= LeftBaseData.MaxUnitCount)
+		{
+			Map->AccessBaseData(1)->Spawn.ExecuteIfBound(FVector::ZeroVector,
+				LeftBaseData.AutoSpawnNum, true);
+
+			LeftBaseData.AutoSpawnNum++;
+
+			if (LeftBaseData.AutoSpawnNum > LeftBaseData.MaxUnitCount)
+				LeftBaseData.AutoSpawnNum = 0;
+		}
+	}
+	
+	if (RightBaseData.IsAutoPlayMode && !IsLeft)
+	{
+		if (RightBaseData.AutoSpawnNum <= RightBaseData.MaxUnitCount)
+		{
+			Map->AccessBaseData(0)->Spawn.ExecuteIfBound(FVector::ZeroVector,
+				RightBaseData.AutoSpawnNum, true);
+
+			RightBaseData.AutoSpawnNum++;
+
+			if (RightBaseData.AutoSpawnNum > RightBaseData.MaxUnitCount)
+				RightBaseData.AutoSpawnNum = 0;
+		}
+	}
+}
+
 void AC_GameModeBase::RestoreCost(const float& DeltaTime)
 {
 
@@ -209,6 +235,10 @@ void AC_GameModeBase::RestoreCost(const float& DeltaTime)
 			RightBaseData.CurCost = MaxCost;
 			RightBaseData.IsCostFull = true;
 		}
+
+	if (RightBaseData.CurCost - (int)RightBaseData.CurCost < 0.01f)
+		AutoPlay(false);
+
 
 	if (!LeftBaseData.IsCostFull)
 	{
@@ -222,8 +252,31 @@ void AC_GameModeBase::RestoreCost(const float& DeltaTime)
 
 		Datas.CurCost = LeftBaseData.CurCost;
 		
-		if (Datas.CurCost - (int)Datas.CurCost < 0.01f )
+		if (Datas.CurCost - (int)Datas.CurCost < 0.01f)
+		{
 			UIDataUpdated.ExecuteIfBound();
+		}
 	}
+
+	if (LeftBaseData.CurCost - (int)LeftBaseData.CurCost < 0.01f)
+			AutoPlay(true);
+}
+
+void AC_GameModeBase::InitBaseData()
+{
+	LeftBaseData.CurCost = MaxCost;
+	RightBaseData.CurCost = MaxCost;
+	
+	LeftBaseData.MaxUnitCount = LeftTeamSpawnCycle.Num();
+	RightBaseData.MaxUnitCount = RightTeamSpawnCycle.Num();
+
+	//AI
+	Map->AccessBaseData(0)->SetAutoPlay(true);
+
+	LeftBaseData.IsAutoPlayMode = Map->AccessBaseData(1)->GetAutoPlay();
+	RightBaseData.IsAutoPlayMode = Map->AccessBaseData(0)->GetAutoPlay();
+
+	RestoreCost(0.0f);
+	CheckHP();
 }
 
