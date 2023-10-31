@@ -41,7 +41,10 @@ void AC_GameModeBase::SpawnCharacter(const FVector& Location, const int& SlotNum
 						if (auto* Unit = Cast<AC_CSCharacter>(Character))
 						{
 							if (Unit->GetTeamID() == 0 && !Unit->IsDead())
-								Unit->Die();
+								if (auto* Interface = Cast<IC_CharacterInterface>(Unit))
+								{
+
+								}
 						}
 					}
 				}
