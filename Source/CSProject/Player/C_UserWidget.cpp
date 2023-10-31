@@ -153,7 +153,7 @@ void UC_UserWidget::UpdateMouseLBPressing(const bool& IsPressing)
 			{
 				SetUnitButtonSelect(false);
 
-				SpawnOrdered.ExecuteIfBound(ButtonNum);
+				SpawnOrdered.ExecuteIfBound(ButtonNum - 1);
 			}
 		}
 		else
@@ -163,7 +163,7 @@ void UC_UserWidget::UpdateMouseLBPressing(const bool& IsPressing)
 				//Click
 				// unit selected 유지
 				if(UnitSelected)
-					SelectedPreview.ExecuteIfBound(ButtonNum);
+					SelectedPreview.ExecuteIfBound(ButtonNum - 1);
 
 			}
 			else
@@ -172,7 +172,7 @@ void UC_UserWidget::UpdateMouseLBPressing(const bool& IsPressing)
 				// spawn unit, selected 해제
 				SetUnitButtonSelect(false);
 
-				SpawnOrdered.ExecuteIfBound(ButtonNum);
+				SpawnOrdered.ExecuteIfBound(ButtonNum - 1);
 			}
 		}
 	}
@@ -182,25 +182,25 @@ void UC_UserWidget::KeyBoardNumPress(const int& InNum)
 {
 	switch (InNum)
 	{
-	case 0:
+	case 1:
 		if (ButtonNum == 1 && UnitSelected)
 			SetUnitButtonSelect(false);
 		else
 			SetUnitButtonSelect(true, 1);
 		break;
-	case 1:
+	case 2:
 		if (ButtonNum == 2 && UnitSelected)
 			SetUnitButtonSelect(false);
 		else
 			SetUnitButtonSelect(true, 2);
 		break;
-	case 2:
+	case 3:
 		if (ButtonNum == 3 && UnitSelected)
 			SetUnitButtonSelect(false);
 		else
 			SetUnitButtonSelect(true, 3);
 		break;
-	case 3:
+	case 4:
 		if (ButtonNum == 4 && UnitSelected)
 			SetUnitButtonSelect(false);
 		else
@@ -240,7 +240,7 @@ void UC_UserWidget::SetUnitButtonSelect(const bool& Selected, const int& ButtonN
 		ButtonNum = ButtonNumber;
 		for (int i = 0; i < UnitButton.Num(); i++)
 		{
-			if (i == ButtonNum)
+			if (i == ButtonNum - 1)
 				UnitButton[i]->SetRenderScale(FVector2D(1.1f));
 			else
 				UnitButton[i]->SetRenderScale(FVector2D(1.0f));

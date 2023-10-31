@@ -95,25 +95,25 @@ void AC_Controller::EndRB()
 
 void AC_Controller::Key1B()
 {
-	Cast<IC_ControllerInterface>(GetPawn())->KeyNumPress(0);
+	Cast<IC_ControllerInterface>(GetPawn())->KeyNumPress(1);
 
 }
 
 void AC_Controller::Key2B()
 {
-	Cast<IC_ControllerInterface>(GetPawn())->KeyNumPress(1);
+	Cast<IC_ControllerInterface>(GetPawn())->KeyNumPress(2);
 
 }
 
 void AC_Controller::Key3B()
 {
-	Cast<IC_ControllerInterface>(GetPawn())->KeyNumPress(2);
+	Cast<IC_ControllerInterface>(GetPawn())->KeyNumPress(3);
 
 }
 
 void AC_Controller::Key4B()
 {
-	Cast<IC_ControllerInterface>(GetPawn())->KeyNumPress(3);
+	Cast<IC_ControllerInterface>(GetPawn())->KeyNumPress(4);
 
 }
 

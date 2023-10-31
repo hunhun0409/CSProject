@@ -41,6 +41,7 @@ void AC_GameModeBase::SpawnCharacter(const FVector& Location, const int& SlotNum
 
 				Datas.UnitOnFieldData.Emplace(Unit->GetStatus()->GetCharacterName(), true);
 
+				
 				if (LeftTeamSpawnCycle.Num() > 4)
 				{
 					LeftTeamSpawnCycle.Swap(SlotNum, 5);
