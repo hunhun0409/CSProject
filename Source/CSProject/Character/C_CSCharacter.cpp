@@ -162,6 +162,21 @@ void AC_CSCharacter::Tick(float DeltaTime)
 		MoveForward();
 }
 
+float AC_CSCharacter::GetSPSkillCooldown()
+{
+	if (SpecialSkill)
+		return SpecialSkill->GetSkillCoolDown();
+
+	return 0.0f;
+}
+
+float AC_CSCharacter::GetULTSkillCooldown()
+{
+	if (UltimateSkill)
+		return UltimateSkill->GetSkillCoolDown();
+	return 0.0f;
+}
+
 void AC_CSCharacter::SetSPSkillCoolRate(const float& InRate)
 {
 	if (SpecialSkill)
@@ -649,3 +664,4 @@ float AC_CSCharacter::CalculateDamage(float Damage, AActor* DamageCauser)
 	return FinalDamage;
 
 }
+

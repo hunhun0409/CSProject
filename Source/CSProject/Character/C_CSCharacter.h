@@ -87,6 +87,12 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+
+	UFUNCTION(BlueprintCallable, Category = "StatusUI")
+		float GetSPSkillCooldown();
+	UFUNCTION(BlueprintCallable, Category = "StatusUI")
+		float GetULTSkillCooldown();
+
 	void SetSPSkillCoolRate(const float& InRate);
 	void SetULTSkillCoolRate(const float& InRate);
 

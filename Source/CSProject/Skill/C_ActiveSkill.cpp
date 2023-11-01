@@ -17,11 +17,13 @@ AC_ActiveSkill::AC_ActiveSkill()
 {
 	CreateDefaultSubobjectAuto(SkillMontage);
 
+	
 }
 void AC_ActiveSkill::BeginPlay()
 {
 	Super::BeginPlay();
-
+	if (Timer == FTimerHandle())
+		GetWorld()->GetTimerManager().SetTimer(Timer, this, &ThisClass::AddCooldown, AddInterval, true, AddInterval);
 }
 
 void AC_ActiveSkill::ApplyEffectToPawn(APawn* InPawn)
@@ -37,6 +39,8 @@ void AC_ActiveSkill::BeginAction()
 	{
 		if (SkillMontage)
 		{
+			RestartCooldown();
+
 			Cast<AC_CSCharacter>(GetOwner())->GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &ThisClass::OnNotifyStart);
 			Cast<AC_CSCharacter>(GetOwner())->GetMesh()->GetAnimInstance()->OnMontageEnded.AddDynamic(this, &ThisClass::OnSkillMontageEnded);
 
@@ -59,7 +63,7 @@ void AC_ActiveSkill::Activate()
 	//스킬이 발사되는 순간
 	Cast<AC_CSCharacter>(GetOwner())->GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.RemoveDynamic(this, &ThisClass::OnNotifyStart);
 
-	RestartCooldown();
+	
 	//미완
 	//효과
 }
