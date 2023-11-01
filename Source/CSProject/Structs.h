@@ -12,7 +12,7 @@ struct FBasicData
 	bool IsAutoPlayMode = false;
 	int AutoSpawnNum = 0;
 	int MaxUnitCount = 0;
-	TMap<FName, bool> UnitOnFieldData;
+	TSet<FName> UnitOnFieldData;
 };
 
 USTRUCT()
@@ -26,7 +26,7 @@ struct FUIData
 	float CostRegenRatio;
 	TArray<UTexture2D*> UnitImage;
 	TArray<FName> ButtonUnitName;
-	TMap<FName, bool> UnitOnFieldData;
+	TSet<FName> UnitOnFieldData;
 };
 
 struct FUnitBattleData

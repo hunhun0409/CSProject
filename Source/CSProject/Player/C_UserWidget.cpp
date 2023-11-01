@@ -6,6 +6,7 @@
 #include "Kismet/KismetMaterialLibrary.h"
 #include "Components/Image.h"
 #include "Components/PanelSlot.h"
+#include "Components/TextBlock.h"
 
 void UC_UserWidget::NativeOnInitialized()
 {
@@ -37,22 +38,15 @@ void UC_UserWidget::NativeConstruct()
 		MouseWidget->SetBrushFromTexture(MouseCurserNClick);
 	}
 
+	if (!CostName.IsNone())
+	{
+		CostText = Cast<UTextBlock>(GetWidgetFromName(CostName));
+	}
+
 	for (int i = 0; i < UnitButtonName.Num(); i++)
 	{
 		UnitButton.Emplace(Cast<UImage>(GetWidgetFromName(UnitButtonName[i])));
 	}
-
-	//if(!Button1.IsNone())
-	//	UnitButton1 = Cast<UImage>(GetWidgetFromName(Button1));
-
-	//if(!Button2.IsNone())
-	//	UnitButton2 = Cast<UImage>(GetWidgetFromName(Button2));
-
-	//if(!Button3.IsNone())
-	//	UnitButton3 = Cast<UImage>(GetWidgetFromName(Button3));
-
-	//if(!Button4.IsNone())
-	//	UnitButton4 = Cast<UImage>(GetWidgetFromName(Button4));
 
 	//UImage에 UTexture2D는 Character로부터 받아 변경. Press 입력을 받으면 Release 될때가지 마우스 위치에 있던
 	//Image의 Tint를 조정. 만약 소환된 Character면 어둡게 표시. <- 정보 받아야 함.
@@ -81,6 +75,7 @@ void UC_UserWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
 void UC_UserWidget::UpdateUIData(const FUIData& UIData)
 {
 	CurCost = UIData.CurCost;
+	CostText->SetText(FText::FromString(FString::FromInt(CurCost)));
 	PlayerBaseHP = UIData.PlayerBaseHP;
 	EnemyBaseHP = UIData.EnemyBaseHP;
 	CostRegenRatio = UIData.CostRegenRatio;

@@ -151,13 +151,7 @@ void AC_CSCharacter::CharacterMontageBlendingOut(UAnimMontage* const montage, bo
 }
 
 void AC_CSCharacter::Tick(float DeltaTime)
-{
-	if (IsDead())
-	{
-		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, "IsDead!");
-		return;
-	}
-		
+{	
 	Super::Tick(DeltaTime);
 	//PrintState();
 	/*if(bMove)

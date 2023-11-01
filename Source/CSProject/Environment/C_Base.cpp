@@ -218,11 +218,12 @@ void AC_Base::SetTeamID(uint8 InTeamID)
 	TeamID = InTeamID;
 	if (TeamID == 0)
 	{
-		AutoSpawnLocation = GetActorLocation() + GetActorForwardVector() * 10;
+		
+		AutoSpawnLocation = GetActorTransform().GetTranslation() + GetActorForwardVector() * 2;
 	}
 	else
 	{
-		AutoSpawnLocation = GetActorLocation() - GetActorForwardVector() * 10;
+		AutoSpawnLocation = GetActorTransform().GetTranslation() - GetActorForwardVector() * 2;
 		IsAutoSpawning = true;
 	}
 }

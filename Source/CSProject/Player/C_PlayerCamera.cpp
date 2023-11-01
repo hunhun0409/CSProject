@@ -47,7 +47,6 @@ void AC_PlayerCamera::BeginPlay()
 		}
 
 		Datas = GameMode->GetUIData();
-
 	}
 	
 	if (ZoomCurve)
