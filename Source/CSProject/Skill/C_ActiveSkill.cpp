@@ -22,8 +22,8 @@ AC_ActiveSkill::AC_ActiveSkill()
 void AC_ActiveSkill::BeginPlay()
 {
 	Super::BeginPlay();
-	if (Timer == FTimerHandle())
-		GetWorld()->GetTimerManager().SetTimer(Timer, this, &ThisClass::AddCooldown, AddInterval, true, AddInterval);
+
+	
 }
 
 void AC_ActiveSkill::ApplyEffectToPawn(APawn* InPawn)
@@ -39,10 +39,11 @@ void AC_ActiveSkill::BeginAction()
 	{
 		if (SkillMontage)
 		{
+
 			RestartCooldown();
 
-			Cast<AC_CSCharacter>(GetOwner())->GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &ThisClass::OnNotifyStart);
-			Cast<AC_CSCharacter>(GetOwner())->GetMesh()->GetAnimInstance()->OnMontageEnded.AddDynamic(this, &ThisClass::OnSkillMontageEnded);
+			SkillOwner->GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.AddDynamic(this, &ThisClass::OnNotifyStart);
+			SkillOwner->GetMesh()->GetAnimInstance()->OnMontageEnded.AddDynamic(this, &ThisClass::OnSkillMontageEnded);
 
 			float attackRate = Cast<AC_CSCharacter>(GetOwner())->GetStatus()->GetAttackRate();
 
@@ -73,9 +74,20 @@ void AC_ActiveSkill::Deactivate()
 	
 }
 
+void AC_ActiveSkill::StartCooldown()
+{
+	if (Timer == FTimerHandle())
+		GetWorld()->GetTimerManager().SetTimer(Timer, this, &ThisClass::AddCooldown, AddInterval, true, AddInterval);
+}
+
 void AC_ActiveSkill::RestartCooldown()
 {
 	CurCooldown = 0;
+	if (SkillType == ESkillType::Special)
+		Cast<AC_CSCharacter>(GetInstigator())->bCanActivateSP = false;
+	if (SkillType == ESkillType::Ultimate)
+		Cast<AC_CSCharacter>(GetInstigator())->bCanActivateULT = false;
+	
 	//미완
 	//전장에 스폰여부를 확인하고 스폰돼있을때만 쿨이 돌게 해야함
 	if (Timer == FTimerHandle())
@@ -100,6 +112,11 @@ void AC_ActiveSkill::AddCooldown()
 
 	if (CurCooldown == MaxCooldown)
 	{
+		if(SkillType == ESkillType::Special)
+			Cast<AC_CSCharacter>(GetInstigator())->bCanActivateSP = true;
+		if (SkillType == ESkillType::Ultimate)
+			Cast<AC_CSCharacter>(GetInstigator())->bCanActivateULT = true;
+
 		if (Timer != FTimerHandle())
 			GetWorld()->GetTimerManager().ClearTimer(Timer);
 	}
@@ -112,5 +129,5 @@ bool AC_ActiveSkill::CanActivate()
 
 float AC_ActiveSkill::GetSkillCoolDown()
 {
-	return MaxCooldown / CurCooldown;
+	return CurCooldown / MaxCooldown;
 }

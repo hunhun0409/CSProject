@@ -35,6 +35,7 @@ protected:
 	void Activate() override;
 	void Deactivate() override;
 
+	void StartCooldown() override;
 	void RestartCooldown() override;
 
 	UFUNCTION()

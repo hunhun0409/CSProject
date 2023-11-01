@@ -152,17 +152,9 @@ void AC_CSCharacter::CharacterMontageBlendingOut(UAnimMontage* const montage, bo
 
 void AC_CSCharacter::Tick(float DeltaTime)
 {
-	if (IsDead())
-	{
-		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, "IsDead!");
-		return;
-	}
-		
 	Super::Tick(DeltaTime);
-	//PrintState();
-	/*if(bMove)
-		GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, "bMove == true!");*/
 
+	UpdateCooldown();
 
 	if(bMove && *CharacterState == ECharacterState::Idle)
 		MoveForward();
@@ -471,7 +463,7 @@ void AC_CSCharacter::InitSkill()
 		auto* const SpawnedSPSkill = GetWorld()->SpawnActor<AC_Skill>(SpecialSkillClass, SpawnParameters);
 		SpawnedSPSkill->AttachToComponent(GetMesh(), Rules);
 		SpecialSkill = SpawnedSPSkill;
-
+		SpecialSkill->StartCooldown();
 
 	}
 	//ultimate
@@ -480,6 +472,7 @@ void AC_CSCharacter::InitSkill()
 		auto* const SpawnedUltSkill = GetWorld()->SpawnActor<AC_Skill>(UltimateSkillClass, SpawnParameters);
 		SpawnedUltSkill->AttachToComponent(GetMesh(), Rules);
 		UltimateSkill = SpawnedUltSkill;
+		UltimateSkill->StartCooldown();
 	}
 }
 

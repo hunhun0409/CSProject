@@ -31,6 +31,7 @@ public:
 
 
 
+		virtual void StartCooldown() PURE_VIRTUAL(IC_SkillInterface::StartCooldown, return;)
 		virtual void RestartCooldown() PURE_VIRTUAL(IC_SkillInterface::RestartCooldown, return;)
 
 		virtual bool CanActivate() PURE_VIRTUAL(IC_SkillInterface::CanActivate, return false;)
