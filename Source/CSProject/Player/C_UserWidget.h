@@ -75,4 +75,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 		FName MouseImage;
 	class UImage* MouseWidget;
+
+	UPROPERTY(EditDefaultsOnly)
+		FName CostName;
+	class UTextBlock* CostText;
 };

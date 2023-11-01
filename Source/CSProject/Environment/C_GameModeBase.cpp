@@ -16,11 +16,12 @@ AC_GameModeBase::AC_GameModeBase()
 
 void AC_GameModeBase::SpawnCharacter(const FVector& Location, const int& SlotNum, const bool& IsLeftTeam)
 {
+
 	if (IsLeftTeam)
 	{
 		if (Map->GetSpawnCollider(true)->Bounds.GetBox().IsInside(Location))
 		{
-			if (!LeftTeamSpawnCycle[SlotNum])
+			if (SlotNum >= LeftTeamSpawnCycle.Num())
 				return;
 			
 			int UnitCost = LeftTeamSpawnCycle[SlotNum].GetDefaultObject()->GetCost();
@@ -43,13 +44,11 @@ void AC_GameModeBase::SpawnCharacter(const FVector& Location, const int& SlotNum
 							if (Unit->GetTeamID() == 0 && !Unit->IsDead())
 								if (auto* Interface = Cast<IC_CharacterInterface>(Unit))
 									Interface->Respawn();
-
 						}
 					}
 				}
-
 				CostReduce(true, UnitCost);
-				
+
 				FTransform SpawnTransform;
 				SpawnTransform.SetLocation(Location);
 				auto* Unit = Cast<AC_CSCharacter>(GetWorld()->SpawnActor(LeftTeamSpawnCycle[SlotNum], &SpawnTransform));
@@ -61,8 +60,8 @@ void AC_GameModeBase::SpawnCharacter(const FVector& Location, const int& SlotNum
 					Unit->SetULTSkillCoolRate(Data->ULTCoolRate);
 				}
 
-				Datas.UnitOnFieldData.Emplace(Unit->GetStatus()->GetCharacterName(), true);
-				LeftBaseData.UnitOnFieldData.Emplace(Unit->GetStatus()->GetCharacterName(), true);
+				Datas.UnitOnFieldData.Emplace(Unit->GetStatus()->GetCharacterName());
+				LeftBaseData.UnitOnFieldData.Emplace(Unit->GetStatus()->GetCharacterName());
 				
 				if (LeftTeamSpawnCycle.Num() > 4)
 				{
@@ -81,12 +80,13 @@ void AC_GameModeBase::SpawnCharacter(const FVector& Location, const int& SlotNum
 	}
 	else
 	{
-		if (!RightTeamSpawnCycle[SlotNum])
+		if (SlotNum >= RightTeamSpawnCycle.Num())
 			return;
 		int UnitCost = RightTeamSpawnCycle[SlotNum].GetDefaultObject()->GetCost();
 
 		if (RightBaseData.CurCost >= UnitCost)
 		{
+
 			if (RightBaseData.UnitOnFieldData.Find(RightTeamSpawnCycle[SlotNum].GetDefaultObject()->GetCharacterName()))
 			{
 				if (RightBaseData.IsAutoPlayMode)
@@ -106,7 +106,6 @@ void AC_GameModeBase::SpawnCharacter(const FVector& Location, const int& SlotNum
 					}
 				}
 			}
-
 			CostReduce(false, UnitCost);
 
 			FTransform SpawnTransform;
@@ -120,7 +119,7 @@ void AC_GameModeBase::SpawnCharacter(const FVector& Location, const int& SlotNum
 				Unit->SetULTSkillCoolRate(Data->ULTCoolRate);
 			}
 
-			RightBaseData.UnitOnFieldData.Emplace(Unit->GetStatus()->GetCharacterName(), true);
+			RightBaseData.UnitOnFieldData.Emplace(Unit->GetStatus()->GetCharacterName());
 
 			if (RightTeamSpawnCycle.Num() > 4)
 			{
@@ -140,16 +139,22 @@ void AC_GameModeBase::SetVisiblePlayerSpawnableArea(const bool& IsVisible)
 
 void AC_GameModeBase::UnitDiedDataUpdate(AC_CSCharacter* DiedUnit, const float& SPCoolRate, const float& ULTCoolRate)
 {
-	FName DiedUnitName = DiedUnit->GetStatus()->GetCharacterName();
+	FName DiedUnitName = DiedUnit->GetCharacterName();
 	FUnitBattleData NewData;
 	NewData.SPCoolRate = SPCoolRate;
 	NewData.ULTCoolRate = ULTCoolRate;
 	UnitBattleDatas.Emplace(DiedUnitName, NewData);
 
-	if(DiedUnit->GetTeamID() == 0)
-		LeftBaseData.UnitOnFieldData.Emplace(DiedUnit->GetStatus()->GetCharacterName(), false);
+	if (DiedUnit->GetTeamID() == 0)
+	{
+		LeftBaseData.UnitOnFieldData.Remove(DiedUnit->GetCharacterName());
+	}
 	else
-		RightBaseData.UnitOnFieldData.Emplace(DiedUnit->GetStatus()->GetCharacterName(), false);
+	{
+		RightBaseData.UnitOnFieldData.Remove(DiedUnit->GetCharacterName());
+	}
+
+
 
 	if (DiedUnit->GetTeamID() == 0)
 	{
@@ -171,8 +176,6 @@ void AC_GameModeBase::OnConstruction(const FTransform& Transform)
 void AC_GameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
-
-	Datas.CostRegenRatio = CostRegenRatio;
 
 	if (Field)
 		Map = Cast<AC_Field>(GetWorld()->SpawnActor(Field));
@@ -200,7 +203,6 @@ void AC_GameModeBase::BeginPlay()
 	}
 
 	InitBaseData();
-
 }
 
 void AC_GameModeBase::Tick(float DeltaTime)
@@ -235,6 +237,7 @@ void AC_GameModeBase::CostReduce(const bool& IsLeft, const int& Cost)
 	{
 		LeftBaseData.CurCost -= Cost;
 		LeftBaseData.IsCostFull = false;
+		Datas.CurCost = LeftBaseData.CurCost;
 	}
 	else
 	{
@@ -256,8 +259,9 @@ void AC_GameModeBase::AutoPlay(const bool& IsLeft)
 
 			LeftBaseData.AutoSpawnNum++;
 
-			if (LeftBaseData.AutoSpawnNum > LeftBaseData.MaxUnitCount)
+			if (LeftBaseData.AutoSpawnNum >= LeftBaseData.MaxUnitCount)
 				LeftBaseData.AutoSpawnNum = 0;
+
 		}
 	}
 	
@@ -266,19 +270,19 @@ void AC_GameModeBase::AutoPlay(const bool& IsLeft)
 		if (RightBaseData.AutoSpawnNum <= RightBaseData.MaxUnitCount)
 		{
 			Map->AccessBaseData(0)->Spawn.ExecuteIfBound(FVector::ZeroVector,
-				RightBaseData.AutoSpawnNum, true);
+				RightBaseData.AutoSpawnNum, false);
 
 			RightBaseData.AutoSpawnNum++;
 
-			if (RightBaseData.AutoSpawnNum > RightBaseData.MaxUnitCount)
+			if (RightBaseData.AutoSpawnNum >= RightBaseData.MaxUnitCount)
 				RightBaseData.AutoSpawnNum = 0;
 		}
 	}
+
 }
 
 void AC_GameModeBase::RestoreCost(const float& DeltaTime)
 {
-
 	if(!RightBaseData.IsCostFull)
 		if (RightBaseData.CurCost <= MaxCost)
 			RightBaseData.CurCost += DeltaTime * CostRegenRatio;
@@ -287,10 +291,6 @@ void AC_GameModeBase::RestoreCost(const float& DeltaTime)
 			RightBaseData.CurCost = MaxCost;
 			RightBaseData.IsCostFull = true;
 		}
-
-	if (RightBaseData.CurCost - (int)RightBaseData.CurCost < 0.01f || RightBaseData.IsCostFull)
-		AutoPlay(false);
-
 
 	if (!LeftBaseData.IsCostFull)
 	{
@@ -301,7 +301,6 @@ void AC_GameModeBase::RestoreCost(const float& DeltaTime)
 			LeftBaseData.CurCost = MaxCost;
 			LeftBaseData.IsCostFull = true;
 		}
-
 		Datas.CurCost = LeftBaseData.CurCost;
 		
 		if (Datas.CurCost - (int)Datas.CurCost < 0.01f)
@@ -310,15 +309,28 @@ void AC_GameModeBase::RestoreCost(const float& DeltaTime)
 		}
 	}
 
-	if (LeftBaseData.CurCost - (int)LeftBaseData.CurCost < 0.01f || LeftBaseData.IsCostFull)
-			AutoPlay(true);
+	static float AutoTimer = 0.0f;
+
+	AutoTimer += DeltaTime;
+
+	if (AutoTimer >= 0.1f)
+	{
+		AutoPlay(false);
+		AutoPlay(true);
+
+		AutoTimer = 0.0f;
+	}
 }
 
 void AC_GameModeBase::InitBaseData()
 {
+	Datas.CostRegenRatio = CostRegenRatio;
+
 	LeftBaseData.CurCost = MaxCost;
 	RightBaseData.CurCost = MaxCost;
 	
+	Datas.CurCost = LeftBaseData.CurCost;
+
 	LeftBaseData.MaxUnitCount = LeftTeamSpawnCycle.Num();
 	RightBaseData.MaxUnitCount = RightTeamSpawnCycle.Num();
 
