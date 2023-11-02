@@ -3,6 +3,7 @@
 
 #include "Skill/C_ActiveSkill.h"
 #include "Character/C_CSCharacter.h"
+#include "Enum/ECharacterState.h"
 
 #include "Particles/ParticleSystemComponent.h"
 
@@ -66,11 +67,10 @@ void AC_ActiveSkill::Activate()
 	//스킬이 발사되는 순간
 	if (!IsValid(GetOwner()))
 		return;
-	Cast<AC_CSCharacter>(GetOwner())->GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.RemoveDynamic(this, &ThisClass::OnNotifyStart);
+	AC_CSCharacter* SkillOwner = Cast<AC_CSCharacter>(GetOwner());
+	*(SkillOwner->CharacterState) = ECharacterState::Idle;
 
-	
-	//미완
-	//효과
+	SkillOwner->GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.RemoveDynamic(this, &ThisClass::OnNotifyStart);
 }
 
 void AC_ActiveSkill::Deactivate()
@@ -98,9 +98,6 @@ void AC_ActiveSkill::RestartCooldown()
 		if (IsValid(GetInstigator()))
 			Cast<AC_CSCharacter>(GetInstigator())->bCanActivateULT = false;
 	}
-	
-	//미완
-	//전장에 스폰여부를 확인하고 스폰돼있을때만 쿨이 돌게 해야함
 	if (Timer == FTimerHandle())
 		GetWorld()->GetTimerManager().SetTimer(Timer, this, &ThisClass::AddCooldown, AddInterval, true, AddInterval);
 }

@@ -156,6 +156,9 @@ void AC_CSCharacter::Tick(float DeltaTime)
 
 	UpdateCooldown();
 
+	if (TeamID == 0)
+		PrintState();
+
 	if(bMove && *CharacterState == ECharacterState::Idle)
 		MoveForward();
 }
@@ -191,7 +194,7 @@ void AC_CSCharacter::Attack()
 {
 	if (IsDead())
 		return;
-	if (bCanActivateAttack)
+	if (bCanActivateAttack && *CharacterState == ECharacterState::Idle)
 	{
 		if (!IsValid(Target) || Cast<AC_CSCharacter>(Target)->IsDead())
 		{
@@ -213,7 +216,7 @@ void AC_CSCharacter::SPSkill()
 {
 	if (IsDead())
 		return;
-	if (bCanActivateSP)
+	if (bCanActivateSP && *CharacterState == ECharacterState::Idle)
 	{
 		*CharacterState = ECharacterState::SP_Skilling;
 
@@ -225,7 +228,7 @@ void AC_CSCharacter::ULTSkill()
 {
 	if (IsDead())
 		return;
-	if (bCanActivateULT)
+	if (bCanActivateULT && *CharacterState == ECharacterState::Idle)
 	{
 		*CharacterState = ECharacterState::ULT_Skilling;
 
