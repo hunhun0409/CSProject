@@ -144,7 +144,7 @@ void AC_CSAIController::GetClosestActor()
 		float ClosestDist = OwningPawn->GetStatus()->GetMaxSightRange();
 		for (AActor* actor : SensedActors)
 		{
-			if (actor)
+			if (actor && OwningPawn)
 			{
 				if (OwningPawn->GetDistanceTo(actor) <= ClosestDist)
 				{
