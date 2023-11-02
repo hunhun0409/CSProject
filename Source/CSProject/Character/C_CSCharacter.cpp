@@ -194,7 +194,11 @@ void AC_CSCharacter::Attack()
 	if (bCanActivateAttack)
 	{
 		if (!IsValid(Target) || Cast<AC_CSCharacter>(Target)->IsDead())
+		{
+			Cast<AC_CSAIController>(GetController())->RemoveTarget(Target);
 			return;
+		}
+			
 		FRotator rot = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), Target->GetActorLocation());
 		rot = FRotator(0, rot.Yaw, 0);
 		SetActorRotation(rot.Quaternion(), ETeleportType::TeleportPhysics);
@@ -305,22 +309,20 @@ void AC_CSCharacter::Respawn()
 
 	Cast<AActor>(Weapon)->Destroy();
 	StatusUI->SetVisibility(false);
-	Destroy();
+
+	uint8 i = UKismetMathLibrary::RandomIntegerInRange(0, DieMontage.Num() - 1);
+	PlayAnimMontage(DieMontage[i]);
+	SetLifeSpan(3.0f);
 }
 
 void AC_CSCharacter::Die()
 {
 	*CharacterState = ECharacterState::Dead;
-	
-	TArray<AActor*> FoundActors;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ACharacter::StaticClass(), FoundActors);
 
-	Cast<AActor>(Weapon)->Destroy();
-	StatusUI->SetVisibility(false);
-
-	auto* GameMode = Cast<AC_GameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 	float SPCoolRate = 0.0f;
 	float ULTCoolRate = 0.0f;
+
+	auto* GameMode = Cast<AC_GameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 	if (SpecialSkill)
 	{
 		//0~1사이값 반환, 0.5면 50% 찼다는 뜻
@@ -330,8 +332,13 @@ void AC_CSCharacter::Die()
 	{
 		ULTCoolRate = UltimateSkill->GetSkillCoolDown();
 	}
-
+	
 	GameMode->UnitDiedDataUpdate(this, SPCoolRate, ULTCoolRate);
+
+
+	
+	TArray<AActor*> FoundActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AC_CSCharacter::StaticClass(), FoundActors);
 
 	//Todo
 	//상대 함선에게 죽음을 알림 : 미완성
@@ -359,10 +366,6 @@ void AC_CSCharacter::Die()
 	//	}
 	//}
 
-
-
-
-
 	//전장에 있는 캐릭터들에게 죽음을 알림
 	TArray<AC_CSCharacter*> AllCharacters;
 	for (AActor* actor : FoundActors)
@@ -389,6 +392,8 @@ void AC_CSCharacter::Die()
 	}
 
 
+	Cast<AActor>(Weapon)->Destroy();
+	StatusUI->SetVisibility(false);
 
 	uint8 i = UKismetMathLibrary::RandomIntegerInRange(0, DieMontage.Num() - 1);
 	PlayAnimMontage(DieMontage[i]);

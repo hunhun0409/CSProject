@@ -55,6 +55,8 @@ void AC_ActiveSkill::BeginAction()
 void AC_ActiveSkill::EndAction()
 {
 	//Skill 애니메이션 끝날때 시행할 작업
+	if (!IsValid(GetOwner()))
+		return;
 	Cast<AC_CSCharacter>(GetOwner())->GetMesh()->GetAnimInstance()->OnMontageEnded.RemoveDynamic(this, &ThisClass::OnSkillMontageEnded);
 
 }
@@ -62,6 +64,8 @@ void AC_ActiveSkill::EndAction()
 void AC_ActiveSkill::Activate()
 {
 	//스킬이 발사되는 순간
+	if (!IsValid(GetOwner()))
+		return;
 	Cast<AC_CSCharacter>(GetOwner())->GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.RemoveDynamic(this, &ThisClass::OnNotifyStart);
 
 	
@@ -84,9 +88,16 @@ void AC_ActiveSkill::RestartCooldown()
 {
 	CurCooldown = 0;
 	if (SkillType == ESkillType::Special)
-		Cast<AC_CSCharacter>(GetInstigator())->bCanActivateSP = false;
+	{
+		if (IsValid(GetInstigator()))
+			Cast<AC_CSCharacter>(GetInstigator())->bCanActivateSP = false;
+	}
+		
 	if (SkillType == ESkillType::Ultimate)
-		Cast<AC_CSCharacter>(GetInstigator())->bCanActivateULT = false;
+	{
+		if (IsValid(GetInstigator()))
+			Cast<AC_CSCharacter>(GetInstigator())->bCanActivateULT = false;
+	}
 	
 	//미완
 	//전장에 스폰여부를 확인하고 스폰돼있을때만 쿨이 돌게 해야함
@@ -112,10 +123,19 @@ void AC_ActiveSkill::AddCooldown()
 
 	if (CurCooldown == MaxCooldown)
 	{
-		if(SkillType == ESkillType::Special)
-			Cast<AC_CSCharacter>(GetInstigator())->bCanActivateSP = true;
+		if (SkillType == ESkillType::Special)
+		{
+			if(IsValid(GetInstigator()))
+				Cast<AC_CSCharacter>(GetInstigator())->bCanActivateSP = true;
+		}
+
+			
 		if (SkillType == ESkillType::Ultimate)
-			Cast<AC_CSCharacter>(GetInstigator())->bCanActivateULT = true;
+		{
+			if (IsValid(GetInstigator()))
+				Cast<AC_CSCharacter>(GetInstigator())->bCanActivateULT = true;
+		}
+			
 
 		if (Timer != FTimerHandle())
 			GetWorld()->GetTimerManager().ClearTimer(Timer);

@@ -28,7 +28,7 @@ void UC_BTCharacterService::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* N
 		behavior->ChangeType(EBehaviorType::Dead);
 		return;
 	}
-	if (!IsValid(target))
+	if (target == nullptr)
 	{
 		behavior->ChangeType(EBehaviorType::Move);
 		return;
@@ -36,12 +36,10 @@ void UC_BTCharacterService::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* N
 
 	if (IsValid(target))
 	{
-		unit->bMove = false;
 		float distance = controller->GetTargetDist();
 		float attackRange = unit->GetStatus()->GetMaxAttackRange();
-		if (distance <= attackRange)
+		if (distance <= attackRange)//attack
 		{
-
 			if (unit->bCanActivateULT)
 			{
 				behavior->ChangeType(EBehaviorType::ULTSkill);
@@ -55,8 +53,9 @@ void UC_BTCharacterService::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* N
 			behavior->ChangeType(EBehaviorType::Attack);
 			return;
 		}
-		else
+		else//trace
 		{
+			unit->bMove = false;
 			behavior->ChangeType(EBehaviorType::Trace);
 			return;
 		}

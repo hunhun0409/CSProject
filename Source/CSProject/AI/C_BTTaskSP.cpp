@@ -15,6 +15,7 @@ EBTNodeResult::Type UC_BTTaskSP::ExecuteTask(UBehaviorTreeComponent& OwnerComp, 
 	AC_CSAIController* Controller = Cast<AC_CSAIController>(OwnerComp.GetOwner());
 	AC_CSCharacter* Unit = Cast<AC_CSCharacter>(Controller->GetPawn());
 
+	Unit->bMove = false;
 	Cast<IC_CharacterInterface>(Unit)->SPSkill();
 
 	return EBTNodeResult::InProgress;

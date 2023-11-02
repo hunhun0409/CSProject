@@ -13,14 +13,19 @@ void AC_AssultRifle::ActivateAttack()
 
 	if (Timer == FTimerHandle())
 	{
-		float attackRate = Cast<AC_CSCharacter>(GetOwner())->GetStatus()->GetAttackRate();
-		float FinalInterval = FireInterval / attackRate;
+		AC_CSCharacter* WeaponOwner = Cast<AC_CSCharacter>(GetOwner());
 
-		GetWorld()->GetTimerManager().SetTimer(Timer, this, &ThisClass::ActivateAttack, FinalInterval, true, 0);
-		return;
+		if (WeaponOwner)
+		{
+			float attackRate = Cast<AC_CSCharacter>(GetOwner())->GetStatus()->GetAttackRate();
+			float FinalInterval = FireInterval / attackRate;
+
+			GetWorld()->GetTimerManager().SetTimer(Timer, this, &ThisClass::ActivateAttack, FinalInterval, true, 0);
+			return;
+		}
 	}
-
 	Super::ActivateAttack();
+
 	if (++CurFireCount == FirePerAttack)
 	{
 		DeactivateAttack();

@@ -70,7 +70,7 @@ void AC_CSAIController::OnPossess(APawn* InPawn)
 
 	if (Timer == FTimerHandle())
 	{
-		GetWorld()->GetTimerManager().SetTimer(Timer, this, &ThisClass::GetClosestActor, 0.1f, true, 0);
+		GetWorld()->GetTimerManager().SetTimer(Timer, this, &ThisClass::GetClosestActor, 0.2f, true, 0);
 	}
 }
 
@@ -144,10 +144,13 @@ void AC_CSAIController::GetClosestActor()
 		float ClosestDist = OwningPawn->GetStatus()->GetMaxSightRange();
 		for (AActor* actor : SensedActors)
 		{
-			if (OwningPawn->GetDistanceTo(actor) <= ClosestDist)
+			if (actor)
 			{
-				ClosestDist = OwningPawn->GetDistanceTo(actor);
-				ClosestActor = actor;
+				if (OwningPawn->GetDistanceTo(actor) <= ClosestDist)
+				{
+					ClosestDist = OwningPawn->GetDistanceTo(actor);
+					ClosestActor = actor;
+				}
 			}
 		}
 		TargetDist = ClosestDist;

@@ -42,22 +42,18 @@ void AC_Gun::ActivateAttack()
 	Super::ActivateAttack();
 
 	AC_CSCharacter* const WeaponOwner = Cast<AC_CSCharacter>(GetOwner());
-	float attackRate = Cast<AC_CSCharacter>(GetOwner())->GetStatus()->GetAttackRate();
-	float damage = Cast<AC_CSCharacter>(GetOwner())->GetStatus()->GetAttack();
-
 	if (WeaponOwner)
 	{
+		float attackRate = WeaponOwner->GetStatus()->GetAttackRate();
+		float damage = WeaponOwner->GetStatus()->GetAttack();
 		UGameplayStatics::ApplyDamage(WeaponOwner->Target, damage, GetInstigatorController(), this, UDamageType::StaticClass());
+
+		WeaponOwner->bCanActivateAttack = false;
+		if (AttackTimer == FTimerHandle())
+		{
+			GetWorld()->GetTimerManager().SetTimer(AttackTimer, this, &ThisClass::NotifyCanAttack, 1 / attackRate, false);
+		}
 	}
-
-
-	WeaponOwner->bCanActivateAttack = false;
-	if (AttackTimer == FTimerHandle())
-	{
-		GetWorld()->GetTimerManager().SetTimer(AttackTimer, this, &ThisClass::NotifyCanAttack, 1 / attackRate, false);
-	}
-
-	
 	ActivateEffect();
 }
 
