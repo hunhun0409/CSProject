@@ -272,8 +272,6 @@ void AC_GameModeBase::AutoPlay(const bool& IsLeft)
 	{
 		if (RightBaseData.AutoSpawnNum <= RightBaseData.MaxUnitCount)
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Black, "1");
-
 			AutoSpawning[0].ExecuteIfBound(FVector::ZeroVector,
 				RightBaseData.AutoSpawnNum, false);
 

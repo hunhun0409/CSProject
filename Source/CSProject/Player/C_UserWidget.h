@@ -58,6 +58,14 @@ protected:
 		FName CostImage;
 	class UImage* CostWidget;
 
+	UPROPERTY(EditDefaultsOnly)
+		class UMaterialInstance* UnitButtonMaterialInstance;
+	UPROPERTY()
+		TArray<class UMaterialInstanceDynamic*> UBMID;
+	UPROPERTY(EditDefaultsOnly)
+		FName UBMIDScalarParamName;
+	UPROPERTY(EditDefaultsOnly)
+		FName UBMIDTextureParamName;
 	TArray<UImage*> UnitButton;
 	UPROPERTY(EditDefaultsOnly)
 		TArray<FName> UnitButtonName;

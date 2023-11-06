@@ -19,7 +19,7 @@ void UC_UserWidget::NativePreConstruct()
 	if (CostMaterialInstance)
 		CostMaterialInstanceDynamic = UKismetMaterialLibrary::CreateDynamicMaterialInstance(
 			this, CostMaterialInstance);
-
+	
 }
 
 void UC_UserWidget::NativeConstruct()
@@ -46,10 +46,12 @@ void UC_UserWidget::NativeConstruct()
 	for (int i = 0; i < UnitButtonName.Num(); i++)
 	{
 		UnitButton.Emplace(Cast<UImage>(GetWidgetFromName(UnitButtonName[i])));
-	}
 
-	//UImage에 UTexture2D는 Character로부터 받아 변경. Press 입력을 받으면 Release 될때가지 마우스 위치에 있던
-	//Image의 Tint를 조정. 만약 소환된 Character면 어둡게 표시. <- 정보 받아야 함.
+		if (UnitButtonMaterialInstance)
+			UBMID.Emplace(UKismetMaterialLibrary::CreateDynamicMaterialInstance(this, UnitButtonMaterialInstance));
+
+		UnitButton[i]->SetBrushFromMaterial(UBMID[i]);
+	}
 }
 
 void UC_UserWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaTime)
@@ -81,9 +83,15 @@ void UC_UserWidget::UpdateUIData(const FUIData& UIData)
 	CostRegenRatio = UIData.CostRegenRatio;
 	for (int i = 0; i < UnitButton.Num(); i++)
 	{
-		if(UIData.UnitImage.IsValidIndex(i))
-			UnitButton[i]->SetBrushFromTexture(UIData.UnitImage[i]);
-		//해당 값으로 GrayScale Material 설정. UIData.UnitOnFieldData.Find(UIData.ButtonUnitName[i]);
+		if (UIData.UnitImage.IsValidIndex(i))
+		{
+			UBMID[i]->SetTextureParameterValue(UBMIDTextureParamName, UIData.UnitImage[i]);
+
+			if (UIData.UnitOnFieldData.Find(UIData.ButtonUnitName[i]))
+				UBMID[i]->SetScalarParameterValue(UBMIDScalarParamName, 1.0f);
+			else
+				UBMID[i]->SetScalarParameterValue(UBMIDScalarParamName, 0.0f);
+		}
 	}
 }
 
