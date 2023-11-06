@@ -160,7 +160,7 @@ void AC_GameModeBase::UnitDiedDataUpdate(AC_CSCharacter* DiedUnit, const float& 
 
 	if (DiedUnit->GetTeamID() == 0)
 	{
-		Datas.UnitOnFieldData.Emplace(DiedUnitName, false);
+		Datas.UnitOnFieldData.Remove(DiedUnitName);
 		UIDataUpdated.ExecuteIfBound();
 	}
 }

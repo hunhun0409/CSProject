@@ -41,9 +41,6 @@ void AC_Field::BeginPlay()
 	ColliderScaleYOffset.Y = RightSpawnCollider->GetRelativeScale3D().Y;
 	RightBase->SetTeamID(1);
 
-	GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Red, RBTransform.GetTranslation().ToString());
-	GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Blue, RightBase->GetActorLocation().ToString());
-
 	UpdateSpawnCollider();
 }
 

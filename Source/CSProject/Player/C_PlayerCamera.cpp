@@ -40,6 +40,9 @@ void AC_PlayerCamera::BeginPlay()
 		{
 			GameMode->UIDataUpdated.BindUFunction(this, "UpdateUIData");
 			CameraMovableY = GameMode->GetMaxYPos();
+			FVector StartPoint = GetActorLocation();
+			StartPoint.Y = CameraMovableY.Y;
+			SetActorLocation(StartPoint);
 			GetUIData.BindUFunction(GameMode, "GetUIData");
 			//SpawnOrder.BindUFunction(GameMode, "SpawnCharacter");
 			SpawnOrder.BindUFunction(GameMode->GetField()->AccessBaseData(1), "SpawnCharacter");
