@@ -50,6 +50,7 @@ void AC_GameModeBase::SpawnCharacter(const FVector& Location, const int& SlotNum
 				CostReduce(true, UnitCost);
 
 				FTransform SpawnTransform;
+				SpawnTransform.SetRotation(FRotator(0, 90, 0).Quaternion());
 				SpawnTransform.SetLocation(Location);
 				auto* Unit = Cast<AC_CSCharacter>(GetWorld()->SpawnActor(LeftTeamSpawnCycle[SlotNum], &SpawnTransform));
 				Unit->SetTeamID(0);
@@ -109,6 +110,7 @@ void AC_GameModeBase::SpawnCharacter(const FVector& Location, const int& SlotNum
 			CostReduce(false, UnitCost);
 
 			FTransform SpawnTransform;
+			SpawnTransform.SetRotation(FRotator(0, -90, 0).Quaternion());
 			SpawnTransform.SetLocation(Location);
 			auto* Unit = Cast<AC_CSCharacter>(GetWorld()->SpawnActor(RightTeamSpawnCycle[SlotNum], &SpawnTransform));
 			Unit->SetTeamID(1);
@@ -185,6 +187,7 @@ void AC_GameModeBase::BeginPlay()
 		Map->AccessBaseData((bool)i)->UpdateHP.AddUFunction(this, "CheckHP");
 
 		CameraMovablePosY[i] = Map->AccessBaseData((bool)i)->GetActorLocation().Y;
+		AutoSpawning[i].BindUFunction(Map->AccessBaseData((bool)i), "SpawnCharacter");
 	}
 
 	for (int i = 0; i < LeftTeamOrganization.Num(); i++)
@@ -208,7 +211,7 @@ void AC_GameModeBase::BeginPlay()
 void AC_GameModeBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
+
 	RestoreCost(DeltaTime);
 }
 
@@ -254,7 +257,7 @@ void AC_GameModeBase::AutoPlay(const bool& IsLeft)
 	{
 		if (LeftBaseData.AutoSpawnNum <= LeftBaseData.MaxUnitCount)
 		{
-			Map->AccessBaseData(1)->Spawn.ExecuteIfBound(FVector::ZeroVector,
+			AutoSpawning[1].ExecuteIfBound(FVector::ZeroVector,
 				LeftBaseData.AutoSpawnNum, true);
 
 			LeftBaseData.AutoSpawnNum++;
@@ -269,7 +272,9 @@ void AC_GameModeBase::AutoPlay(const bool& IsLeft)
 	{
 		if (RightBaseData.AutoSpawnNum <= RightBaseData.MaxUnitCount)
 		{
-			Map->AccessBaseData(0)->Spawn.ExecuteIfBound(FVector::ZeroVector,
+			GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Black, "1");
+
+			AutoSpawning[0].ExecuteIfBound(FVector::ZeroVector,
 				RightBaseData.AutoSpawnNum, false);
 
 			RightBaseData.AutoSpawnNum++;

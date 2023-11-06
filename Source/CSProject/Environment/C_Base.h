@@ -23,15 +23,15 @@ public:
 
 	TDelegate<void(FVector, int, bool)> Spawn;
 	// 플레이어 구분해서 true -> 플레이어 컨트롤러에서 설정(소환 연결), false ->자동 소환
+	UFUNCTION()
+		void SpawnCharacter(const FVector& Location, const int& SlotNum, const bool& IsLeftTeam);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 	virtual void OnConstruction(const FTransform& Transform) override;
 
 	virtual float CalculateDamage(float Damage, AActor* DamageCauser) override;
-
-	UFUNCTION()
-		void SpawnCharacter(const FVector& Location, const int& SlotNum, const bool& IsLeftTeam);
 
 public:	
 	// Called every frame

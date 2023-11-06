@@ -196,8 +196,12 @@ float AC_Base::CalculateDamage(float Damage, AActor* DamageCauser)
 
 void AC_Base::SpawnCharacter(const FVector& Location, const int& SlotNum, const bool& IsLeftTeam)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Magenta, IsAutoSpawning ? "T" : "F");
+
 	if (IsAutoSpawning)
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Black, AutoSpawnLocation.ToString());
+
 		Spawn.ExecuteIfBound(AutoSpawnLocation, SlotNum, IsLeftTeam);
 	}
 	else
@@ -223,7 +227,12 @@ void AC_Base::SetTeamID(uint8 InTeamID)
 	}
 	else
 	{
-		AutoSpawnLocation = GetActorTransform().GetTranslation() - GetActorForwardVector() * 2;
+		GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Yellow, GetActorLocation().ToString());
+		AutoSpawnLocation = GetActorLocation() - GetActorForwardVector() * 2;
+
+		GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Emerald, AutoSpawnLocation.ToString());
 		IsAutoSpawning = true;
+
+		GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Magenta, IsAutoSpawning ? "T" : "F");
 	}
 }

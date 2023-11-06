@@ -61,6 +61,8 @@ protected:
 
 	void AutoPlay(const bool& IsLeft);
 
+	TDelegate<void(FVector, int, bool)> AutoSpawning[2];
+
 private:
 	void RestoreCost(const float& DeltaTime);
 
