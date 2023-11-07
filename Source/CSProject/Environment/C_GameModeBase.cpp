@@ -7,6 +7,9 @@
 #include "C_Base.h"
 #include "Character/C_CSCharacter.h"
 #include "Kismet/GameplayStatics.h"
+#include "NavigationSystem.h"
+#include "NavigationData.h"
+#include "C_HitResultDisplayer.h"
 
 AC_GameModeBase::AC_GameModeBase()
 {
@@ -165,23 +168,11 @@ void AC_GameModeBase::UnitDiedDataUpdate(AC_CSCharacter* DiedUnit, const float& 
 	}
 }
 
-void AC_GameModeBase::PrintDamage(float FinalDamage, bool bCrit, bool bEvade, FVector ActorLocation)
+void AC_GameModeBase::SetField(AC_Field* NewField)
 {
-}
+	if (NewField)
+		Map = NewField;
 
-void AC_GameModeBase::OnConstruction(const FTransform& Transform)
-{
-	Super::OnConstruction(Transform);
-
-}
-
-void AC_GameModeBase::BeginPlay()
-{
-	Super::BeginPlay();
-
-	if (Field)
-		Map = Cast<AC_Field>(GetWorld()->SpawnActor(Field));
-	
 	for (size_t i = 0; i < 2; i++)
 	{
 		Map->AccessBaseData((bool)i)->UpdateHP.AddUFunction(this, "CheckHP");
@@ -200,12 +191,37 @@ void AC_GameModeBase::BeginPlay()
 			Datas.ButtonUnitName.Emplace(LeftTeamSpawnCycle[i].GetDefaultObject()->GetCharacterName());
 		}
 	}
+
 	for (int i = 0; i < RightTeamOrganization.Num(); i++)
 	{
 		RightTeamSpawnCycle.Add(RightTeamOrganization[i]);
 	}
 
 	InitBaseData();
+}
+
+void AC_GameModeBase::PrintDamage(float FinalDamage, bool bCrit, bool bEvade, FVector ActorLocation)
+{
+	FVector NewLoc = /*ActorLocation +*/ FVector(0, 20, 0);
+
+	if (auto* AHUD = Cast<AC_HitResultDisplayer>(GetWorld()->SpawnActor(AC_HitResultDisplayer::StaticClass(), &NewLoc)))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Red, "1");
+		AHUD->SetDamageText(FinalDamage, bCrit, bEvade);
+	}
+}
+
+void AC_GameModeBase::OnConstruction(const FTransform& Transform)
+{
+	Super::OnConstruction(Transform);
+
+}
+
+void AC_GameModeBase::BeginPlay()
+{
+	Super::BeginPlay();
+
+	
 }
 
 void AC_GameModeBase::Tick(float DeltaTime)

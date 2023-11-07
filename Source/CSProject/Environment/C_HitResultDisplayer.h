@@ -19,8 +19,17 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	//virtual void OnConstruction(const FTransform& Transform) override;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	void SetDamageText(float FinalDamage, bool bCrit, bool bEvade);
+
+protected:
+	UPROPERTY()
+		class UTextRenderComponent* Text;
+
+	FString TextToDisplay;
 };

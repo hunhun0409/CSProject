@@ -4,6 +4,7 @@
 #include "C_Field.h"
 #include "Components/BoxComponent.h"
 #include "C_Base.h"
+#include "C_GameModeBase.h"
 
 // Sets default values
 AC_Field::AC_Field()
@@ -42,6 +43,11 @@ void AC_Field::BeginPlay()
 	RightBase->SetTeamID(1);
 
 	UpdateSpawnCollider();
+
+	if (auto* GameMode = Cast<AC_GameModeBase>(GetWorld()->GetAuthGameMode()))
+	{
+		GameMode->SetField(this);
+	}
 }
 
 // Called every frame

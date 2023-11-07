@@ -44,6 +44,8 @@ public:
 
 	void UnitDiedDataUpdate(class AC_CSCharacter* DiedUnit, const float& SPCoolRate, const float& ULTCoolRate);
 
+	void SetField(class AC_Field* NewField);
+
 protected:
 	virtual void PrintDamage(float FinalDamage, bool bCrit, bool bEvade, FVector ActorLocation) override;
 
@@ -70,9 +72,6 @@ private:
 public:
 	
 protected:
-	UPROPERTY(EditDefaultsOnly)
-		TSubclassOf<class AC_Field> Field;
-
 	UPROPERTY()
 		class AC_Field* Map;
 
