@@ -65,6 +65,7 @@ public:
 	FORCEINLINE void SetTeamID(uint8 InTeamID) { TeamID = InTeamID; }
 	FORCEINLINE class UBehaviorTree* GetTree() { return BehaviorTree; }
 	FORCEINLINE ECharacterState GetCharacterState() { return *CharacterState; }
+	FORCEINLINE void SetTarget(AActor* Inactor) { Target = Inactor; }
 
 	FORCEINLINE bool IsDead() { return *CharacterState == ECharacterState::Dead; }
 	FORCEINLINE UTexture2D* GetCharacterButtonImage() { return CharacterImage; }

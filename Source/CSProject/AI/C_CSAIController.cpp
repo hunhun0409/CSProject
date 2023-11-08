@@ -93,7 +93,7 @@ void AC_CSAIController::RemoveTarget(AActor* Inactor)
 			if (Target == Inactor)
 			{
 				Target = nullptr;
-				Cast<AC_CSCharacter>(GetPawn())->Target = nullptr;
+				Cast<AC_CSCharacter>(GetPawn())->SetTarget(nullptr);
 				Blackboard->SetValueAsObject("Target", nullptr);
 			}
 		}
@@ -103,59 +103,66 @@ void AC_CSAIController::RemoveTarget(AActor* Inactor)
 void AC_CSAIController::OnPerceptionUpdated(const TArray<AActor*>& UpdateActors)
 {
 	AC_CSCharacter* OwningPawn = Cast<AC_CSCharacter>(GetPawn());
-	TArray<AActor*> actors;
-	Perception->GetCurrentlyPerceivedActors(nullptr, actors);
-
-	//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Red, "Sensed Actor!");
-
-	for (AActor* actor : actors)
+	if (OwningPawn)
 	{
-		
-		if (!actor->IsA(AC_CSCharacter::StaticClass()) && !actor->IsA(AC_Base::StaticClass()))
-			continue;
-		if (Cast<AC_CSCharacter>(actor)->GetTeamID() == OwningPawn->GetTeamID())
-			continue;
-		//else if (Cast<AC_Base>(actor)->GetTeamID() == OwningPawn->GetTeamID())
-		//	continue;
+		TArray<AActor*> actors;
+		Perception->GetCurrentlyPerceivedActors(nullptr, actors);
 
-		if (SensedActors.Contains(actor))
-		{
-			if (OwningPawn->GetDistanceTo(actor) > 1000)
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Red, FString::SanitizeFloat(OwningPawn->GetDistanceTo(actor)));
+		GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Red, "Sensed Actor!");
 
-				SensedActors.Remove(actor);
-			}
-		}
-		else
-		{
-			SensedActors.Add(actor);
-		}
+		//for (AActor* actor : actors)
+		//{
+		//	if (!actor->IsA(AC_CSCharacter::StaticClass()) && !actor->IsA(AC_Base::StaticClass()))
+		//		continue;
+		//	if (Cast<AC_CSCharacter>(actor)->GetTeamID() == OwningPawn->GetTeamID())
+		//		continue;
+		//	//else if (Cast<AC_Base>(actor)->GetTeamID() == OwningPawn->GetTeamID())
+		//	//	continue;
+
+		//	if (SensedActors.Contains(actor))
+		//	{
+		//		if (OwningPawn->GetDistanceTo(actor) > 1000)
+		//		{
+		//			GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Red, FString::SanitizeFloat(OwningPawn->GetDistanceTo(actor)));
+
+		//			SensedActors.Remove(actor);
+		//		}
+		//	}
+		//	else
+		//	{
+		//		SensedActors.Add(actor);
+		//	}
+		//}
 	}
+
 }
 
 void AC_CSAIController::GetClosestActor()
 {
-	if (SensedActors.Num())
+	AC_CSCharacter* OwningPawn = Cast<AC_CSCharacter>(GetPawn());
+	if (OwningPawn)
 	{
-		AC_CSCharacter* OwningPawn = Cast<AC_CSCharacter>(GetPawn());
-		AActor* ClosestActor = nullptr;
-
-		float ClosestDist = OwningPawn->GetStatus()->GetMaxSightRange();
-		for (AActor* actor : SensedActors)
+		if (SensedActors.Num())
 		{
-			if (actor && OwningPawn)
+
+			AActor* ClosestActor = nullptr;
+
+			float ClosestDist = OwningPawn->GetStatus()->GetMaxSightRange();
+			for (AActor* actor : SensedActors)
 			{
-				if (OwningPawn->GetDistanceTo(actor) <= ClosestDist)
+				if (actor && OwningPawn)
 				{
-					ClosestDist = OwningPawn->GetDistanceTo(actor);
-					ClosestActor = actor;
+					if (OwningPawn->GetDistanceTo(actor) <= ClosestDist)
+					{
+						ClosestDist = OwningPawn->GetDistanceTo(actor);
+						ClosestActor = actor;
+					}
 				}
 			}
+			TargetDist = ClosestDist;
+			Target = ClosestActor;
+			OwningPawn->Target = Target;
+			Blackboard->SetValueAsObject("Target", Target);
 		}
-		TargetDist = ClosestDist;
-		Target = ClosestActor;
-		OwningPawn->Target = Target;
-		Blackboard->SetValueAsObject("Target", Target);
 	}
 }

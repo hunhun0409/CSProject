@@ -156,8 +156,6 @@ void AC_CSCharacter::Tick(float DeltaTime)
 
 	UpdateCooldown();
 
-	/*if (TeamID == 0)
-		PrintState();*/
 
 	if(bMove && *CharacterState == ECharacterState::Idle)
 		MoveForward();
@@ -308,6 +306,7 @@ void AC_CSCharacter::Respawn()
 		{
 			Cast<AC_CSAIController>(character->GetController())->RemoveTarget(this);
 		}
+		
 	}
 
 	Cast<AActor>(Weapon)->Destroy();
@@ -341,7 +340,7 @@ void AC_CSCharacter::Die()
 
 	
 	TArray<AActor*> FoundActors;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AC_CSCharacter::StaticClass(), FoundActors);
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor::StaticClass(), FoundActors);
 
 	//Todo
 	//상대 함선에게 죽음을 알림 : 미완성
