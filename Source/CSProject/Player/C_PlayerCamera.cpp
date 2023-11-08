@@ -12,6 +12,7 @@
 #include "C_UserWidget.h"
 #include "Environment/C_Field.h"
 #include "Environment/C_Base.h"
+#include "Environment/C_HUD.h"
 
 // Sets default values
 AC_PlayerCamera::AC_PlayerCamera()
@@ -75,6 +76,16 @@ void AC_PlayerCamera::BeginPlay()
 			UIWidget->CancelPreview.BindUFunction(this, "CancelSelect");
 		}
 	}
+
+	if (auto* PlayerController = GetWorld()->GetFirstPlayerController())
+	{
+		if (auto* HUD = Cast<AC_HUD>(GetWorld()->GetFirstPlayerController()->GetHUD()))
+		{
+			DamageText.BindUFunction(HUD, "AddDamageText");
+			UpdateHUDCamreaPos.BindUFunction(HUD, "SetCameraPos");
+			UpdateHUDCamreaPos.ExecuteIfBound(GetActorLocation());
+		}
+	}
 }
 
 // Called every frame
@@ -99,6 +110,8 @@ void AC_PlayerCamera::Tick(float DeltaTime)
 		}
 
 		CameraMovement = UKismetMathLibrary::FInterpTo(CameraMovement, 0, 0.1f, 0.5f);
+
+		UpdateHUDCamreaPos.ExecuteIfBound(GetActorLocation());
 
 		AddMovementInput(FVector(0, CameraMovement, 0));
 	}
@@ -224,11 +237,13 @@ void AC_PlayerCamera::CancelSelect()
 
 void AC_PlayerCamera::SpawnDamageHUD(const float& FinalDamage, const bool& bCrit, const bool& bEvade, const FVector& ActorLocation)
 {
-	FVector2D ScreenLocation;
+	FVector2D ScreenPosition;
 
 	if (auto* PlayerController = GetWorld()->GetFirstPlayerController())
 	{
-		PlayerController->ProjectWorldLocationToScreen(ActorLocation, ScreenLocation);
+		PlayerController->ProjectWorldLocationToScreen(ActorLocation + FVector(0, 0, 100), ScreenPosition);
+
+		DamageText.ExecuteIfBound(FinalDamage, bCrit, bEvade, ScreenPosition);
 
 	}
 

@@ -31,6 +31,8 @@ public:
 	TDelegate<FUIData()> GetUIData;
 	TDelegate<void(FVector, int, bool)> SpawnOrder;
 	TDelegate<void(bool)> ShowAreaOrder;
+	TDelegate<void(const float&, const bool&, const bool&, const FVector2D&)> DamageText;
+	TDelegate<void(FVector)> UpdateHUDCamreaPos;
 
 protected:
 	UFUNCTION()

@@ -106,7 +106,7 @@ void AC_CSAIController::OnPerceptionUpdated(const TArray<AActor*>& UpdateActors)
 	TArray<AActor*> actors;
 	Perception->GetCurrentlyPerceivedActors(nullptr, actors);
 
-	GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Red, "Sensed Actor!");
+	//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Red, "Sensed Actor!");
 
 	for (AActor* actor : actors)
 	{

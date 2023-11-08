@@ -27,6 +27,10 @@ public:
 	UPROPERTY()
 		FLinearColor Color;
 
+	FVector CameraOffset;
+
+	FDamageTextInfo() {}
+
 	FDamageTextInfo(FVector2D Position, FText InText, float Duration, FLinearColor InColor)
 		: ScreenPosition(Position), Text(InText), DisplayDuration(Duration), Color(InColor)
 	{}
@@ -40,11 +44,21 @@ class CSPROJECT_API AC_HUD : public AHUD
 public:
 	AC_HUD();
 
-	void AddDamageText(const float& FinalDamage, const bool& bCrit, const bool& bEvade, const FVector2D ScreenPosition);
+	void Tick(float DeltaSeconds) override;
+
+	UFUNCTION()
+		void AddDamageText(const float& FinalDamage, const bool& bCrit, const bool& bEvade, const FVector2D ScreenPosition);
+	UFUNCTION()
+		void SetCameraPos(FVector InPos) { CameraPos = InPos; }
+	//플레이어 카메라 움직인 양 비교해서
+	//First pos - next pos만큼 ScreenPosition에 더하기.
+	//Delegate로 ActorLocation 받고, AddDamgeText 실행.
 
 protected:
 	void DrawHUD() override;
 
 private:
 	TArray<FDamageTextInfo> DamageTexts;
+	FVector2D TextMoveOffset;
+	FVector CameraPos;
 };

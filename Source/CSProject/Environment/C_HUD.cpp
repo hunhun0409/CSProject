@@ -4,10 +4,19 @@
 #include "Environment/C_HUD.h"
 #include "Engine/Canvas.h"
 #include "Slate/SceneViewport.h"
+#include "Kismet/KismetMathLibrary.h"
 
 AC_HUD::AC_HUD()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	TextMoveOffset = { 0.0f, -0.4f };
+}
+
+void AC_HUD::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
 }
 
 void AC_HUD::AddDamageText(const float& FinalDamage, const bool& bCrit, const bool& bEvade, const FVector2D ScreenPosition)
@@ -17,23 +26,25 @@ void AC_HUD::AddDamageText(const float& FinalDamage, const bool& bCrit, const bo
 
 	if (bCrit)
 	{
-		Text = FText::FromString("Critical! " + FString::FromInt((int)FinalDamage));
+		Text = FText::FromString("Critical!\n" + FString::FromInt((int)FinalDamage));
 		Color = FLinearColor::Yellow;
 	}
 	if (bEvade)
 	{
-		Text = FText::FromString("Miss! " + FString::FromInt((int)FinalDamage));
+		Text = FText::FromString("Miss!\n" + FString::FromInt((int)FinalDamage));
 		Color = FLinearColor::Blue;
 	}
 	else
 	{
-		Text = FText::FromString("Hit! " + FString::FromInt((int)FinalDamage));
+		Text = FText::FromString("Hit!\n" + FString::FromInt((int)FinalDamage));
 		Color = FLinearColor::Red;
 	}
 
-	FDamageTextInfo NewText(ScreenPosition, Text, 3.0f, Color);
+	FVector2D NewPosition = ScreenPosition + FVector2D(UKismetMathLibrary::RandomIntegerInRange(-10, 10), UKismetMathLibrary::RandomIntegerInRange(-30, 20));
 
+	FDamageTextInfo NewText(NewPosition, Text, 3.0f, Color);
 
+	NewText.CameraOffset = CameraPos;
 
 	DamageTexts.Add(NewText);
 }
@@ -46,21 +57,18 @@ void AC_HUD::DrawHUD()
 	if (!Canvas)
 		return;
 
-	//FVector2D ViewportSize;
-	//GEngine->GameViewport->GetViewportSize(ViewportSize);
-
 	for (int32 i = 0; i < DamageTexts.Num(); ++i)
 	{
 		FDamageTextInfo& DamageText = DamageTexts[i];
 
-		//FVector2D ScreenPosition = DamageText.ScreenPosition * ViewportSize;
+		FVector2D TextPosition = DamageText.ScreenPosition + FVector2D((DamageText.CameraOffset.Y - CameraPos.Y), 0);
 
-		FCanvasTextItem TextItem(DamageText.ScreenPosition, DamageText.Text, GEngine->GetSmallFont(), DamageText.Color);
+		FCanvasTextItem TextItem(TextPosition, DamageText.Text, GEngine->GetSmallFont(), DamageText.Color);
 		TextItem.EnableShadow(FLinearColor::Black);
 		Canvas->DrawItem(TextItem);
 
 		DamageText.DisplayDuration -= GetWorld()->GetDeltaSeconds();
-
+		DamageText.ScreenPosition += TextMoveOffset;
 		if (DamageText.DisplayDuration <= 0)
 		{
 			DamageTexts.RemoveAt(i);

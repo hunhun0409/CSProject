@@ -20,7 +20,22 @@ void AC_GameModeBase::SpawnCharacter(const FVector& Location, const int& SlotNum
 
 	if (IsLeftTeam)
 	{
-		if (Map->GetSpawnCollider(true)->Bounds.GetBox().IsInside(Location))
+		bool Spawnable = true;
+		//상자 밖 전방 소환 기능.
+		FVector SpawnLocation = Location;
+		if (!Map->GetSpawnCollider(true)->Bounds.GetBox().IsInside(Location))
+		{
+			float BoxRightExtentPos = Map->GetSpawnCollider(true)->Bounds.GetBox().GetCenter().Y + Map->GetSpawnCollider(true)->Bounds.GetBox().GetExtent().Y;
+			if (BoxRightExtentPos <= Location.Y &&
+				Map->GetSpawnCollider(true)->Bounds.GetBox().IsInside(FVector(Location.X, BoxRightExtentPos - 1, Location.Z)))
+			{
+				SpawnLocation.Y = BoxRightExtentPos;
+			}
+			else
+				Spawnable = false;
+		}
+
+		if(Spawnable)
 		{
 			if (SlotNum >= LeftTeamSpawnCycle.Num())
 				return;
@@ -52,7 +67,7 @@ void AC_GameModeBase::SpawnCharacter(const FVector& Location, const int& SlotNum
 
 				FTransform SpawnTransform;
 				SpawnTransform.SetRotation(FRotator(0, 90, 0).Quaternion());
-				SpawnTransform.SetLocation(Location);
+				SpawnTransform.SetLocation(SpawnLocation);
 				auto* Unit = Cast<AC_CSCharacter>(GetWorld()->SpawnActor(LeftTeamSpawnCycle[SlotNum], &SpawnTransform));
 				Unit->SetTeamID(0);
 

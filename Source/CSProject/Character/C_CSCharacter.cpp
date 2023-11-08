@@ -156,8 +156,8 @@ void AC_CSCharacter::Tick(float DeltaTime)
 
 	UpdateCooldown();
 
-	if (TeamID == 0)
-		PrintState();
+	/*if (TeamID == 0)
+		PrintState();*/
 
 	if(bMove && *CharacterState == ECharacterState::Idle)
 		MoveForward();
