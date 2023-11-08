@@ -41,6 +41,8 @@ protected:
 		void Preview(int SlotNum);
 	UFUNCTION()
 		void CancelSelect();
+	UFUNCTION()
+		void SpawnDamageHUD(const float& FinalDamage, const bool& bCrit, const bool& bEvade, const FVector& ActorLocation);
 
 protected:
 	virtual void Zoom(const float& Value) override;

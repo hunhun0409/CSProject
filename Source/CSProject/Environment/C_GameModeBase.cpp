@@ -9,12 +9,10 @@
 #include "Kismet/GameplayStatics.h"
 #include "NavigationSystem.h"
 #include "NavigationData.h"
-#include "C_HitResultDisplayer.h"
 
 AC_GameModeBase::AC_GameModeBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
-
 }
 
 void AC_GameModeBase::SpawnCharacter(const FVector& Location, const int& SlotNum, const bool& IsLeftTeam)
@@ -202,13 +200,8 @@ void AC_GameModeBase::SetField(AC_Field* NewField)
 
 void AC_GameModeBase::PrintDamage(float FinalDamage, bool bCrit, bool bEvade, FVector ActorLocation)
 {
-	FVector NewLoc = /*ActorLocation +*/ FVector(0, 20, 0);
-
-	if (auto* AHUD = Cast<AC_HitResultDisplayer>(GetWorld()->SpawnActor(AC_HitResultDisplayer::StaticClass(), &NewLoc)))
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Red, "1");
-		AHUD->SetDamageText(FinalDamage, bCrit, bEvade);
-	}
+	SpawnDamageHUD.ExecuteIfBound(FinalDamage, bCrit, bEvade, ActorLocation);
+	
 }
 
 void AC_GameModeBase::OnConstruction(const FTransform& Transform)
@@ -220,8 +213,6 @@ void AC_GameModeBase::OnConstruction(const FTransform& Transform)
 void AC_GameModeBase::BeginPlay()
 {
 	Super::BeginPlay();
-
-	
 }
 
 void AC_GameModeBase::Tick(float DeltaTime)

@@ -30,6 +30,8 @@ public:
 		const FUIData& GetUIData() { return Datas; }
 
 	TDelegate<void()> UIDataUpdated;
+
+	TDelegate<void(const float&, const bool&, const bool&, const FVector&)> SpawnDamageHUD;
 	
 	//TDelegate<void() <- 데미지량 및 유형(회피등을 담은 구조체를 매개변수로)
 	//위 델리게이트는 캐릭터에 만들고, 여기선 연결 후 Text Actor 소환 연동

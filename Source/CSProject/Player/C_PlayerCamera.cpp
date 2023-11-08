@@ -47,6 +47,7 @@ void AC_PlayerCamera::BeginPlay()
 			//SpawnOrder.BindUFunction(GameMode, "SpawnCharacter");
 			SpawnOrder.BindUFunction(GameMode->GetField()->AccessBaseData(1), "SpawnCharacter");
 			ShowAreaOrder.BindUFunction(GameMode, "SetVisiblePlayerSpawnableArea");
+			GameMode->SpawnDamageHUD.BindUFunction(this, "SpawnDamageHUD");
 		}
 
 		Datas = GameMode->GetUIData();
@@ -62,7 +63,7 @@ void AC_PlayerCamera::BeginPlay()
 	
 	if (UIWidgetClass)
 	{
-		UIWidget = Cast<UC_UserWidget>(CreateWidget(GetController()->CastToPlayerController(), UIWidgetClass, "UIWidget"));
+		UIWidget = Cast<UC_UserWidget>(CreateWidget(GetWorld()->GetFirstPlayerController(), UIWidgetClass, "UIWidget"));
 
 		if (UIWidget)
 		{
@@ -219,4 +220,16 @@ void AC_PlayerCamera::CancelSelect()
 	CalculatePreviewLoc = false;
 	
 	ShowAreaOrder.ExecuteIfBound(false);
+}
+
+void AC_PlayerCamera::SpawnDamageHUD(const float& FinalDamage, const bool& bCrit, const bool& bEvade, const FVector& ActorLocation)
+{
+	FVector2D ScreenLocation;
+
+	if (auto* PlayerController = GetWorld()->GetFirstPlayerController())
+	{
+		PlayerController->ProjectWorldLocationToScreen(ActorLocation, ScreenLocation);
+
+	}
+
 }
