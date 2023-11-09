@@ -9,7 +9,7 @@
 #include "C_Base.generated.h"
 
 UCLASS(Abstract)
-class CSPROJECT_API AC_Base : public AActor, public IC_DamageHandleInterface
+class CSPROJECT_API AC_Base : public APawn, public IC_DamageHandleInterface
 {
 	GENERATED_BODY()
 		//타워속성
