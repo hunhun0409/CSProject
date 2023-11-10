@@ -3,7 +3,7 @@
 
 #include "C_Field.h"
 #include "Components/BoxComponent.h"
-#include "C_Base.h"
+#include "C_Base_V2.h"
 #include "C_GameModeBase.h"
 
 // Sets default values
@@ -29,7 +29,18 @@ void AC_Field::BeginPlay()
 	Super::BeginPlay();
 	FTransform LBTransform = GetActorTransform();
 	LBTransform.SetLocation(LBTransform.GetLocation() + LeftSpawnCollider->GetComponentLocation());
-	LeftBase = Cast<AC_Base>(GetWorld()->SpawnActor(LeftBaseType, &LBTransform));
+
+	FStringAssetReference AssetRef(TEXT("Blueprint'/Game/KS/Test/TestBase_V2.TestBase_V2'")); // 블루프린트 경로로 대체
+	
+
+	AActor* temp = NewObject<AActor>(GetWorld(), LeftBaseType);
+
+	temp->SetActorLocation(LBTransform.GetLocation());
+	//AActor* temp = GetWorld()->SpawnActor(LeftBaseType, &LBTransform);
+
+	LeftBase = Cast<AC_Base_V2>(temp);
+
+
 	LeftBase->UpdateHP.AddUFunction(this, "UpdateSpawnCollider");
 	ColliderScaleYOffset.X = LeftSpawnCollider->GetRelativeScale3D().Y;
 	LeftBase->SetTeamID(0);
@@ -37,7 +48,12 @@ void AC_Field::BeginPlay()
 	FTransform RBTransform = GetActorTransform();
 	RBTransform.SetLocation(RBTransform.GetLocation() + RightSpawnCollider->GetComponentLocation());
 	RBTransform.SetScale3D(FVector(3, 3, 3));
-	RightBase = Cast<AC_Base>(GetWorld()->SpawnActor(RightBaseType, &RBTransform));
+
+	AActor* temp2 = NewObject<AActor>(GetWorld(), RightBaseType);
+
+	temp2->SetActorLocation(RBTransform.GetLocation());
+
+	RightBase = Cast<AC_Base_V2>(temp2);
 	RightBase->UpdateHP.AddUFunction(this, "UpdateSpawnCollider");
 	ColliderScaleYOffset.Y = RightSpawnCollider->GetRelativeScale3D().Y;
 	RightBase->SetTeamID(1);
@@ -57,7 +73,7 @@ void AC_Field::Tick(float DeltaTime)
 
 }
 
-AC_Base* AC_Field::AccessBaseData(const bool& isLeftBase)
+AC_Base_V2* AC_Field::AccessBaseData(const bool& isLeftBase)
 {
 	if (isLeftBase)
 		return LeftBase;

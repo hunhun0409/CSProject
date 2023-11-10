@@ -15,7 +15,7 @@
 
 class AC_CSCharacter;
 class AC_Field;
-class AC_Base;
+class AC_Base_V2;
 UCLASS(Abstract)
 class CSPROJECT_API AC_GameModeBase : public AGameModeBase, public IC_DamageHandleInterface
 {

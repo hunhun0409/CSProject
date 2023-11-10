@@ -9,7 +9,7 @@
 #include "Weapon/C_Weapon.h"
 
 
-#include "Environment/C_Base.h"
+#include "Environment/C_Base_V2.h"
 #include "Environment/C_GameModeBase.h"
 
 #include "Interface/C_DamageHandleInterface.h"
@@ -542,12 +542,12 @@ float AC_CSCharacter::CalculateDamage(float Damage, AActor* DamageCauser)
 		CauserCrit = Cast<AC_CSCharacter>(MyDamageCauser)->GetStatus()->GetCrit();
 		CauserCritDamage = Cast<AC_CSCharacter>(MyDamageCauser)->GetStatus()->GetCritDamage();
 	}
-	else if (MyDamageCauser->IsA<AC_Base>())
+	else if (MyDamageCauser->IsA<AC_Base_V2>())
 	{
-		CauserClass = Cast<AC_Base>(MyDamageCauser)->GetStatus()->GetClassType();
-		CauserHit = Cast<AC_Base>(MyDamageCauser)->GetStatus()->GetHit();
-		CauserCrit = Cast<AC_Base>(MyDamageCauser)->GetStatus()->GetCrit();
-		CauserCritDamage = Cast<AC_Base>(MyDamageCauser)->GetStatus()->GetCritDamage();
+		CauserClass = Cast<AC_Base_V2>(MyDamageCauser)->GetStatus()->GetClassType();
+		CauserHit = Cast<AC_Base_V2>(MyDamageCauser)->GetStatus()->GetHit();
+		CauserCrit = Cast<AC_Base_V2>(MyDamageCauser)->GetStatus()->GetCrit();
+		CauserCritDamage = Cast<AC_Base_V2>(MyDamageCauser)->GetStatus()->GetCritDamage();
 	}
 	else
 	{
