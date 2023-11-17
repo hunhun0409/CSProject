@@ -13,11 +13,8 @@ AC_Base_V2::AC_Base_V2()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	AIPerception = CreateDefaultSubobject<UAIPerceptionComponent>("AIPerception");
+	//AIPerception = CreateDefaultSubobject<UAIPerceptionComponent>("AIPerception");
 	Status = CreateDefaultSubobject<UC_StatusComponent>("Status");
-
-
-	//Status = CreateDefaultSubobject<UC_StatusComponent>("StatusComponent");
 
 	HitEffect = CreateDefaultSubobject<UParticleSystem>("ParticleSystem");
 
@@ -45,7 +42,7 @@ void AC_Base_V2::BeginPlay()
 		TArray<FStatusData> Data = StatusMap[Name];
 		if (Data.Num())
 		{
-			Status->ApplyStatus(Data[0]);
+			Status->ApplyStatus(Data[0]); // ลอมü
 		}
 	}
 

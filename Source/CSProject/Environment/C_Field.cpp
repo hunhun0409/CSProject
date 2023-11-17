@@ -28,32 +28,21 @@ void AC_Field::BeginPlay()
 {
 	Super::BeginPlay();
 	FTransform LBTransform = GetActorTransform();
-	LBTransform.SetLocation(LBTransform.GetLocation() + LeftSpawnCollider->GetComponentLocation());
+	LBTransform.SetLocation(LBTransform.GetLocation() + LeftSpawnCollider->GetComponentLocation() + FVector(0,0,100));
 
 	FStringAssetReference AssetRef(TEXT("Blueprint'/Game/KS/Test/TestBase_V2.TestBase_V2'")); // 블루프린트 경로로 대체
 	
-
-	AActor* temp = NewObject<AActor>(GetWorld(), LeftBaseType);
-
-	temp->SetActorLocation(LBTransform.GetLocation());
-	//AActor* temp = GetWorld()->SpawnActor(LeftBaseType, &LBTransform);
-
-	LeftBase = Cast<AC_Base_V2>(temp);
-
+	LeftBase = Cast<AC_Base_V2>(GetWorld()->SpawnActor(LeftBaseType, &LBTransform));
 
 	LeftBase->UpdateHP.AddUFunction(this, "UpdateSpawnCollider");
 	ColliderScaleYOffset.X = LeftSpawnCollider->GetRelativeScale3D().Y;
 	LeftBase->SetTeamID(0);
 
 	FTransform RBTransform = GetActorTransform();
-	RBTransform.SetLocation(RBTransform.GetLocation() + RightSpawnCollider->GetComponentLocation());
+	RBTransform.SetLocation(RBTransform.GetLocation() + RightSpawnCollider->GetComponentLocation() + FVector(0, 0, 100));
 	RBTransform.SetScale3D(FVector(3, 3, 3));
 
-	AActor* temp2 = NewObject<AActor>(GetWorld(), RightBaseType);
-
-	temp2->SetActorLocation(RBTransform.GetLocation());
-
-	RightBase = Cast<AC_Base_V2>(temp2);
+	RightBase = Cast<AC_Base_V2>(GetWorld()->SpawnActor(RightBaseType, &RBTransform));
 	RightBase->UpdateHP.AddUFunction(this, "UpdateSpawnCollider");
 	ColliderScaleYOffset.Y = RightSpawnCollider->GetRelativeScale3D().Y;
 	RightBase->SetTeamID(1);

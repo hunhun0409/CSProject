@@ -6,6 +6,7 @@
 #include "GameFramework/Pawn.h"
 #include "Interface/C_DamageHandleInterface.h"
 #include "Components/C_StatusComponent.h"
+#include "DataTables/StatusData.h"
 #include "C_Base_V2.generated.h"
 
 UCLASS(Abstract)
@@ -52,24 +53,24 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "TeamID")
 		uint8 TeamID;
 
-	UPROPERTY(EditDefaultsOnly)
-		class UAIPerceptionComponent* AIPerception;
+	//UPROPERTY(EditDefaultsOnly)
+	//	class UAIPerceptionComponent* AIPerception;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Status")
 		UDataTable* DataTable;
 
 	TMap<FName, TArray<FStatusData>> StatusMap;
+	//Status
+	UPROPERTY(EditDefaultsOnly, Category = "Status", meta = (AllowPrivateAccess = "true"))
+		FName Name;
 
-private:bool IsAutoSpawning = false;
-	   FVector AutoSpawnLocation;
+	UPROPERTY(EditDefaultsOnly, Category = "Status", meta = (AllowPrivateAccess = "true"))
+		class UC_StatusComponent* Status;
 
-	   //Status
-	   UPROPERTY(EditDefaultsOnly, Category = "Status", meta = (AllowPrivateAccess = "true"))
-		   FName Name;
-	   //Status
-	   UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Status", meta = (AllowPrivateAccess = "true"))
-		   class UC_StatusComponent* Status;
+	UPROPERTY(EditDefaultsOnly, Category = "OnDamaged")
+		class UParticleSystem* HitEffect;
 
-	   UPROPERTY(EditDefaultsOnly, Category = "OnDamaged")
-		   class UParticleSystem* HitEffect;
+private:
+	bool IsAutoSpawning = false;
+	FVector AutoSpawnLocation;
 };
