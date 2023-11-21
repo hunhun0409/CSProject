@@ -2,6 +2,6 @@
 0,Rifleman,3,SR,Soldier,Ranger,Ground,AllAround_Attack,22000,1500,300,750,50,700,200,1.5,1000,700,300
 1,ShotgunMan,4,SR,Soldier,Striker,Ground,Ground_Attack,80000,8000,1150,1435,50,633,1264,1,1000,300,600
 2,PistolMan,2,SR,Soldier,Ranger,Ground,AllAround_Attack,12000,2000,300,750,50,450,200,1.2,1000,500,300
-3,CatGirl,3,SR,Soldier,Ranger,Ground,AllAround_Attack,12000,2000,300,750,50,450,200,1,1000,500,300
+3,CatGirl,3,SR,Soldier,Ranger,Ground,AllAround_Attack,12000,2000,300,750,50,450,200,1,1000,150,300
 4,BasicBase,9999,N,Mechanic,Tower,AllAround,AllAround_Attack,143200,2000,1000,0,50,10000,0,1,1000,1000,0
 5,CounterRifleman,3,SR,Soldier,Ranger,Ground,AllAround_Attack,200000,100,30000,750,50,700,200,1.5,1000,700,300

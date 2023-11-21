@@ -8,7 +8,6 @@
 
 #include "Weapon/C_Weapon.h"
 
-
 #include "Environment/C_Base_V2.h"
 #include "Environment/C_GameModeBase.h"
 
@@ -114,11 +113,11 @@ void AC_CSCharacter::OnConstruction(FTransform const& Transform)
 {
 	Super::OnConstruction(Transform);
 
-	if (GetMesh())
+	/*if (GetMesh())
 	{
 		GetMesh()->SetRelativeLocation(FVector(0, 0, -88.5f));
 		GetMesh()->SetRelativeRotation(FRotator(0, -90, 0).Quaternion());
-	}
+	}*/
 	
 	if (StatusUI)
 	{
@@ -194,19 +193,33 @@ void AC_CSCharacter::Attack()
 		return;
 	if (bCanActivateAttack && *CharacterState == ECharacterState::Idle)
 	{
-		if (!IsValid(Target) || Cast<AC_CSCharacter>(Target)->IsDead())
+		if (Target)
 		{
-			Cast<AC_CSAIController>(GetController())->RemoveTarget(Target);
-			return;
+			if (Cast<AC_CSCharacter>(Target))
+			{
+				if (Cast<AC_CSCharacter>(Target)->IsDead())
+				{
+					Cast<AC_CSAIController>(GetController())->RemoveTarget(Target);
+					return;
+				}
+			}
+			if (Cast<AC_Base_V2>(Target))
+			{
+				if (Cast<AC_Base_V2>(Target)->GetStatus()->GetCurHealth() <= 0)
+				{
+					Cast<AC_CSAIController>(GetController())->RemoveTarget(Target);
+					return;
+				}
+			}
+
+			FRotator rot = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), Target->GetActorLocation());
+			rot = FRotator(0, rot.Yaw, 0);
+			SetActorRotation(rot.Quaternion(), ETeleportType::TeleportPhysics);
+
+			*CharacterState = ECharacterState::Attacking;
+
+			Weapon->BeginAction();
 		}
-			
-		FRotator rot = UKismetMathLibrary::FindLookAtRotation(GetActorLocation(), Target->GetActorLocation());
-		rot = FRotator(0, rot.Yaw, 0);
-		SetActorRotation(rot.Quaternion(), ETeleportType::TeleportPhysics);
-
-		*CharacterState = ECharacterState::Attacking;
-
-		Weapon->ActivateAttack();
 	}
 }
 

@@ -21,8 +21,8 @@ private:
 		uint8 FirePerAttack = 3;
 	
 private:
-	void ActivateAttack() final override;
-	void DeactivateAttack() final override;
+	void BeginAction() final override;
+	void EndAction() final override;
 
 private:
 	FTimerHandle Timer;

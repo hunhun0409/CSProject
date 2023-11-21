@@ -6,7 +6,7 @@
 #include "Components/C_StatusComponent.h"
 
 
-void AC_AssultRifle::ActivateAttack()
+void AC_AssultRifle::BeginAction()
 {
 	if (!IsValid(GetOwner()))
 		return;
@@ -20,22 +20,23 @@ void AC_AssultRifle::ActivateAttack()
 			float attackRate = Cast<AC_CSCharacter>(GetOwner())->GetStatus()->GetAttackRate();
 			float FinalInterval = FireInterval / attackRate;
 
-			GetWorld()->GetTimerManager().SetTimer(Timer, this, &ThisClass::ActivateAttack, FinalInterval, true, 0);
+			GetWorld()->GetTimerManager().SetTimer(Timer, this, &ThisClass::BeginAction, FinalInterval, true, 0);
 			return;
 		}
 	}
-	Super::ActivateAttack();
+	Super::BeginAction();
 
 	if (++CurFireCount == FirePerAttack)
 	{
-		DeactivateAttack();
+		EndAction();
 		return;
 	}
 }
 
-void AC_AssultRifle::DeactivateAttack()
+void AC_AssultRifle::EndAction()
 {
-	Super::DeactivateAttack();
+	Super::EndAction();
+	GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Red, "Riffle EndAction!");
 	if (Timer != FTimerHandle())
 	{
 		CurFireCount = 0;

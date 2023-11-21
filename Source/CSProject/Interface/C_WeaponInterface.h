@@ -14,8 +14,12 @@ class CSPROJECT_API IC_WeaponInterface
 {
 	GENERATED_BODY()
 public:
-	virtual void ActivateAttack()	PURE_VIRTUAL(IC_WeaponInterface::ActivateAttack, return;)
-	virtual void DeactivateAttack()	PURE_VIRTUAL(IC_WeaponInterface::ActivateAttack, return;)
+	virtual void BeginAction()	PURE_VIRTUAL(IC_WeaponInterface::BeginAction, return;)
+	virtual void EndAction()	PURE_VIRTUAL(IC_WeaponInterface::EndAction, return;)
+	virtual void Activate() PURE_VIRTUAL(IC_SkillInterface::Activate, return;)
+	virtual void Deactivate() PURE_VIRTUAL(IC_SkillInterface::Deactivate, return;)
+	
+	virtual void ApplyDamage() PURE_VIRTUAL(IC_SkillInterface::ApplyDamage, return;)
 	virtual void ActivateTrail() PURE_VIRTUAL(IWeaponInterface::ActivateTrail, return;)
 	virtual void DeactivateTrail() PURE_VIRTUAL(IWeaponInterface::DeactivateTrail, return;)
 	virtual void ActivateEffect() PURE_VIRTUAL(IWeaponInterface::ActivateEffect, return;)

@@ -45,8 +45,13 @@ protected:
 	virtual void BeginPlay() override;
 
 
-	void ActivateAttack() override;
-	void DeactivateAttack() override;
+	void BeginAction() override;
+	void EndAction() override;
+
+	void Activate() override;
+	void Deactivate() override;
+
+	void ApplyDamage() override;
 
 	void ActivateTrail() override;
 	void DeactivateTrail() override;
@@ -54,8 +59,18 @@ protected:
 	void ActivateEffect() override;
 	void DeactivateEffect() override;
 
+
+
+	UFUNCTION()
+		virtual void OnNotifyStart(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload);
+	UFUNCTION()
+		virtual void OnMontageEnded(UAnimMontage* Montage, bool bInterrupted);
+	UFUNCTION()
+		virtual void OnMontageInterrupted(UAnimMontage* Montage, bool bInterrupted);
+
 	void NotifyCanAttack();
 
+	
 protected:
 	FTimerHandle AttackTimer;
 

@@ -31,8 +31,8 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-	void ActivateAttack() override;
-	void DeactivateAttack() override;
+	void BeginAction() override;
+	void EndAction() override;
 
 	void ActivateTrail() override;
 	void DeactivateTrail() override;

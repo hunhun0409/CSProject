@@ -1,6 +1,6 @@
 #include "AI/C_CSAIController.h"
 #include "Character/C_CSCharacter.h"
-#include "Environment/C_Base.h"
+#include "Environment/C_Base_V2.h"
 #include "perception/aiperceptionComponent.h"
 #include "perception/AISenseconfig_sight.h"
 #include "BehaviorTree/BehaviorTree.h"
@@ -38,6 +38,9 @@ void AC_CSAIController::Tick(const float DeltaSecond)
 				false, -1.0f, 0, 0, FVector::RightVector, FVector::ForwardVector);
 		}
 	}
+	AC_CSCharacter* OwningPawn = Cast<AC_CSCharacter>(GetPawn());
+	if (OwningPawn->GetTeamID() == 0)
+		GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Magenta, FString::SanitizeFloat(SensedActors.Num()));
 }
 
 void AC_CSAIController::OnPossess(APawn* InPawn)
@@ -70,7 +73,7 @@ void AC_CSAIController::OnPossess(APawn* InPawn)
 
 	if (Timer == FTimerHandle())
 	{
-		GetWorld()->GetTimerManager().SetTimer(Timer, this, &ThisClass::GetClosestActor, 0.2f, true, 0);
+		GetWorld()->GetTimerManager().SetTimer(Timer, this, &ThisClass::GetClosestActor, 0.1f, true, 0);
 	}
 }
 
@@ -85,16 +88,21 @@ void AC_CSAIController::OnUnPossess()
 
 void AC_CSAIController::RemoveTarget(AActor* Inactor)
 {
+	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, "Remove Target!!!!!!!!!!!!!!!");
 	if (SensedActors.Num())
 	{
+		GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Green, "Num != 0");
 		if (SensedActors.Contains(Inactor))
 		{
-			SensedActors.Remove(Inactor);
+			GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Blue, "Contains Actor");
+			uint8 removenum = SensedActors.Remove(Inactor);
+			GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Black, FString::SanitizeFloat(removenum));
 			if (Target == Inactor)
 			{
 				Target = nullptr;
 				Cast<AC_CSCharacter>(GetPawn())->SetTarget(nullptr);
 				Blackboard->SetValueAsObject("Target", nullptr);
+				TargetDist = 9999.0f;
 			}
 		}
 	}
@@ -108,31 +116,37 @@ void AC_CSAIController::OnPerceptionUpdated(const TArray<AActor*>& UpdateActors)
 		TArray<AActor*> actors;
 		Perception->GetCurrentlyPerceivedActors(nullptr, actors);
 
-		GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Red, "Sensed Actor!");
+		//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Red, "Sensed Actor!");
 
-		//for (AActor* actor : actors)
-		//{
-		//	if (!actor->IsA(AC_CSCharacter::StaticClass()) && !actor->IsA(AC_Base::StaticClass()))
-		//		continue;
-		//	if (Cast<AC_CSCharacter>(actor)->GetTeamID() == OwningPawn->GetTeamID())
-		//		continue;
-		//	//else if (Cast<AC_Base>(actor)->GetTeamID() == OwningPawn->GetTeamID())
-		//	//	continue;
+		for (AActor* actor : actors)
+		{
+			if (!actor->IsA(AC_CSCharacter::StaticClass()) && !actor->IsA(AC_Base_V2::StaticClass()))
+				continue;
+			if (Cast<AC_CSCharacter>(actor))
+			{
+				if (Cast<AC_CSCharacter>(actor)->GetTeamID() == OwningPawn->GetTeamID() || Cast<AC_CSCharacter>(actor)->IsDead())
+					continue;
+			}
+			if (Cast<AC_Base_V2>(actor))
+			{
+				if (Cast<AC_Base_V2>(actor)->GetTeamID() == OwningPawn->GetTeamID())
+					continue;
+			}
 
-		//	if (SensedActors.Contains(actor))
-		//	{
-		//		if (OwningPawn->GetDistanceTo(actor) > 1000)
-		//		{
-		//			GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Red, FString::SanitizeFloat(OwningPawn->GetDistanceTo(actor)));
+			if (SensedActors.Contains(actor))
+			{
+				if (OwningPawn->GetDistanceTo(actor) > 1000)
+				{
+					GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Red, FString::SanitizeFloat(OwningPawn->GetDistanceTo(actor)));
 
-		//			SensedActors.Remove(actor);
-		//		}
-		//	}
-		//	else
-		//	{
-		//		SensedActors.Add(actor);
-		//	}
-		//}
+					SensedActors.Remove(actor);
+				}
+			}
+			else
+			{
+				SensedActors.Add(actor);
+			}
+		}
 	}
 
 }
@@ -144,10 +158,10 @@ void AC_CSAIController::GetClosestActor()
 	{
 		if (SensedActors.Num())
 		{
-
+			
 			AActor* ClosestActor = nullptr;
 
-			float ClosestDist = OwningPawn->GetStatus()->GetMaxSightRange();
+			float ClosestDist = OwningPawn->GetStatus()->GetMaxSightRange() + 300;
 			for (AActor* actor : SensedActors)
 			{
 				if (actor && OwningPawn)
@@ -163,6 +177,8 @@ void AC_CSAIController::GetClosestActor()
 			Target = ClosestActor;
 			OwningPawn->Target = Target;
 			Blackboard->SetValueAsObject("Target", Target);
+
+			
 		}
 	}
 }

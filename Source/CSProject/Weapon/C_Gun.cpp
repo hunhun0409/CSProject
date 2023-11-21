@@ -35,30 +35,16 @@ void AC_Gun::BeginPlay()
 	
 }
 
-void AC_Gun::ActivateAttack()
+void AC_Gun::BeginAction()
 {
-	if (!IsValid(GetOwner()))
-		return;
-	Super::ActivateAttack();
+	Super::BeginAction();
 
-	AC_CSCharacter* const WeaponOwner = Cast<AC_CSCharacter>(GetOwner());
-	if (WeaponOwner)
-	{
-		float attackRate = WeaponOwner->GetStatus()->GetAttackRate();
-		float damage = WeaponOwner->GetStatus()->GetAttack();
-		UGameplayStatics::ApplyDamage(WeaponOwner->Target, damage, GetInstigatorController(), this, UDamageType::StaticClass());
-
-		WeaponOwner->bCanActivateAttack = false;
-		if (AttackTimer == FTimerHandle())
-		{
-			GetWorld()->GetTimerManager().SetTimer(AttackTimer, this, &ThisClass::NotifyCanAttack, 1 / attackRate, false);
-		}
-	}
 	ActivateEffect();
 }
 
-void AC_Gun::DeactivateAttack()
+void AC_Gun::EndAction()
 {
+	Super::EndAction();
 }
 
 void AC_Gun::ActivateTrail()
