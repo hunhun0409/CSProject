@@ -4,7 +4,7 @@
 #include "C_GameModeBase.h"
 #include "Components/BoxComponent.h"
 #include "C_Field.h"
-#include "C_Base.h"
+#include "C_Base_V2.h"
 #include "Character/C_CSCharacter.h"
 #include "Kismet/GameplayStatics.h"
 #include "NavigationSystem.h"
@@ -239,12 +239,12 @@ void AC_GameModeBase::Tick(float DeltaTime)
 
 void AC_GameModeBase::CheckHP()
 {
-	if (AC_Base* LeftBase = Map->AccessBaseData(1))
+	if (AC_Base_V2* LeftBase = Map->AccessBaseData(1))
 	{
 		LeftBaseData.CurHP = LeftBase->GetStatus()->GetCurHealth();
 		LeftBaseData.MaxHP = LeftBase->GetStatus()->GetMaxHealth();
 	}
-	if (AC_Base* RightBase = Map->AccessBaseData(0))
+	if (AC_Base_V2* RightBase = Map->AccessBaseData(0))
 	{
 		RightBaseData.CurHP = RightBase->GetStatus()->GetCurHealth();
 		RightBaseData.MaxHP = RightBase->GetStatus()->GetMaxHealth();

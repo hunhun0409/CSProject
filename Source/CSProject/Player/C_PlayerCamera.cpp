@@ -11,7 +11,7 @@
 #include "Environment/C_GameModeBase.h"
 #include "C_UserWidget.h"
 #include "Environment/C_Field.h"
-#include "Environment/C_Base.h"
+#include "Environment/C_Base_V2.h"
 #include "Environment/C_HUD.h"
 
 // Sets default values
