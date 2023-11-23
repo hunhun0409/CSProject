@@ -82,13 +82,14 @@ void AC_GameModeBase::SpawnCharacter(const FVector& Location, const int& SlotNum
 				
 				if (LeftTeamSpawnCycle.Num() > 4)
 				{
-					LeftTeamSpawnCycle.Swap(SlotNum, 5);
+					LeftTeamSpawnCycle.Swap(SlotNum, 4);
 
-					for (int i = 5; i < LeftTeamSpawnCycle.Num() - 1; i++)
+					for (int i = 4; i < LeftTeamSpawnCycle.Num() - 1; i++)
 						LeftTeamSpawnCycle.Swap(i, i + 1);
-
-				Datas.UnitImage.EmplaceAt(SlotNum, LeftTeamSpawnCycle[SlotNum].GetDefaultObject()->GetCharacterButtonImage());
-				Datas.ButtonUnitName.EmplaceAt(SlotNum, LeftTeamSpawnCycle[SlotNum].GetDefaultObject()->GetStatus()->GetCharacterName());
+					Datas.UnitImage.RemoveAt(SlotNum);
+					Datas.UnitImage.EmplaceAt(SlotNum, LeftTeamSpawnCycle[SlotNum].GetDefaultObject()->GetCharacterButtonImage());
+					Datas.ButtonUnitName.RemoveAt(SlotNum);
+					Datas.ButtonUnitName.EmplaceAt(SlotNum, LeftTeamSpawnCycle[SlotNum].GetDefaultObject()->GetStatus()->GetCharacterName());
 				}
 
 				UIDataUpdated.ExecuteIfBound();
@@ -141,9 +142,9 @@ void AC_GameModeBase::SpawnCharacter(const FVector& Location, const int& SlotNum
 
 			if (RightTeamSpawnCycle.Num() > 4)
 			{
-				RightTeamSpawnCycle.Swap(SlotNum, 5);
+				RightTeamSpawnCycle.Swap(SlotNum, 4);
 
-				for (int i = 5; i < RightTeamSpawnCycle.Num() - 1; i++)
+				for (int i = 4; i < RightTeamSpawnCycle.Num() - 1; i++)
 					RightTeamSpawnCycle.Swap(i, i + 1);
 			}
 		}
