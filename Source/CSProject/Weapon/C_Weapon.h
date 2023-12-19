@@ -70,6 +70,8 @@ protected:
 
 	void NotifyCanAttack();
 
+	UFUNCTION(BlueprintImplementableEvent)
+		void OnAttackEvent(AActor* AttackTarget);
 	
 protected:
 	FTimerHandle AttackTimer;

@@ -187,6 +187,7 @@ void AC_CSCharacter::SetULTSkillCoolRate(const float& InRate)
 		UltimateSkill->SetSkillCoolDown(InRate);
 }
 
+
 void AC_CSCharacter::Attack()
 {
 	if (IsDead())

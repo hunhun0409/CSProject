@@ -103,6 +103,7 @@ void AC_Weapon::ApplyDamage()
 	AC_CSCharacter* const WeaponOwner = Cast<AC_CSCharacter>(GetOwner());
 	if (WeaponOwner)
 	{
+		OnAttackEvent(WeaponOwner->Target);
 		float attackRate = WeaponOwner->GetStatus()->GetAttackRate();
 		float damage = WeaponOwner->GetStatus()->GetAttack();
 		UGameplayStatics::ApplyDamage(WeaponOwner->Target, damage, GetInstigatorController(), this, UDamageType::StaticClass());

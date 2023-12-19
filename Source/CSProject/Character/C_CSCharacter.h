@@ -82,7 +82,6 @@ protected:
 	UFUNCTION()
 		virtual void CharacterMontageBlendingOut(UAnimMontage* const montage = 0, bool bInterrupted = 0);
 
-		
 
 public:	
 	// Called every frame
@@ -97,7 +96,6 @@ public:
 	void SetSPSkillCoolRate(const float& InRate);
 	void SetULTSkillCoolRate(const float& InRate);
 
-	
 protected:
 	void Attack() override;
 	void SPSkill() override;
