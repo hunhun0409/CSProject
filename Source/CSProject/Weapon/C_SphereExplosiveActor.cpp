@@ -23,7 +23,7 @@ void AC_SphereExplosiveActor::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	Collider->OnComponentBeginOverlap.AddDynamic(this, AC_SphereExplosiveActor::OnBeginOverlap);
+	Collider->OnComponentBeginOverlap.AddDynamic(this, &AC_SphereExplosiveActor::OnBeginOverlap);
 }
 
 void AC_SphereExplosiveActor::OnConstruction(const FTransform& Transform)
@@ -34,7 +34,7 @@ void AC_SphereExplosiveActor::OnConstruction(const FTransform& Transform)
 
 void AC_SphereExplosiveActor::OnBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (auto* Target = Cast<AC_CSCharacter>(OtherActor))
+	/*if (auto* Target = Cast<AC_CSCharacter>(OtherActor))
 	{
 
 	}
@@ -44,7 +44,7 @@ void AC_SphereExplosiveActor::OnBeginOverlap(UPrimitiveComponent* OverlappedComp
 		{
 
 		}
-	}
+	}*/
 }
 
 // Called every frame
