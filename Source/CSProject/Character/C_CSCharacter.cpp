@@ -127,7 +127,7 @@ void AC_CSCharacter::OnConstruction(FTransform const& Transform)
 
 void AC_CSCharacter::PrintState()
 {
-	GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, *StateToName.Find(*CharacterState));
+	//GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, *StateToName.Find(*CharacterState));
 
 	//FString MyBoolString = bMove ? TEXT("true") : TEXT("false");
 	//GEngine->AddOnScreenDebugMessage(INDEX_NONE, 5.0f, FColor::Green, MyBoolString);

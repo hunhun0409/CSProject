@@ -39,8 +39,8 @@ void AC_CSAIController::Tick(const float DeltaSecond)
 		}
 	}
 	AC_CSCharacter* OwningPawn = Cast<AC_CSCharacter>(GetPawn());
-	if (OwningPawn->GetTeamID() == 0)
-		GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Magenta, FString::SanitizeFloat(SensedActors.Num()));
+	//if (OwningPawn->GetTeamID() == 0)
+		//GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Magenta, FString::SanitizeFloat(SensedActors.Num()));
 }
 
 void AC_CSAIController::OnPossess(APawn* InPawn)
