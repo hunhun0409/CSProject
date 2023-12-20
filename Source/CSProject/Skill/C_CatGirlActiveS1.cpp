@@ -2,6 +2,7 @@
 
 
 #include "Skill/C_CatGirlActiveS1.h"
+#include "Character/C_CSCharacter.h"
 
 AC_CatGirlActiveS1::AC_CatGirlActiveS1()
 {
@@ -30,6 +31,7 @@ void AC_CatGirlActiveS1::EndAction()
 void AC_CatGirlActiveS1::Activate()
 {
 	Super::Activate();
+	
 }
 
 void AC_CatGirlActiveS1::Deactivate()
