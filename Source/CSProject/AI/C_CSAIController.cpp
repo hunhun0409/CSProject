@@ -39,8 +39,6 @@ void AC_CSAIController::Tick(const float DeltaSecond)
 		}
 	}
 	AC_CSCharacter* OwningPawn = Cast<AC_CSCharacter>(GetPawn());
-	if (OwningPawn->GetTeamID() == 0)
-		GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Magenta, FString::SanitizeFloat(SensedActors.Num()));
 }
 
 void AC_CSAIController::OnPossess(APawn* InPawn)
@@ -88,13 +86,13 @@ void AC_CSAIController::OnUnPossess()
 
 void AC_CSAIController::RemoveTarget(AActor* Inactor)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, "Remove Target!!!!!!!!!!!!!!!");
+	//GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, "Remove Target!!!!!!!!!!!!!!!");
 	if (SensedActors.Num())
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Green, "Num != 0");
+		//GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Green, "Num != 0");
 		if (SensedActors.Contains(Inactor))
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Blue, "Contains Actor");
+			//GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Blue, "Contains Actor");
 			uint8 removenum = SensedActors.Remove(Inactor);
 			GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Black, FString::SanitizeFloat(removenum));
 			if (Target == Inactor)
