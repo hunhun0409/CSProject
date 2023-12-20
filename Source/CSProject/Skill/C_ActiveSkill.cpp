@@ -58,6 +58,8 @@ void AC_ActiveSkill::EndAction()
 	//Skill 애니메이션 끝날때 시행할 작업
 	if (!IsValid(GetOwner()))
 		return;
+	AC_CSCharacter* SkillOwner = Cast<AC_CSCharacter>(GetOwner());
+	*(SkillOwner->CharacterState) = ECharacterState::Idle;
 	Cast<AC_CSCharacter>(GetOwner())->GetMesh()->GetAnimInstance()->OnMontageEnded.RemoveDynamic(this, &ThisClass::OnSkillMontageEnded);
 
 }
@@ -68,7 +70,7 @@ void AC_ActiveSkill::Activate()
 	if (!IsValid(GetOwner()))
 		return;
 	AC_CSCharacter* SkillOwner = Cast<AC_CSCharacter>(GetOwner());
-	*(SkillOwner->CharacterState) = ECharacterState::Idle;
+	//*(SkillOwner->CharacterState) = ECharacterState::Idle;
 
 	SkillOwner->GetMesh()->GetAnimInstance()->OnPlayMontageNotifyBegin.RemoveDynamic(this, &ThisClass::OnNotifyStart);
 }
