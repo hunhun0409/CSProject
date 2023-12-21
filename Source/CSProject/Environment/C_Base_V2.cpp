@@ -220,6 +220,8 @@ void AC_Base_V2::GetDamaged(AActor* DamagedActor, float Damage, const UDamageTyp
 
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitEffect, Transform);
 
+	if(UpdateHP.IsBound())
+		UpdateHP.Broadcast();
 }
 
 void AC_Base_V2::SpawnCharacter(const FVector& Location, const int& SlotNum, const bool& IsLeftTeam)

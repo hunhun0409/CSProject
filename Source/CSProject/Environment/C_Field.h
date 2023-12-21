@@ -34,6 +34,8 @@ protected:
 		void UpdateSpawnCollider();
 
 protected:
+	TDelegate<void()> BaseHPUpdated;
+
 	UPROPERTY(EditDefaultsOnly)
 		class UStaticMeshComponent* Field;
 
