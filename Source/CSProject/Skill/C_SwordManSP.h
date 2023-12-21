@@ -29,7 +29,13 @@ protected:
 
 private:
 	UPROPERTY(EditDefaultsOnly)
-		float IncreaseAttackRate = 0.5f;
+		float IncreaseAttackSpeedRate = 0.5f;
+	UPROPERTY(EditDefaultsOnly)
+		float IncreaseAttackDamageRate = 1.0f;
+	UPROPERTY(EditDefaultsOnly)
+		float SkillDuration = 12.0f;
+
+	FTimerHandle Timer;
 	/*UFUNCTION()
 		virtual void OnNotifyStart(FName NotifyName, const FBranchingPointNotifyPayload& BranchingPointPayload);
 	UFUNCTION()

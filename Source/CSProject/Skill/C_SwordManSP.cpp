@@ -16,7 +16,19 @@ void AC_SwordManSP::ApplyEffectToPawn(APawn* InPawn)
 	AC_CSCharacter* InOwner = Cast<AC_CSCharacter>(InPawn);
 	UC_StatusComponent* Status = InOwner->GetStatus();
 
-	Status->SetAttackRate(0.5f);
+	float curAttackRate = Status->GetAttackRate();
+	float newAttackRate = curAttackRate * (1 + IncreaseAttackSpeedRate);
+
+	float curAttack = Status->GetAttack();
+	float newAttack = curAttack * (1 + IncreaseAttackDamageRate);
+
+	Status->SetAttackRate(newAttackRate);
+	Status->SetAttack(newAttack);
+
+	if (Timer == FTimerHandle())
+	{
+		GetWorld()->GetTimerManager().SetTimer(Timer, this, &ThisClass::Deactivate, SkillDuration, true, 0);
+	}
 }
 
 void AC_SwordManSP::BeginAction()
@@ -33,15 +45,31 @@ void AC_SwordManSP::Activate()
 {
 	Super::Activate();
 
+	ApplyEffectToPawn(GetInstigator());
 	if (GetOwner())
 	{
-
 	}
 }
 
 void AC_SwordManSP::Deactivate()
 {
 	Super::Deactivate();
+
+
+	if (GetOwner()->IsValidLowLevel())
+	{
+		AC_CSCharacter* InOwner = Cast<AC_CSCharacter>(GetOwner());
+		UC_StatusComponent* Status = InOwner->GetStatus();
+
+		float curAttackRate = Status->GetAttackRate();
+		float newAttackRate = curAttackRate / (1 + IncreaseAttackSpeedRate);
+
+		float curAttack = Status->GetAttack();
+		float newAttack = curAttack / (1 + IncreaseAttackDamageRate);
+
+		Status->SetAttackRate(newAttackRate);
+		Status->SetAttack(newAttack);
+	}
 }
 
 void AC_SwordManSP::StartCooldown()
