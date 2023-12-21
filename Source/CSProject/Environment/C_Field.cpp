@@ -47,12 +47,13 @@ void AC_Field::BeginPlay()
 	ColliderScaleYOffset.Y = RightSpawnCollider->GetRelativeScale3D().Y;
 	RightBase->SetTeamID(1);
 
-	UpdateSpawnCollider();
-
 	if (auto* GameMode = Cast<AC_GameModeBase>(GetWorld()->GetAuthGameMode()))
 	{
 		GameMode->SetField(this);
+		BaseHPUpdated.BindUFunction(GameMode, "CheckHP");
 	}
+
+	UpdateSpawnCollider();
 }
 
 // Called every frame
@@ -97,5 +98,6 @@ void AC_Field::UpdateSpawnCollider()
 	RightSpawnCollider->SetRelativeScale3D(RightColliderOffset);
 	RightSpawnCollider->SetWorldLocation(FVector(0, RightBase->GetActorLocation().Y - RightSpawnCollider->GetScaledBoxExtent().Y, 0));
 
+	BaseHPUpdated.ExecuteIfBound();
 }
 
